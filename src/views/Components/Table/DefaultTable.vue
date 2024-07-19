@@ -4,9 +4,9 @@ import { useI18n } from '@/hooks/web/useI18n'
 import { Table, TableColumn } from '@/components/Table'
 import { getTableListApi } from '@/api/table'
 import { TableData } from '@/api/table/types'
-import { ref, h } from 'vue'
-import { ElTag } from 'element-plus'
-import { BaseButton } from '@/components/Button'
+import { ref } from 'vue'
+// import { ElTag } from 'element-plus'
+// import { BaseButton } from '@/components/Button'
 
 interface Params {
   pageIndex?: number
@@ -17,53 +17,60 @@ const { t } = useI18n()
 
 const columns: TableColumn[] = [
   {
-    field: 'title',
-    label: t('tableDemo.title')
+    field: '排名',
+    label: '排名',
+    type: 'index'
   },
   {
-    field: 'author',
-    label: t('tableDemo.author')
+    field: '教练',
+    label: '教练'
   },
   {
-    field: 'display_time',
-    label: t('tableDemo.displayTime'),
+    field: '授课总节数',
+    label: '授课总节数',
     sortable: true
   },
-  {
-    field: 'importance',
-    label: t('tableDemo.importance'),
-    formatter: (_: Recordable, __: TableColumn, cellValue: number) => {
-      return h(
-        ElTag,
-        {
-          type: cellValue === 1 ? 'success' : cellValue === 2 ? 'warning' : 'danger'
-        },
-        () =>
-          cellValue === 1
-            ? t('tableDemo.important')
-            : cellValue === 2
-              ? t('tableDemo.good')
-              : t('tableDemo.commonly')
-      )
-    }
-  },
+  // {
+  //   field: 'display_time',
+  //   label: t('tableDemo.displayTime'),
+  //   sortable: true
+  // },
+  // {
+  //   field: 'importance',
+  //   label: t('tableDemo.importance'),
+  //   formatter: (_: Recordable, __: TableColumn, cellValue: number) => {
+  //     return h(
+  //       ElTag,
+  //       {
+  //         type: cellValue === 1 ? 'success' : cellValue === 2 ? 'warning' : 'danger'
+  //       },
+  //       () =>
+  //         cellValue === 1
+  //           ? t('tableDemo.important')
+  //           : cellValue === 2
+  //             ? t('tableDemo.good')
+  //             : t('tableDemo.commonly')
+  //     )
+  //   }
+  // },
   {
     field: 'pageviews',
-    label: t('tableDemo.pageviews')
-  },
-  {
-    field: 'action',
-    label: t('tableDemo.action'),
-    slots: {
-      default: (data) => {
-        return (
-          <BaseButton type="primary" onClick={() => actionFn(data)}>
-            {t('tableDemo.action')}
-          </BaseButton>
-        )
-      }
-    }
+    label: '应结课程费',
+    sortable: true
   }
+  // {
+  //   field: 'action',
+  //   label: t('tableDemo.action'),
+  //   slots: {
+  //     default: (data) => {
+  //       return (
+  //         <BaseButton type="primary" onClick={() => actionFn(data)}>
+  //           {t('tableDemo.action')}
+  //         </BaseButton>
+  //       )
+  //     }
+  //   }
+  // }
 ]
 
 const loading = ref(true)
@@ -77,7 +84,7 @@ const getTableList = async (params?: Params) => {
       pageSize: 10
     }
   )
-    .catch(() => {})
+    .catch(() => { })
     .finally(() => {
       loading.value = false
     })
@@ -88,18 +95,14 @@ const getTableList = async (params?: Params) => {
 
 getTableList()
 
-const actionFn = (data: any) => {
-  console.log(data)
-}
+// const actionFn = (data: any) => {
+//   console.log(data)
+// }
 </script>
 
 <template>
-  <ContentWrap :title="t('tableDemo.table')" :message="t('tableDemo.tableDes')">
-    <Table
-      :columns="columns"
-      :data="tableDataList"
-      :loading="loading"
-      :defaultSort="{ prop: 'display_time', order: 'descending' }"
-    />
+  <ContentWrap :title="t('analysis.CoachsituationRanking')" :message="t('tableDemo.tableDes')">
+    <Table :columns="columns" :data="tableDataList" :loading="loading"
+      :defaultSort="{ prop: 'display_time', order: 'descending' }" />
   </ContentWrap>
 </template>

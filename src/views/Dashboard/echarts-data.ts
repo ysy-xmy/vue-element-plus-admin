@@ -5,7 +5,7 @@ const { t } = useI18n()
 
 export const lineOptions: EChartsOption = {
   title: {
-    text: t('analysis.monthlySales'),
+    text: t('analysis.incomePic'),
     left: 'center'
   },
   xAxis: {
@@ -74,7 +74,7 @@ export const lineOptions: EChartsOption = {
 
 export const pieOptions: EChartsOption = {
   title: {
-    text: t('analysis.userAccessSource'),
+    text: t('analysis.listofOrder'),
     left: 'center'
   },
   tooltip: {
@@ -111,7 +111,7 @@ export const pieOptions: EChartsOption = {
 
 export const barOptions: EChartsOption = {
   title: {
-    text: t('analysis.weeklyUserActivity'),
+    text: t('analysis.listofOrder'),
     left: 'center'
   },
   tooltip: {

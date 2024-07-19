@@ -21,7 +21,7 @@ const pieOptionsData = reactive<EChartsOption>(pieOptions) as EChartsOption
 
 // 用户来源
 const getUserAccessSource = async () => {
-  const res = await getUserAccessSourceApi().catch(() => {})
+  const res = await getUserAccessSourceApi().catch(() => { })
   if (res) {
     set(
       pieOptionsData,
@@ -41,7 +41,7 @@ const barOptionsData = reactive<EChartsOption>(barOptions) as EChartsOption
 
 // 周活跃量
 const getWeeklyUserActivity = async () => {
-  const res = await getWeeklyUserActivityApi().catch(() => {})
+  const res = await getWeeklyUserActivityApi().catch(() => { })
   if (res) {
     set(
       barOptionsData,
@@ -62,7 +62,7 @@ const lineOptionsData = reactive<EChartsOption>(lineOptions) as EChartsOption
 
 // 每月销售总额
 const getMonthlySales = async () => {
-  const res = await getMonthlySalesApi().catch(() => {})
+  const res = await getMonthlySalesApi().catch(() => { })
   if (res) {
     set(
       lineOptionsData,
@@ -97,31 +97,32 @@ const getAllApi = async () => {
 }
 
 getAllApi()
+// import DefaultTable from '../Components/Table/DefaultTable.vue'
+import tableCoach from '../Components/Table/tableCoach.vue'
+import tableRecord from '../Components/Table/tableRecord.vue'
 </script>
 
 <template>
   <PanelGroup />
   <ElRow :gutter="20" justify="space-between">
-    <ElCol :xl="10" :lg="10" :md="24" :sm="24" :xs="24">
-      <ElCard shadow="hover" class="mb-20px">
-        <ElSkeleton :loading="loading" animated>
-          <Echart :options="pieOptionsData" :height="300" />
-        </ElSkeleton>
-      </ElCard>
-    </ElCol>
-    <ElCol :xl="14" :lg="14" :md="24" :sm="24" :xs="24">
-      <ElCard shadow="hover" class="mb-20px">
-        <ElSkeleton :loading="loading" animated>
-          <Echart :options="barOptionsData" :height="300" />
-        </ElSkeleton>
-      </ElCard>
-    </ElCol>
+
     <ElCol :span="24">
       <ElCard shadow="hover" class="mb-20px">
         <ElSkeleton :loading="loading" animated :rows="4">
           <Echart :options="lineOptionsData" :height="350" />
         </ElSkeleton>
       </ElCard>
+    </ElCol>
+    <ElCol :xl="10" :lg="10" :md="24" :sm="24" :xs="24">
+      <!-- <ElCard shadow="hover" class="mb-20px">
+        <ElSkeleton :loading="loading" animated>
+          <Echart :options="pieOptionsData" :height="300" />
+        </ElSkeleton>
+      </ElCard> -->
+      <tableCoach :loading="loading" :data="[]" :columns="[]" />
+    </ElCol>
+    <ElCol :xl="14" :lg="14" :md="24" :sm="24" :xs="24">
+      <tableRecord :loading="loading" :data="[]" :columns="[]" />
     </ElCol>
   </ElRow>
 </template>
