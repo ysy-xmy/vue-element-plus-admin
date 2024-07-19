@@ -195,6 +195,14 @@ export default {
     hasPermission: '请设置操作权限值'
   },
   analysis: {
+    allUser: '总用户量',
+    activeStu: '活跃学员',
+    coachNum: '教练数量',
+    lastmonPay: '上月收入',
+    courseBuynum: '本月课程购买量',
+    incomePic: '盈利收入图',
+    CoachsituationRanking: '教练情况排名',
+    listofOrder: '最近订单情况列表',
     newUser: '新增用户',
     unreadInformation: '未读消息',
     transactionAmount: '成交金额',

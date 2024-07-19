@@ -134,6 +134,10 @@ export default {
     menu12: 'Menu1-2',
     menu2: 'Menu2',
     dashboard: 'Dashboard',
+    finance: 'Finance',
+    resource: 'Resource',
+
+    record: 'Record',
     analysis: 'Analysis',
     workplace: 'Workplace',
     guide: 'Guide',

@@ -48,16 +48,32 @@ getCount()
                   <Icon icon="svg-icon:peoples" :size="40" />
                 </div>
               </div>
-              <div class="flex flex-col justify-between">
-                <div :class="`${prefixCls}__item--text text-16px text-gray-500 text-right`">{{
-                  t('analysis.newUser')
-                }}</div>
-                <CountTo
-                  class="text-20px font-700 text-right"
-                  :start-val="0"
-                  :end-val="102400"
-                  :duration="2600"
-                />
+              <div class="flex flex-col w-1/2 justify-between">
+                <div class="flex">
+                  <div
+                    :class="`${prefixCls}__item--text w-1/2 text-16px text-gray-500 text-center`"
+                    >{{ t('analysis.allUser') }}</div
+                  >
+
+                  <CountTo
+                    class="text-20px font-700 text-right"
+                    :start-val="0"
+                    :end-val="102400"
+                    :duration="2600"
+                  />
+                </div>
+                <div class="flex">
+                  <div :class="`${prefixCls}__item--text w-1/2 text-16px text-gray-500 text-center`"
+                    >{{ t('analysis.activeStu') }}
+                  </div>
+
+                  <CountTo
+                    class="text-20px font-700 text-right"
+                    :start-val="0"
+                    :end-val="20010"
+                    :duration="2600"
+                  />
+                </div>
               </div>
             </div>
           </template>
@@ -79,7 +95,7 @@ getCount()
               </div>
               <div class="flex flex-col justify-between">
                 <div :class="`${prefixCls}__item--text text-16px text-gray-500 text-right`">{{
-                  t('analysis.unreadInformation')
+                  t('analysis.coachNum')
                 }}</div>
                 <CountTo
                   class="text-20px font-700 text-right"
@@ -108,7 +124,7 @@ getCount()
               </div>
               <div class="flex flex-col justify-between">
                 <div :class="`${prefixCls}__item--text text-16px text-gray-500 text-right`">{{
-                  t('analysis.transactionAmount')
+                  t('analysis.lastmonPay')
                 }}</div>
                 <CountTo
                   class="text-20px font-700 text-right"
@@ -137,12 +153,12 @@ getCount()
               </div>
               <div class="flex flex-col justify-between">
                 <div :class="`${prefixCls}__item--text text-16px text-gray-500 text-right`">{{
-                  t('analysis.totalShopping')
+                  t('analysis.courseBuynum')
                 }}</div>
                 <CountTo
                   class="text-20px font-700 text-right"
                   :start-val="0"
-                  :end-val="13600"
+                  :end-val="136"
                   :duration="2600"
                 />
               </div>

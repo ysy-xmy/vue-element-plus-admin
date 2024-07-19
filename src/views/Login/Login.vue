@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import { LoginForm, RegisterForm } from './components'
+import { LoginForm } from './components'
 import { ThemeSwitch } from '@/components/ThemeSwitch'
 import { LocaleDropdown } from '@/components/LocaleDropdown'
 import { useI18n } from '@/hooks/web/useI18n'
-import { getCssVar, underlineToHump } from '@/utils'
+import { getCssVar } from '@/utils'
 import { useAppStore } from '@/store/modules/app'
 import { useDesign } from '@/hooks/web/useDesign'
 import { ref } from 'vue'
@@ -21,10 +21,6 @@ const isLogin = ref(true)
 
 const toRegister = () => {
   isLogin.value = false
-}
-
-const toLogin = () => {
-  isLogin.value = true
 }
 
 const themeChange = () => {

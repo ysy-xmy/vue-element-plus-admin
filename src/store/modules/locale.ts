@@ -9,7 +9,7 @@ const { getStorage, setStorage } = useStorage('localStorage')
 
 const elLocaleMap = {
   'zh-CN': zhCn,
-  en: en
+  // en: en
 }
 interface LocaleState {
   currentLocale: LocaleDropdownType
@@ -29,10 +29,10 @@ export const useLocaleStore = defineStore('locales', {
           lang: 'zh-CN',
           name: '简体中文'
         },
-        {
-          lang: 'en',
-          name: 'English'
-        }
+        // {
+        //   lang: 'en',
+        //   name: 'English'
+        // }
       ]
     }
   },

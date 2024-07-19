@@ -29,6 +29,9 @@ router.beforeEach(async (to, from, next) => {
 
       // 开发者可根据实际情况进行修改
       const roleRouters = userStore.getRoleRouters || []
+      appStore.setDynamicRouter(false)
+
+
 
       // 是否使用动态路由
       if (appStore.getDynamicRouter) {

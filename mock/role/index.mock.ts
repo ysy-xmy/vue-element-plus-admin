@@ -11,7 +11,7 @@ const adminList = [
     redirect: '/dashboard/analysis',
     name: 'Dashboard',
     meta: {
-      title: 'router.dashboard',
+      title: '数据盘',
       icon: 'vi-ant-design:dashboard-filled',
       alwaysShow: true
     },

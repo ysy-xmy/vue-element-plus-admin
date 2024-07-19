@@ -10,7 +10,7 @@ const prefixCls = getPrefixCls('logo')
 const appStore = useAppStore()
 
 const show = ref(true)
-
+appStore.setTitle('健管家管理后台')
 const title = computed(() => appStore.getTitle)
 
 const layout = computed(() => appStore.getLayout)

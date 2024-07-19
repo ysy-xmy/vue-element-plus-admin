@@ -6,7 +6,6 @@ export const useRenderMenuTitle = () => {
   const renderMenuTitle = (meta: RouteMeta) => {
     const { t } = useI18n()
     const { title = 'Please set title', icon } = meta
-
     return icon ? (
       <>
         <Icon icon={meta.icon}></Icon>
