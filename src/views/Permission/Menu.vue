@@ -7,6 +7,5 @@ console.log()
 </template>
 
 <style scoped lang="less">
-.body {
-}
+.body {}
 </style>

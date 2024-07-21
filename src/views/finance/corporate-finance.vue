@@ -110,7 +110,14 @@ getAllApi()
                 </ElSkeleton>
             </ElCard>
         </ElCol>
-        <ElCol :span="24">
+        <ElCol :xl="10" :lg="10" :md="24" :sm="24" :xs="24">
+            <ElCard shadow="hover" class="mb-20px">
+                <ElSkeleton :loading="loading" animated :rows="4">
+                    <Echart :options="pieOptions" :height="350" />
+                </ElSkeleton>
+            </ElCard>
+        </ElCol>
+        <ElCol :xl="10" :lg="10" :md="24" :sm="24" :xs="24">
             <ElCard shadow="hover" class="mb-20px">
                 <ElSkeleton :loading="loading" animated :rows="4">
                     <Echart :options="pieOptions" :height="350" />
