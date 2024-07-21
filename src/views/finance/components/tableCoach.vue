@@ -1,10 +1,16 @@
 <script setup lang="tsx">
+//@ts-ignore
+
 import { ContentWrap } from '@/components/ContentWrap'
+//@ts-ignore
 import { useI18n } from '@/hooks/web/useI18n'
+//@ts-ignore
 import { Table, TableColumn } from '@/components/Table'
+//@ts-ignore
 import { getTableListApi } from '@/api/table'
+//@ts-ignore
 import { TableData } from '@/api/table/types'
-import { ref} from 'vue'
+import { ref } from 'vue'
 // import { ElTag } from 'element-plus'
 // import { BaseButton } from '@/components/Button'
 

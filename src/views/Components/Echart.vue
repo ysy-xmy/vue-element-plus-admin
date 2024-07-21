@@ -34,3 +34,4 @@ const { t } = useI18n()
     </ElRow>
   </ContentWrap>
 </template>
+@/views/finance/echarts-data

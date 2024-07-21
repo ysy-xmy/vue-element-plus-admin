@@ -98,8 +98,8 @@ const getAllApi = async () => {
 
 getAllApi()
 // import DefaultTable from '../Components/Table/DefaultTable.vue'
-import tableCoach from '../Components/Table/tableCoach.vue'
-import tableRecord from '../Components/Table/tableRecord.vue'
+import tableCoach from './components/tableCoach.vue'
+import tableRecord from './components/tableRecord.vue'
 </script>
 
 <template>

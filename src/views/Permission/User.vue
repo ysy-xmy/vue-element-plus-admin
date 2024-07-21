@@ -1,11 +1,12 @@
 <script setup lang="ts">
 console.log()
-import Admin from '@/views/Authorization/User/Admin.vue'
+import User from '@/views/Authorization/User/User.vue'
+
 </script>
 
 <template>
-  <div class="mb-2">管理员管理</div>
-  <Admin></Admin>
+    <div class="mb-2">用户管理</div>
+    <User />
 </template>
 
 <style scoped lang="less">

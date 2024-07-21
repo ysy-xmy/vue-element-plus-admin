@@ -201,7 +201,7 @@ export default {
     lastmonPay: '上月收入',
     courseBuynum: '本月课程购买量',
     incomePic: '盈利折线图',
-    CoachsituationRanking: '教练授课情况排行榜',
+    CoachsituationRanking: '订单列表',
     listofOrder: '最近订单情况列表',
     newUser: '新增用户',
     unreadInformation: '未读消息',
@@ -521,6 +521,9 @@ export default {
     title: '用户管理',
     message: '由于是模拟数据，所以只提供了两种不同权限的帐号，开发者可根据实际情况自行改造结合。',
     index: '序号',
+    admin: '管理员',
+    user: '普通用户',
+    superadmin: '超级管理员',
     action: '操作',
     username: '用户名',
     password: '密码',
@@ -543,7 +546,12 @@ export default {
     // 禁用
     disable: '禁用',
     // 上级部门
-    superiorDepartment: '上级部门'
+    superiorDepartment: '上级部门',
+    name: '姓名',
+    sex: '性别',
+    age: '年龄',
+    nickName: '昵称',
+    shop: '分店名称'
   },
   menu: {
     menuName: '菜单名称',

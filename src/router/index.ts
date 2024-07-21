@@ -66,7 +66,7 @@ export const asyncRouterMap: AppRouteRecordRaw[] = [
 
     meta: {
       title: '仪表盘',
-      icon: 'carbon:dashboard',
+      icon: 'vi-ant-design:dashboard-filled',
 
     },
     children: [
@@ -77,7 +77,9 @@ export const asyncRouterMap: AppRouteRecordRaw[] = [
         meta: {
           title: '仪表盘',
           noCache: true,
-          affix: true
+          affix: true,
+          icon: 'vi-ant-design:dashboard-filled',
+
         }
       },
 
@@ -123,6 +125,15 @@ export const asyncRouterMap: AppRouteRecordRaw[] = [
         }
       },
       {
+        path: 'user',
+        name: 'user',
+        component: () => import('@/views/Permission/User.vue'),
+        meta: {
+          title: '用户管理',
+          icon: 'carbon:user-role'
+        }
+      },
+      {
         path: 'menu',
         name: 'Menu',
         component: () => import('@/views/Permission/Menu.vue'),
@@ -145,7 +156,7 @@ export const asyncRouterMap: AppRouteRecordRaw[] = [
       {
         path: 'course',
         name: 'Course',
-        component: () => import('@/views/Level/Menu2.vue'),
+        component: () => import('@/views/finance/course.vue'),
         meta: {
           title: '课程销量',
           icon: 'carbon:user-role'
@@ -154,7 +165,7 @@ export const asyncRouterMap: AppRouteRecordRaw[] = [
       {
         path: 'coach-finance',
         name: 'coach-finance',
-        component: () => import('@/views/Level/Menu2.vue'),
+        component: () => import('@/views/finance/coach-finance.vue'),
         meta: {
           title: '教练提成',
           icon: 'carbon:user-role'
@@ -163,7 +174,7 @@ export const asyncRouterMap: AppRouteRecordRaw[] = [
       {
         path: 'corporate-finance',
         name: 'Corporate Finance',
-        component: () => import('@/views/Level/Menu2.vue'),
+        component: () => import('@/views/finance/corporate-finance.vue'),
         meta: {
           title: '公司财务',
           icon: 'carbon:user-role'
@@ -182,10 +193,10 @@ export const asyncRouterMap: AppRouteRecordRaw[] = [
     children: [
       {
         path: 'course-list',
-        name: '课程信息',
+        name: '动作库',
         component: () => import('@/views/Level/Menu2.vue'),
         meta: {
-          title: '课程信息',
+          title: '动作库',
           icon: 'carbon:user-role'
         }
       },

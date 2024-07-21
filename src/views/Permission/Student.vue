@@ -1,12 +1,14 @@
 <script setup lang="ts">
 console.log()
+import Stu from '@/views/Authorization/User/Student.vue'
+
 </script>
 
 <template>
-  <div>学生管理</div>
+  <div class="mb-2">学生管理</div>
+  <Stu />
 </template>
 
 <style scoped lang="less">
-.body {
-}
+.body {}
 </style>

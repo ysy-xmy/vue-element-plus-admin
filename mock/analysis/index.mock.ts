@@ -30,11 +30,12 @@ export default [
       return {
         code: SUCCESS_CODE,
         data: [
-          { value: 1000, name: 'analysis.directAccess' },
-          { value: 310, name: 'analysis.mailMarketing' },
-          { value: 234, name: 'analysis.allianceAdvertising' },
-          { value: 135, name: 'analysis.videoAdvertising' },
-          { value: 1548, name: 'analysis.searchEngines' }
+          { value: 1548, name: '课程收入' },
+          { value: 310, name: '会员收入' },
+          { value: 234, name: '广告收入' },
+          { value: 135, name: '学员打赏' },
+          { value: 234, name: '其他收入' }
+
         ]
       }
     }

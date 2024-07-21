@@ -3,9 +3,149 @@ import { useI18n } from '@/hooks/web/useI18n'
 
 const { t } = useI18n()
 
+
+
+
 export const lineOptions: EChartsOption = {
   title: {
-    text: t('analysis.incomePic'),
+    text: '课程销量图',
+    left: 'center'
+  },
+  xAxis: {
+    data: [
+      t('analysis.january'),
+      t('analysis.february'),
+      t('analysis.march'),
+      t('analysis.april'),
+      t('analysis.may'),
+      t('analysis.june'),
+      t('analysis.july'),
+      t('analysis.august'),
+      t('analysis.september'),
+      t('analysis.october'),
+      t('analysis.november'),
+      t('analysis.december')
+    ],
+    boundaryGap: false,
+    axisTick: {
+      show: false
+    }
+  },
+  grid: {
+    left: 20,
+    right: 20,
+    bottom: 20,
+    top: 80,
+    containLabel: true
+  },
+  tooltip: {
+    trigger: 'axis',
+    axisPointer: {
+      type: 'cross'
+    },
+    padding: [5, 10]
+  },
+  yAxis: {
+    axisTick: {
+      show: false
+    }
+  },
+  legend: {
+    data: [t('analysis.estimate'), t('analysis.actual')],
+    top: 50
+  },
+  series: [
+    {
+      name: t('analysis.estimate'),
+      smooth: true,
+      type: 'line',
+      data: [100, 120, 161, 134, 105, 160, 165, 114, 163, 185, 118, 123],
+      animationDuration: 2800,
+      animationEasing: 'cubicInOut'
+    },
+    {
+      name: t('analysis.actual'),
+      smooth: true,
+      type: 'line',
+      itemStyle: {},
+      data: [120, 82, 91, 154, 162, 140, 145, 250, 134, 56, 99, 123],
+      animationDuration: 2800,
+      animationEasing: 'quadraticOut'
+    }
+  ]
+}
+export const courseLineOptions: EChartsOption = {
+  title: {
+    text: '课程销量图',
+    left: 'center'
+  },
+  xAxis: {
+    data: [
+      t('analysis.january'),
+      t('analysis.february'),
+      t('analysis.march'),
+      t('analysis.april'),
+      t('analysis.may'),
+      t('analysis.june'),
+      t('analysis.july'),
+      t('analysis.august'),
+      t('analysis.september'),
+      t('analysis.october'),
+      t('analysis.november'),
+      t('analysis.december')
+    ],
+    boundaryGap: false,
+    axisTick: {
+      show: false
+    }
+  },
+  grid: {
+    left: 20,
+    right: 20,
+    bottom: 20,
+    top: 80,
+    containLabel: true
+  },
+  tooltip: {
+    trigger: 'axis',
+    axisPointer: {
+      type: 'cross'
+    },
+    padding: [5, 10]
+  },
+  yAxis: {
+    axisTick: {
+      show: false
+    }
+  },
+  legend: {
+    data: [t('analysis.estimate'), t('analysis.actual')],
+    top: 50
+  },
+  series: [
+    {
+      name: t('analysis.estimate'),
+      smooth: true,
+      type: 'line',
+      data: [100, 120, 161, 134, 105, 160, 165, 114, 163, 185, 118, 123],
+      animationDuration: 2800,
+      animationEasing: 'cubicInOut'
+    },
+    {
+      name: t('analysis.actual'),
+      smooth: true,
+      type: 'line',
+      itemStyle: {},
+      data: [120, 82, 91, 154, 162, 140, 145, 250, 134, 56, 99, 123],
+      animationDuration: 2800,
+      animationEasing: 'quadraticOut'
+    }
+  ]
+}
+
+export const corporateLineOptions: EChartsOption = {
+  title: {
+    text: '盈利收入',
     left: 'center'
   },
   xAxis: {
@@ -74,7 +214,7 @@ export const lineOptions: EChartsOption = {
 
 export const pieOptions: EChartsOption = {
   title: {
-    text: t('analysis.listofOrder'),
+    text: '收入分布图',
     left: 'center'
   },
   tooltip: {
@@ -100,10 +240,10 @@ export const pieOptions: EChartsOption = {
       center: ['50%', '60%'],
       data: [
         { value: 335, name: '课程收入' },
-        { value: 310, name: t('analysis.mailMarketing') },
-        { value: 234, name: t('analysis.allianceAdvertising') },
-        { value: 135, name: t('analysis.videoAdvertising') },
-        { value: 1548, name: t('analysis.searchEngines') }
+        { value: 310, name: '会员收入' },
+        { value: 234, name: '广告收入' },
+        { value: 135, name: '学员打赏' },
+        { value: 1548, name: '其他收入' }
       ]
     }
   ]

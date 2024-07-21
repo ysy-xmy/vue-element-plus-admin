@@ -1,5 +1,7 @@
 <script setup lang="tsx">
+
 import { ContentWrap } from '@/components/ContentWrap'
+
 import { useI18n } from '@/hooks/web/useI18n'
 import { Table, TableColumn } from '@/components/Table'
 import { getTableListApi } from '@/api/table'
@@ -17,33 +19,60 @@ const { t } = useI18n()
 
 const columns: TableColumn[] = [
     {
-        field: 'NO',
-        label: '序号',
+        field: '排名',
+        label: '排名',
         type: 'index'
     },
     {
-        field: 'OrderNo',
-        label: '订单号'
+        field: '教练',
+        label: '教练'
     },
     {
-        field: 'CourseName',
-        label: '内容',
-    },
-    {
-        field: 'display_time',
-        label: t('tableDemo.displayTime'),
+        field: '授课总节数',
+        label: '授课总节数',
         sortable: true
     },
-    {
-        field: 'buyer',
-        label: '购买者',
-    },
+    // {
+    //   field: 'display_time',
+    //   label: t('tableDemo.displayTime'),
+    //   sortable: true
+    // },
+    // {
+    //   field: 'importance',
+    //   label: t('tableDemo.importance'),
+    //   formatter: (_: Recordable, __: TableColumn, cellValue: number) => {
+    //     return h(
+    //       ElTag,
+    //       {
+    //         type: cellValue === 1 ? 'success' : cellValue === 2 ? 'warning' : 'danger'
+    //       },
+    //       () =>
+    //         cellValue === 1
+    //           ? t('tableDemo.important')
+    //           : cellValue === 2
+    //             ? t('tableDemo.good')
+    //             : t('tableDemo.commonly')
+    //     )
+    //   }
+    // },
     {
         field: 'pageviews',
-        label: '金额',
+        label: '应结课程费',
         sortable: true
-    },
-
+    }
+    // {
+    //   field: 'action',
+    //   label: t('tableDemo.action'),
+    //   slots: {
+    //     default: (data) => {
+    //       return (
+    //         <BaseButton type="primary" onClick={() => actionFn(data)}>
+    //           {t('tableDemo.action')}
+    //         </BaseButton>
+    //       )
+    //     }
+    //   }
+    // }
 ]
 
 const loading = ref(true)
@@ -74,7 +103,7 @@ getTableList()
 </script>
 
 <template>
-    <ContentWrap :title="t('analysis.listofOrder')" :message="t('tableDemo.tableDes')">
+    <ContentWrap title="教练教学情况" :message="t('tableDemo.tableDes')">
         <Table :columns="columns" :data="tableDataList" :loading="loading"
             :defaultSort="{ prop: 'display_time', order: 'descending' }" />
     </ContentWrap>
