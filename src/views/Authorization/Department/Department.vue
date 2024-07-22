@@ -275,7 +275,7 @@ const save = async () => {
   if (formData) {
     saveLoading.value = true
     const res = await saveDepartmentApi(formData)
-      .catch(() => {})
+      .catch(() => { })
       .finally(() => {
         saveLoading.value = false
       })
@@ -299,40 +299,20 @@ const save = async () => {
       </BaseButton>
     </div>
 
-    <Table
-      v-model:pageSize="pageSize"
-      v-model:currentPage="currentPage"
-      :columns="allSchemas.tableColumns"
-      :data="dataList"
-      :loading="loading"
-      :pagination="{
-        total: total
-      }"
-      @register="tableRegister"
-    />
+    <Table v-model:pageSize="pageSize" v-model:currentPage="currentPage" :columns="allSchemas.tableColumns"
+      :data="dataList" :loading="loading" :pagination="{
+      total: total
+    }" @register="tableRegister" />
   </ContentWrap>
 
   <Dialog v-model="dialogVisible" :title="dialogTitle">
-    <Write
-      v-if="actionType !== 'detail'"
-      ref="writeRef"
-      :form-schema="allSchemas.formSchema"
-      :current-row="currentRow"
-    />
+    <Write v-if="actionType !== 'detail'" ref="writeRef" :form-schema="allSchemas.formSchema"
+      :current-row="currentRow" />
 
-    <Detail
-      v-if="actionType === 'detail'"
-      :detail-schema="allSchemas.detailSchema"
-      :current-row="currentRow"
-    />
+    <Detail v-if="actionType === 'detail'" :detail-schema="allSchemas.detailSchema" :current-row="currentRow" />
 
     <template #footer>
-      <BaseButton
-        v-if="actionType !== 'detail'"
-        type="primary"
-        :loading="saveLoading"
-        @click="save"
-      >
+      <BaseButton v-if="actionType !== 'detail'" type="primary" :loading="saveLoading" @click="save">
         {{ t('exampleDemo.save') }}
       </BaseButton>
       <BaseButton @click="dialogVisible = false">{{ t('dialogDemo.close') }}</BaseButton>

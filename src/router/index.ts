@@ -194,7 +194,7 @@ export const asyncRouterMap: AppRouteRecordRaw[] = [
       {
         path: 'course-list',
         name: '动作库',
-        component: () => import('@/views/Level/Menu2.vue'),
+        component: () => import('@/views/resource/actionLibrary.vue'),
         meta: {
           title: '动作库',
           icon: 'carbon:user-role'
@@ -203,7 +203,7 @@ export const asyncRouterMap: AppRouteRecordRaw[] = [
       {
         path: 'gym',
         name: '健身房信息',
-        component: () => import('@/views/Level/Menu2.vue'),
+        component: () => import('@/views/resource/gymInfo.vue'),
         meta: {
           title: '健身房信息',
           icon: 'carbon:user-role'
@@ -286,6 +286,18 @@ export const asyncRouterMap: AppRouteRecordRaw[] = [
     ]
   }
 ]
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
