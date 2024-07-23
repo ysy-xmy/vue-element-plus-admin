@@ -250,11 +250,12 @@ const signIn = async () => {
           }
           userStore.setRememberMe(unref(remember))
           userStore.setUserInfo(res.data)
+          appStore.setDynamicRouter(false)
           // 是否使用动态路由
           if (appStore.getDynamicRouter) {
             getRole()
           } else {
-            await permissionStore.generateRoutes('static').catch(() => {})
+            await permissionStore.generateRoutes('static').catch(() => { })
             permissionStore.getAddRouters.forEach((route) => {
               addRoute(route as RouteRecordRaw) // 动态添加可访问路由表
             })
@@ -283,8 +284,8 @@ const getRole = async () => {
     const routers = res.data || []
     userStore.setRoleRouters(routers)
     appStore.getDynamicRouter && appStore.getServerDynamicRouter
-      ? await permissionStore.generateRoutes('server', routers).catch(() => {})
-      : await permissionStore.generateRoutes('frontEnd', routers).catch(() => {})
+      ? await permissionStore.generateRoutes('server', routers).catch(() => { })
+      : await permissionStore.generateRoutes('frontEnd', routers).catch(() => { })
 
     permissionStore.getAddRouters.forEach((route) => {
       addRoute(route as RouteRecordRaw) // 动态添加可访问路由表
@@ -301,13 +302,6 @@ const getRole = async () => {
 </script>
 
 <template>
-  <Form
-    :schema="schema"
-    :rules="rules"
-    label-position="top"
-    hide-required-asterisk
-    size="large"
-    class="dark:(border-1 border-[var(--el-border-color)] border-solid)"
-    @register="formRegister"
-  />
+  <Form :schema="schema" :rules="rules" label-position="top" hide-required-asterisk size="large"
+    class="dark:(border-1 border-[var(--el-border-color)] border-solid)" @register="formRegister" />
 </template>
