@@ -80,19 +80,19 @@ export default ({ command, mode }: ConfigEnv): UserConfig => {
         svgoOptions: true
       }),
       PurgeIcons(),
-      env.VITE_USE_MOCK === 'true'
-        ? viteMockServe({
-          ignore: /^\_/,
-          mockPath: 'mock',
-          localEnabled: !isBuild,
-          prodEnabled: isBuild,
-          injectCode: `
-          import { setupProdMockServer } from '../mock/_createProductionServer'
+      // env.VITE_USE_MOCK === 'true'
+      //   ? 、viteMockServe({
+      //     ignore: /^\_/,
+      //     mockPath: 'mock',
+      //     localEnabled: !isBuild,
+      //     prodEnabled: isBuild,
+      //     injectCode: `
+      //     import { setupProdMockServer } from '../mock/_createProductionServer'
 
-          setupProdMockServer()
-          `
-        })
-        : undefined,
+      //     setupProdMockServer()
+      //     `
+      //   })
+      //   : undefined,
       ViteEjsPlugin({
         title: env.VITE_APP_TITLE
       }),

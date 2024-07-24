@@ -96,13 +96,6 @@ const crudSchemas = reactive<CrudSchema[]>([
         },
     },
     {
-        field: 'password',
-        label: t('userDemo.password'),
-        search: {
-            hidden: true
-        }
-    },
-    {
         field: 'role',
         label: t('userDemo.role'),
         search: {

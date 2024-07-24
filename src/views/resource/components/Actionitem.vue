@@ -37,7 +37,6 @@ const actionitems = ref<actionitemArray>(
             picurl: 'https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg',
             videoUrl: 'http://sf1-cdn-tos.huoshanstatic.com/obj/media-fe/xgplayer_doc_video/mp4/xgplayer-demo-720p.mp4',
             intro: '这是动作介绍',
-
         },
     ]
 )
@@ -50,15 +49,20 @@ const actionitems = ref<actionitemArray>(
             class=" flex justify-center items-center flex-col p-3 ">
 
             <el-image :src="item.picurl" fit="fill" />
-            <div class="mt-2 w-full flex justify-around items-center content-center">
+            <div class="mt-2 w-full flex flex-col justify-around items-center content-center">
 
-                <span class="demonstration ">{{ item.title }}</span>
-                <BaseButton type="primary">
+                <div class="demonstration w-full font-600 text-center">{{ item.title }}</div>
+
+                <div class='flex flex-row mt-1' >
+                    <BaseButton type="primary">
                     编辑
                 </BaseButton>
                 <BaseButton type="danger">
                     删除
                 </BaseButton>
+
+                </div>
+            
 
             </div>
 
