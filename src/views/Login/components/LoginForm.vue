@@ -231,13 +231,15 @@ watch(
 const signIn = async () => {
   const formRef = await getElFormExpose()
   await formRef?.validate(async (isValid) => {
+
     if (isValid) {
-      console.log('不能登录')
+      //
       loading.value = true
       const formData = await getFormData<UserType>()
+      console.log(formData)
       try {
         const res = await loginApi(formData)
-
+        console.log(res)
         if (res) {
           // 是否记住我
           if (unref(remember)) {
@@ -248,6 +250,7 @@ const signIn = async () => {
           } else {
             userStore.setLoginInfo(undefined)
           }
+          userStore.setToken(res.data.Token)
           userStore.setRememberMe(unref(remember))
           userStore.setUserInfo(res.data)
           appStore.setDynamicRouter(false)

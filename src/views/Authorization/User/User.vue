@@ -4,8 +4,10 @@ import { useI18n } from '@/hooks/web/useI18n'
 import { Table } from '@/components/Table'
 import { ref, unref, nextTick, watch, reactive } from 'vue'
 import { ElTree } from 'element-plus'
-import { getDepartmentApi, getUserByIdApi, saveUserApi, deleteUserByIdApi } from '@/api/department'
-import type { DepartmentItem, DepartmentUserItem } from '@/api/department/types'
+import { getUserByIdApi, saveUserApi, deleteUserByIdApi } from '@/api/department'
+import { getalluserApi } from '@/api/Permission'
+import type { DepartmentUserItem } from '@/api/department/types'
+import type { UserInfo } from '@/api/Permission/type'
 import { useTable } from '@/hooks/web/useTable'
 import { Search } from '@/components/Search'
 import Write from './components/Write.vue'
@@ -196,16 +198,16 @@ const setSearchParams = (params: any) => {
 const treeEl = ref<typeof ElTree>()
 
 const currentNodeKey = ref('')
-const departmentList = ref<DepartmentItem[]>([])
-const fetchDepartment = async () => {
-    const res = await getDepartmentApi()
-    departmentList.value = res.data.list
+const Userlist = ref<UserInfo[]>([])
+const fetchUserlist = async () => {
+    const res = await getalluserApi()
+    Userlist.value = res.data
     currentNodeKey.value =
-        (res.data.list[0] && res.data.list[0]?.children && res.data.list[0].children[0].id) || ''
+        (res.data[0] && res.data[0]?.children && res.data[0].children[0].id) || ''
     await nextTick()
     unref(treeEl)?.setCurrentKey(currentNodeKey.value)
 }
-fetchDepartment()
+fetchUserlist()
 
 const currentDepartment = ref('')
 watch(
@@ -291,11 +293,11 @@ const save = async () => {
     <div class="flex w-full h-full">
         <!-- <ContentWrap class="w-250px">
       <div class="flex justify-center items-center">
-        <div class="flex-1">{{ t('userDemo.departmentList') }}</div>
+        <div class="flex-1">{{ t('userDemo.Userlist') }}</div>
         <ElInput v-model="currentDepartment" class="flex-[2]" :placeholder="t('userDemo.searchDepartment')" clearable />
       </div>
       <ElDivider />
-      <ElTree ref="treeEl" :data="departmentList" default-expand-all :expand-on-click-node="false" node-key="id"
+      <ElTree ref="treeEl" :data="Userlist" default-expand-all :expand-on-click-node="false" node-key="id"
         :current-node-key="currentNodeKey" :props="{
           label: 'departmentName'
         }" :filter-node-method="filterNode" @current-change="currentChange">
