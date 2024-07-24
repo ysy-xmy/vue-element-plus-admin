@@ -195,6 +195,7 @@ const Userlist = ref<UserInfo[]>([])
 const fetchUserlist = async () => {
     const res = await getalluserApi()
     Userlist.value = res.data
+    console.log(Userlist.value)
     currentNodeKey.value =
         (res.data[0] && res.data[0]?.children && res.data[0].children[0].id) || ''
     await nextTick()
