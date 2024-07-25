@@ -63,9 +63,10 @@ import Actionitem from '@/views/resource/components/Actionitem.vue'
                     <span>哑铃</span>
                 </el-menu-item>
                 <el-menu-item index="4">
-                    <BaseButton style="width: 100%;" type="primary" size="large"> 编辑一级目录 </BaseButton>
+                    <BaseButton style="width: 100%;" type="primary" size="large"> 编辑目录 </BaseButton>
                     <!-- <el-button  type="primary" width="200px" text bg>
                         Add
+
                     </el-button> -->
                 </el-menu-item>
 
@@ -75,6 +76,8 @@ import Actionitem from '@/views/resource/components/Actionitem.vue'
         <el-col :span="16">
             <Actionitem />
         </el-col>
+
+
 
     </el-row>
 

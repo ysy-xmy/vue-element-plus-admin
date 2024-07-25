@@ -14,6 +14,9 @@ import Write from './components/Write.vue'
 import Detail from './components/Detail.vue'
 import { Dialog } from '@/components/Dialog'
 import { getRoleListApi } from '@/api/role'
+import { convertDateTime } from './components/utils/convertDateTime'
+import { ElTag } from 'element-plus'
+
 
 // import { getRoleListApi } from '@/api/role'
 import { CrudSchema, useCrudSchemas } from '@/hooks/web/useCrudSchemas'
@@ -21,8 +24,13 @@ import { BaseButton } from '@/components/Button'
 
 const { t } = useI18n()
 
+var select = ref('1')
+// 1为学员，2为教练，3为游客
 
-
+const changeSelect = (value: string) => {
+    select.value = value
+    console.log(select.value)
+}
 
 const { tableRegister, tableState, tableMethods } = useTable({
     fetchDataApi: async () => {
@@ -79,27 +87,73 @@ const crudSchemas = reactive<CrudSchema[]>([
         }
     },
     {
-        field: 'username',
-        label: t('userDemo.name')
-    },
-    {
-        field: 'account',
-        label: t('userDemo.nickName'),
+        field: 'Username',
+        label: '账号',
         form: {
-            hidden: true
-        },
-        detail: {
-            hidden: true
         },
         search: {
             hidden: true
         },
     },
     {
-        field: 'role',
+        field: 'name',
+        label: '姓名',
+        form: {
+        },
+    },
+
+    {
+        field: 'sex',
+        label: '性别',
+        form: {
+
+        },
+        search: {
+            hidden: true
+        },
+    },
+    {
+        field: 'age',
+        label: '年龄',
+        form: {
+
+        },
+        search: {
+            hidden: true
+        },
+    },
+    // {
+    //     field: 'Username',
+    //     label: t('userDemo.nickName'),
+    //     form: {
+    //         hidden: true
+    //     },
+    //     detail: {
+    //         hidden: true
+    //     },
+    //     search: {
+    //         hidden: true
+    //     },
+    // },
+    {
+        field: 'RoleName',
         label: t('userDemo.role'),
         search: {
             hidden: true
+        },
+        table: {
+            slots: {
+                default: (data: any) => {
+                    const role = data.row.RoleName
+                    return (
+                        <>
+                            <ElTag type={role === '学员' ? 'success' : role === '教练' ? 'warning' : 'danger'}>
+                                {role}
+                            </ElTag >
+                        </>
+                    )
+                }
+            }
         },
         form: {
             component: 'Select',
@@ -111,8 +165,10 @@ const crudSchemas = reactive<CrudSchema[]>([
             },
             optionApi: async () => {
                 const res = await getRoleListApi()
-                return res.data?.list?.map((v) => ({
-                    label: v.roleName,
+                console.log(res)
+
+                return res.data.map((v) => ({
+                    label: v.RoleName,
                     value: v.id
                 }))
             }
@@ -128,11 +184,12 @@ const crudSchemas = reactive<CrudSchema[]>([
     //     hidden: true
     //   }
     // },
+
     {
-        field: 'createTime',
+        field: 'CreatedAt',
         label: t('userDemo.createTime'),
         form: {
-            component: 'Input'
+            hidden: true
         },
         search: {
             hidden: true
@@ -151,7 +208,7 @@ const crudSchemas = reactive<CrudSchema[]>([
             hidden: true
         },
         table: {
-            width: 280,
+            width: 200,
             slots: {
                 default: (data: any) => {
                     const row = data.row as DepartmentUserItem
@@ -159,14 +216,12 @@ const crudSchemas = reactive<CrudSchema[]>([
                         <>
                             <div class="flex justify-center items-center w-full">
                                 <BaseButton type="primary" onClick={() => action(row, 'edit')}>
-                                    设置为教练
+                                    编辑
                                 </BaseButton>
                                 <BaseButton type="success" onClick={() => action(row, 'detail')}>
-                                    设置为学员
+                                    查看
                                 </BaseButton>
-                                <BaseButton type="danger" onClick={() => delData(row)}>
-                                    {t('exampleDemo.del')}
-                                </BaseButton>
+
 
 
                             </div>
@@ -187,15 +242,27 @@ const setSearchParams = (params: any) => {
     searchParams.value = params
     getList()
 }
-
 const treeEl = ref<typeof ElTree>()
 
 const currentNodeKey = ref('')
-const Userlist = ref<UserInfo[]>([])
+const Userlist = ref([])
 const fetchUserlist = async () => {
     const res = await getalluserApi()
-    Userlist.value = res.data
+    //对拿到的列表做一个简单的处理
+    Userlist.value = res.data.map((v) => {
+        return {
+            "ID": v.ID,
+            "OpenID": v.OpenID,
+            "Username": v.Username,
+            "Phone": v.Phone,
+            "RoleName": (v.RoleName == 'super_admin') ? '学员' : (v.RoleName == 'normal_admin') ? '教练' : '其他',
+            "Enable": v.Enable,
+            "LastLoginTime": v.LastLoginTime,
+            "CreatedAt": convertDateTime(v.CreatedAt),
+        }
+    })
     console.log(Userlist.value)
+
     currentNodeKey.value =
         (res.data[0] && res.data[0]?.children && res.data[0].children[0].id) || ''
     await nextTick()
@@ -286,36 +353,38 @@ const save = async () => {
 <template>
     <div class="flex w-full h-full">
         <!-- <ContentWrap class="w-250px">
-      <div class="flex justify-center items-center">
-        <div class="flex-1">{{ t('userDemo.Userlist') }}</div>
-        <ElInput v-model="currentDepartment" class="flex-[2]" :placeholder="t('userDemo.searchDepartment')" clearable />
-      </div>
-      <ElDivider />
-      <ElTree ref="treeEl" :data="Userlist" default-expand-all :expand-on-click-node="false" node-key="id"
-        :current-node-key="currentNodeKey" :props="{
-          label: 'departmentName'
-        }" :filter-node-method="filterNode" @current-change="currentChange">
-        <template #default="{ data }">
-          <div :title="data.departmentName" class="whitespace-nowrap overflow-ellipsis overflow-hidden">
-            {{ data.departmentName }}
-          </div>
-        </template>
+            <div class="flex justify-center items-center">
+                <div class="flex-1">{{ t('userDemo.Userlist') }}</div>
+                <ElInput v-model="currentDepartment" class="flex-[2]" :placeholder="t('userDemo.searchDepartment')"
+                    clearable />
+            </div>
+            <ElDivider />
+            <ElTree ref="treeEl" :data="Userlist" default-expand-all :expand-on-click-node="false" node-key="id"
+                :current-node-key="currentNodeKey" :props="{
+                    label: 'departmentName'
+                }" :filter-node-method="filterNode" @current-change="currentChange">
+                <template #default="{ data }">
+                    <div :title="data.departmentName" class="whitespace-nowrap overflow-ellipsis overflow-hidden">
+                        {{ data.departmentName }}
+                    </div>
+                </template>
 </ElTree>
 </ContentWrap> -->
-
-
-
         <ContentWrap class="flex-[3] ml-20px h-full">
             <Search :schema="allSchemas.searchSchema" @reset="setSearchParams" @search="setSearchParams" />
 
             <div class="mb-10px">
-                <BaseButton type="primary" @click="AddAction">{{ t('exampleDemo.add') }}</BaseButton>
-                <BaseButton :loading="delLoading" type="danger" @click="delData()">
-                    {{ t('exampleDemo.del') }}
-                </BaseButton>
+
+                <div class="mb-2 flex items-center text-sm">
+                    <el-radio-group @change="changeSelect" v-model="select" class="ml-4">
+                        <el-radio value="1" size="large">学员</el-radio>
+                        <el-radio value="2" size="large">教练</el-radio>
+
+                    </el-radio-group>
+                </div>
             </div>
             <Table height="100%" v-model:current-page="currentPage" :page-size="pageSize"
-                :columns="allSchemas.tableColumns" :data="dataList" :loading="loading" @register="tableRegister"
+                :columns="allSchemas.tableColumns" :data="Userlist" :loading="loading" @register="tableRegister"
                 :pagination="{
                 total
             }" />

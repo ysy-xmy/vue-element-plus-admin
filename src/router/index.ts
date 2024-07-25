@@ -106,39 +106,30 @@ export const asyncRouterMap: AppRouteRecordRaw[] = [
           icon: 'carbon:user-role'
         }
       },
-      {
-        path: 'coach',
-        name: 'Coach',
-        component: () => import('@/views/Permission/Coach.vue'),
-        meta: {
-          title: '教练',
-          icon: 'carbon:user-role'
-        }
-      },
-      {
-        path: 'student',
-        name: 'Student',
-        component: () => import('@/views/Permission/Student.vue'),
-        meta: {
-          title: '学员',
-          icon: 'carbon:user-role'
-        }
-      },
+      // {
+      //   path: 'coach',
+      //   name: 'Coach',
+      //   component: () => import('@/views/Permission/Coach.vue'),
+      //   meta: {
+      //     title: '教练',
+      //     icon: 'carbon:user-role'
+      //   }
+      // },
+      // {
+      //   path: 'student',
+      //   name: 'Student',
+      //   component: () => import('@/views/Permission/Student.vue'),
+      //   meta: {
+      //     title: '学员',
+      //     icon: 'carbon:user-role'
+      //   }
+
       {
         path: 'user',
         name: 'user',
         component: () => import('@/views/Permission/User.vue'),
         meta: {
           title: '用户管理',
-          icon: 'carbon:user-role'
-        }
-      },
-      {
-        path: 'menu',
-        name: 'Menu',
-        component: () => import('@/views/Permission/Menu.vue'),
-        meta: {
-          title: '菜单管理',
           icon: 'carbon:user-role'
         }
       }

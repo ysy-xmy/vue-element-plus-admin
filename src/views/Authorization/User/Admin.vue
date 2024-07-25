@@ -74,21 +74,15 @@ const crudSchemas = reactive<CrudSchema[]>([
       type: 'index'
     }
   },
-  {
-    field: 'username',
-    label: t('userDemo.shop')
-  },
+
   {
     field: 'account',
-    label: t('userDemo.account')
-  },
-  {
-    field: 'password',
-    label: t('userDemo.password'),
+    label: t('userDemo.account'),
     search: {
       hidden: true
-    }
+    },
   },
+
   // {
   //   field: 'department.id',
   //   label: t('userDemo.department'),
@@ -123,9 +117,6 @@ const crudSchemas = reactive<CrudSchema[]>([
   {
     field: 'role',
     label: t('userDemo.role'),
-    search: {
-      hidden: true
-    },
     form: {
       component: 'Select',
       value: [],
@@ -141,26 +132,31 @@ const crudSchemas = reactive<CrudSchema[]>([
           value: v.id
         }))
       }
-    }
+    },
+    search: {
+      hidden: true,
+
+
+    },
   },
-  {
-    field: 'roleid',
-    label: t('userDemo.role'),
-    formatter: (_: Recordable, __: TableColumn, cellValue: number) => {
-      return h(
-        ElTag,
-        {
-          type: cellValue === 1 ? 'success' : cellValue === 2 ? 'warning' : 'danger'
-        },
-        () =>
-          cellValue === 1
-            ? t('userDemo.superAdmin')
-            : cellValue === 2
-              ? t('userDemo.admin')
-              : t('userDemo.user')
-      )
-    }
-  },
+  // {
+  //   field: 'roleid',
+  //   label: t('userDemo.role'),
+  //   formatter: (_: Recordable, __: TableColumn, cellValue: number) => {
+  //     return h(
+  //       ElTag,
+  //       {
+  //         type: cellValue === 1 ? 'success' : cellValue === 2 ? 'warning' : 'danger'
+  //       },
+  //       () =>
+  //         cellValue === 1
+  //           ? t('userDemo.superAdmin')
+  //           : cellValue === 2
+  //             ? t('userDemo.admin')
+  //             : t('userDemo.user')
+  //     )
+  //   }
+  // },
   // {
   //   field: 'email',
   //   label: t('userDemo.email'),
@@ -223,7 +219,7 @@ const crudSchemas = reactive<CrudSchema[]>([
 ])
 
 const { allSchemas } = useCrudSchemas(crudSchemas)
-
+const select = ref(0)
 const searchParams = ref({})
 const setSearchParams = (params: any) => {
   currentPage.value = 1
@@ -348,18 +344,19 @@ const save = async () => {
 
 
     <ContentWrap class="flex-[3] ml-20px">
-      <Search :schema="allSchemas.searchSchema" @reset="setSearchParams" @search="setSearchParams" />
+      <!-- <Search :schema="allSchemas.searchSchema" @reset="setSearchParams" @search="setSearchParams" /> -->
 
       <div class="mb-10px">
         <BaseButton type="primary" @click="AddAction">{{ t('exampleDemo.add') }}</BaseButton>
         <BaseButton :loading="delLoading" type="danger" @click="delData()">
           {{ t('exampleDemo.del') }}
         </BaseButton>
+
       </div>
       <Table v-model:current-page="currentPage" v-model:page-size="pageSize" :columns="allSchemas.tableColumns"
         :data="dataList" :loading="loading" @register="tableRegister" :pagination="{
-        total
-      }" />
+          total
+        }" />
     </ContentWrap>
 
     <Dialog v-model="dialogVisible" :title="dialogTitle">

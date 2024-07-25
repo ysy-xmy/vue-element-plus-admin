@@ -87,6 +87,7 @@ const crudSchemas = reactive<CrudSchema[]>([
         search: {
             hidden: true
         },
+
     },
 
     {
