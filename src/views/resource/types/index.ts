@@ -6,3 +6,15 @@ export type actionitemArray = [
         intro: string,
     }
 ]
+
+export type actionrouter = {
+    id?: string;
+    picurl?: string;
+    videoUrl?: string;
+    intro?: string;
+    title: string;
+
+    children?: actionrouter[];
+};
+
+

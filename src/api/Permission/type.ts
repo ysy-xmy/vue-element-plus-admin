@@ -11,4 +11,13 @@ export interface UserInfo {
 }
 
 
+export interface UserParams {
+    Page?: string;
+    Size?: string;
+    /**
+     * ADMIN、COACH、STUDENT、COACH&STUDENT
+     */
+    UserSelectType?: string;
+    [property: string]: any;
+}
 

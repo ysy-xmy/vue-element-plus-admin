@@ -12,6 +12,6 @@ export function convertDateTime(isoString: string): string {
 }
 
 // 使用函数
-const isoString = "2024-07-24T13:40:52Z";
-const formattedString = convertDateTime(isoString);
-console.log(formattedString); // 输出: 2024年07月24日 13:40:52
+// const isoString = "2024-07-24T13:40:52Z";
+// const formattedString = convertDateTime(isoString);
+// console.log(formattedString); // 输出: 2024年07月24日 13:40:52

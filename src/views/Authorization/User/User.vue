@@ -5,9 +5,8 @@ import { Table } from '@/components/Table'
 import { ref, unref, nextTick, watch, reactive } from 'vue'
 import { ElTree } from 'element-plus'
 import { getUserByIdApi, saveUserApi, deleteUserByIdApi } from '@/api/department'
-import { getalluserApi } from '@/api/Permission'
+import { getuserlistApi } from '@/api/Permission'
 import type { DepartmentUserItem } from '@/api/department/types'
-import type { UserInfo } from '@/api/Permission/type'
 import { useTable } from '@/hooks/web/useTable'
 import { Search } from '@/components/Search'
 import Write from './components/Write.vue'
@@ -17,14 +16,14 @@ import { getRoleListApi } from '@/api/role'
 import { convertDateTime } from './components/utils/convertDateTime'
 import { ElTag } from 'element-plus'
 
-
+import type { UserParams } from '@/api/Permission/type'
 // import { getRoleListApi } from '@/api/role'
 import { CrudSchema, useCrudSchemas } from '@/hooks/web/useCrudSchemas'
 import { BaseButton } from '@/components/Button'
 
 const { t } = useI18n()
 
-var select = ref('1')
+var select = ref('STUDENT')
 // 1为学员，2为教练，3为游客
 
 const changeSelect = (value: string) => {
@@ -247,7 +246,19 @@ const treeEl = ref<typeof ElTree>()
 const currentNodeKey = ref('')
 const Userlist = ref([])
 const fetchUserlist = async () => {
-    const res = await getalluserApi()
+
+    let params: UserParams = {
+        Page: '1',
+        Size: '10',
+        UserSelectType: 'ADMIN',
+    }
+
+    console.log(params)
+
+    const res = await getuserlistApi(params)
+    console.log(res)
+
+
     //对拿到的列表做一个简单的处理
     Userlist.value = res.data.map((v) => {
         return {
@@ -377,8 +388,8 @@ const save = async () => {
 
                 <div class="mb-2 flex items-center text-sm">
                     <el-radio-group @change="changeSelect" v-model="select" class="ml-4">
-                        <el-radio value="1" size="large">学员</el-radio>
-                        <el-radio value="2" size="large">教练</el-radio>
+                        <el-radio value="STUDENT" size="large">学员</el-radio>
+                        <el-radio value="COACH" size="large">教练</el-radio>
 
                     </el-radio-group>
                 </div>

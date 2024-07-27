@@ -7,13 +7,17 @@ import { ElTree, ElTag } from 'element-plus'
 import { getDepartmentApi, getUserByIdApi, saveUserApi, deleteUserByIdApi } from '@/api/department'
 import type { DepartmentItem, DepartmentUserItem } from '@/api/department/types'
 import { useTable } from '@/hooks/web/useTable'
-import { Search } from '@/components/Search'
+import type { UserParams } from '@/api/Permission/type'
+//@ts-ignore
+import { convertDateTime } from './components/utils/convertDateTime.ts'
+
 import Write from './components/Write.vue'
 import Detail from './components/Detail.vue'
 import { Dialog } from '@/components/Dialog'
 import { getRoleListApi } from '@/api/role'
 import { CrudSchema, useCrudSchemas } from '@/hooks/web/useCrudSchemas'
 import { BaseButton } from '@/components/Button'
+import { getuserlistApi } from '@/api/Permission'
 
 const { t } = useI18n()
 
@@ -39,7 +43,7 @@ const { tableRegister, tableState, tableMethods } = useTable({
     return !!res
   }
 })
-const { total, loading, dataList, pageSize, currentPage } = tableState
+const { total, loading, pageSize, currentPage } = tableState
 const { getList, getElTableExpose, delList } = tableMethods
 
 const crudSchemas = reactive<CrudSchema[]>([
@@ -74,10 +78,17 @@ const crudSchemas = reactive<CrudSchema[]>([
       type: 'index'
     }
   },
+  {
+    field: 'OpenID',
+    label: 'OpenID',
+    search: {
+      hidden: true
+    },
+  },
 
   {
-    field: 'account',
-    label: t('userDemo.account'),
+    field: 'Username',
+    label: '用户名',
     search: {
       hidden: true
     },
@@ -115,8 +126,25 @@ const crudSchemas = reactive<CrudSchema[]>([
   //   }
   // },
   {
-    field: 'role',
+    field: 'RoleName',
     label: t('userDemo.role'),
+    search: {
+      hidden: true
+    },
+    table: {
+      slots: {
+        default: (data: any) => {
+          const role = data.row.RoleName
+          return (
+            <>
+              <ElTag type={role === '学员' ? 'success' : role === '教练' ? 'warning' : 'danger'}>
+                {role}
+              </ElTag >
+            </>
+          )
+        }
+      }
+    },
     form: {
       component: 'Select',
       value: [],
@@ -127,17 +155,14 @@ const crudSchemas = reactive<CrudSchema[]>([
       },
       optionApi: async () => {
         const res = await getRoleListApi()
-        return res.data?.list?.map((v) => ({
-          label: v.roleName,
+        console.log(res)
+
+        return res.data.map((v) => ({
+          label: v.RoleName,
           value: v.id
         }))
       }
-    },
-    search: {
-      hidden: true,
-
-
-    },
+    }
   },
   // {
   //   field: 'roleid',
@@ -168,13 +193,64 @@ const crudSchemas = reactive<CrudSchema[]>([
   //   }
   // },
   {
-    field: 'createTime',
+    field: 'CreatedAt',
     label: t('userDemo.createTime'),
     form: {
-      component: 'Input'
+      hidden: true
     },
     search: {
       hidden: true
+    },
+    sortable: true
+  },
+  {
+    field: 'Enable',
+    label: '状态',
+    search: {
+      hidden: true
+    },
+    table: {
+      slots: {
+        default: (data: any) => {
+          const status = data.row.Enable
+          console.log(status)
+          return (
+            <>
+              <ElTag type={status == true ? 'danger' : 'success'}>
+                {status == true ? t('userDemo.enable') : t('userDemo.disable')}
+              </ElTag>
+            </>
+          )
+        }
+      }
+    },
+    form: {
+      component: 'Select',
+      componentProps: {
+        options: [
+          {
+            value: 0,
+            label: t('userDemo.disable')
+          },
+          {
+            value: 1,
+            label: t('userDemo.enable')
+          }
+        ]
+      }
+    },
+    detail: {
+      slots: {
+        default: (data: any) => {
+          return (
+            <>
+              <ElTag type={data.status === 0 ? 'danger' : 'success'}>
+                {data.status === 1 ? t('userDemo.enable') : t('userDemo.disable')}
+              </ElTag>
+            </>
+          )
+        }
+      }
     }
   },
   {
@@ -190,7 +266,7 @@ const crudSchemas = reactive<CrudSchema[]>([
       hidden: true
     },
     table: {
-      width: 150,
+      width: 200,
       slots: {
         default: (data: any) => {
           const row = data.row as DepartmentUserItem
@@ -198,14 +274,12 @@ const crudSchemas = reactive<CrudSchema[]>([
             <>
               <div class="flex justify-center items-center w-full">
                 <BaseButton type="primary" onClick={() => action(row, 'edit')}>
-                  {t('exampleDemo.edit')}
+                  编辑
                 </BaseButton>
-                {/* <BaseButton type="success" onClick={() => action(row, 'detail')}>
-                {t('exampleDemo.detail')}
-              </BaseButton> */}
-                <BaseButton type="danger" onClick={() => delData(row)}>
-                  {t('exampleDemo.del')}
+                <BaseButton type="success" onClick={() => action(row, 'detail')}>
+                  查看
                 </BaseButton>
+
 
 
               </div>
@@ -230,16 +304,39 @@ const setSearchParams = (params: any) => {
 const treeEl = ref<typeof ElTree>()
 
 const currentNodeKey = ref('')
-const departmentList = ref<DepartmentItem[]>([])
-const fetchDepartment = async () => {
-  const res = await getDepartmentApi()
-  departmentList.value = res.data.list
+const adminlist = ref([])
+const fetchadminlist = async () => {
+  let params: UserParams = {
+    Page: String(currentPage.value),
+    Size: String(pageSize.value),
+    UserSelectType: 'ADMIN',
+  }
+
+
+  const res = await getuserlistApi(params)
+
+
+
+
+  adminlist.value = res.data.map((v) => {
+    return {
+      "ID": v.ID,
+      "OpenID": v.OpenID,
+      "Username": v.Username,
+      "Phone": v.Phone,
+      "RoleName": (v.RoleName == 'super_admin') ? '超级管理员' : (v.RoleName == 'normal_admin') ? '管理员' : '学员',
+      "Enable": v.Enable,
+      "LastLoginTime": v.LastLoginTime,
+      "CreatedAt": convertDateTime(v.CreatedAt),
+    }
+  })
+
   currentNodeKey.value =
-    (res.data.list[0] && res.data.list[0]?.children && res.data.list[0].children[0].id) || ''
+    (res.data[0] && res.data[0]?.children && res.data[0].children[0].id) || ''
   await nextTick()
   unref(treeEl)?.setCurrentKey(currentNodeKey.value)
 }
-fetchDepartment()
+fetchadminlist()
 
 const currentDepartment = ref('')
 watch(
@@ -249,17 +346,6 @@ watch(
   }
 )
 
-// const currentChange = (data: DepartmentItem) => {
-//   // if (data.children) return
-//   currentNodeKey.value = data.id
-//   currentPage.value = 1
-//   getList()
-// }
-
-// const filterNode = (value: string, data: DepartmentItem) => {
-//   if (!value) return true
-//   return data.departmentName.includes(value)
-// }
 
 const dialogVisible = ref(false)
 const dialogTitle = ref('')
@@ -325,11 +411,11 @@ const save = async () => {
   <div class="flex w-100% h-100%">
     <!-- <ContentWrap class="w-250px">
       <div class="flex justify-center items-center">
-        <div class="flex-1">{{ t('userDemo.departmentList') }}</div>
+        <div class="flex-1">{{ t('userDemo.adminlist') }}</div>
         <ElInput v-model="currentDepartment" class="flex-[2]" :placeholder="t('userDemo.searchDepartment')" clearable />
       </div>
       <ElDivider />
-      <ElTree ref="treeEl" :data="departmentList" default-expand-all :expand-on-click-node="false" node-key="id"
+      <ElTree ref="treeEl" :data="adminlist" default-expand-all :expand-on-click-node="false" node-key="id"
         :current-node-key="currentNodeKey" :props="{
           label: 'departmentName'
         }" :filter-node-method="filterNode" @current-change="currentChange">
@@ -354,7 +440,7 @@ const save = async () => {
 
       </div>
       <Table v-model:current-page="currentPage" v-model:page-size="pageSize" :columns="allSchemas.tableColumns"
-        :data="dataList" :loading="loading" @register="tableRegister" :pagination="{
+        :data="adminlist" :loading="loading" @register="tableRegister" :pagination="{
           total
         }" />
     </ContentWrap>
