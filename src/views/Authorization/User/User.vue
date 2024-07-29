@@ -28,7 +28,11 @@ var select = ref('STUDENT')
 
 const changeSelect = (value: string) => {
     select.value = value
-    console.log(select.value)
+    fetchUserlist()
+
+
+
+
 }
 
 const { tableRegister, tableState, tableMethods } = useTable({
@@ -246,17 +250,20 @@ const treeEl = ref<typeof ElTree>()
 const currentNodeKey = ref('')
 const Userlist = ref([])
 const fetchUserlist = async () => {
-
+    loading.value = true
     let params: UserParams = {
         Page: '1',
         Size: '10',
-        UserSelectType: 'ADMIN',
+        UserSelectType: select.value,
     }
 
     console.log(params)
 
-    const res = await getuserlistApi(params)
-    console.log(res)
+    const res = await getuserlistApi(params).finally(() => {
+        loading.value = false
+    })
+
+
 
 
     //对拿到的列表做一个简单的处理
@@ -272,7 +279,8 @@ const fetchUserlist = async () => {
             "CreatedAt": convertDateTime(v.CreatedAt),
         }
     })
-    console.log(Userlist.value)
+
+
 
     currentNodeKey.value =
         (res.data[0] && res.data[0]?.children && res.data[0].children[0].id) || ''

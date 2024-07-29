@@ -4,7 +4,7 @@ import Actionitem from '@/views/resource/components/Actionitem.vue'
 import { actionrouter } from '../types'
 import { Dialog } from '@/components/Dialog'
 import { ElMessageBox } from 'element-plus'
-
+import Menuedit from '@/views/resource/components/Menuedit.vue'
 const dialogVisible = ref(false);
 const dialogTitle = ref('');
 const selectedSecondOption = ref('');
@@ -13,38 +13,52 @@ var actionrouterList: actionrouter[] = [
         title: '自重',
         id: '1',
         children: [
-            {
-                id: '1-1',
-                title: '上胸', children: [
-                    { title: '杠铃卧推', 'id': "902", 'picurl': '/resource/action/1', 'videoUrl': '', 'intro': "简介" },
-                ]
-            },
+
             {
                 id: '1-2',
-                title: '背', children: [
-                    { title: '杠铃卧推', 'id': "234", 'picurl': '/resource/action/1', 'videoUrl': '', 'intro': "简介" },]
+                title: '背',
+                children: [
+                    { title: '杠铃卧推', 'id': "234", 'picurl': '/resource/action/1', 'videoUrl': '', 'intro': "简介", children: [] },],
+                orderid: 2
+
+            },
+            {
+                id: '1-1',
+                title: '上胸',
+                children: [
+                    { title: '杠铃卧推', 'id': "902", 'picurl': '/resource/action/1', 'videoUrl': '', 'intro': "简介", children: [] },
+                ],
+                orderid: 5
+
             },
             {
                 id: '1-3',
                 title: '腿', children: [
-                    { title: '杠铃卧推', 'id': "531", 'picurl': '/resource/action/1', 'videoUrl': '', 'intro': "简介" },]
+                    { title: '杠铃卧推', 'id': "531", 'picurl': '/resource/action/1', 'videoUrl': '', 'intro': "简介", children: [] },],
+                orderid: 3
             },
             {
                 id: '1-4',
                 title: '手', children: [
-                    { title: '杠铃卧推', 'id': "2345", 'picurl': '/resource/action/1', 'videoUrl': '', 'intro': "简介" },
-                ]
+                    { title: '杠铃卧推', 'id': "2345", 'picurl': '/resource/action/1', 'videoUrl': '', 'intro': "简介", children: [] },
+                ],
+                orderid: 4
             },
-        ]
+        ],
+        orderid: 1
     },
     {
         id: '2',
         title: '杠铃',
+        children: [],
+        orderid: 4
 
     },
     {
         id: '3',
         title: '哑铃',
+        children: [],
+        orderid: 3
     },
 ]
 const selectedFirstOption = ref<'' | null>(null);
@@ -55,7 +69,6 @@ const firstoptions = computed(() => {
 
 // 二级选项的响应式引用
 const secondOptionsRef = ref<Actionrouter[]>([]);
-
 // 计算属性，基于响应式引用secondOptionsRef
 const secondoptions = computed(() => {
     return secondOptionsRef.value.map(({ title }) => ({ value: title, label: title }));
@@ -147,7 +160,7 @@ const delData = async () => {
                     </template>
                     <el-menu-item index="4">
                         <BaseButton style="width: 100%;" type="primary" size="large"
-                            @click="action({ title: '新动作' }, 'add')">编辑目录
+                            @click="action({ title: '新动作' }, 'edit')">编辑目录
                         </BaseButton>
                     </el-menu-item>
                 </el-menu>
@@ -160,8 +173,8 @@ const delData = async () => {
 
 
 
-        <Dialog v-model="dialogVisible" :title="dialogTitle">
-            <div v-if="actionType === 'add'" class=" ">
+        <Dialog height="700" v-model="dialogVisible" :title="dialogTitle">
+            <!-- <div v-if="actionType === 'add'" class=" ">
                 <h1>删除目录</h1>
                 <div class="delete-box w-100% h-100% flex justify-evenly items-center">
                     <span>一级目录名：</span>
@@ -193,8 +206,10 @@ const delData = async () => {
 
                     <BaseButton type="primary" size="large" @click="addData">新增</BaseButton>
                 </div>
+            </div> -->
+            <div v-if="actionType === 'edit'" class="flex w-full h-100% justify-center items-start content-start">
+                <Menuedit :currentRow="currentRow" :actionrouterList="actionrouterList" />
             </div>
-
         </Dialog>
     </div>
 </template>

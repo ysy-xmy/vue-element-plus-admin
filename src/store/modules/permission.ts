@@ -90,3 +90,48 @@ export const usePermissionStore = defineStore('permission', {
 export const usePermissionStoreWithOut = () => {
   return usePermissionStore(store)
 }
+
+
+interface ActionItem {
+  title: string;
+  id: string;
+  children: ActionItem[];
+  orderid?: number;
+  picurl?: string;
+  videoUrl?: string;
+  intro?: string;
+  editorder?: boolean;
+}
+
+interface ActionRouter {
+  id: string;
+  title: string;
+  children: ActionItem[];
+  orderid: number;
+}
+
+export const orderlist = (routers: ActionRouter[]): ActionRouter[] => {
+
+  // 排序函数，根据orderid排序
+  const sortByOrderId = (a: ActionItem, b: ActionItem) => {
+    if (a.orderid && b.orderid) {
+      return a.orderid - b.orderid;
+    }
+    return 0;
+  };
+
+  // 递归排序每个路由及其子项
+  const sortChildren = (items: ActionItem[]): ActionItem[] => {
+    return items.map(item => ({
+      ...item,
+      children: sortChildren(item.children) // 递归排序子项
+    })).sort(sortByOrderId);
+  };
+
+  // 对顶级路由进行排序，并对每个路由的子项进行排序
+  return routers.map(router => ({
+    ...router,
+    children: sortChildren(router.children) // 对每个路由的子项进行排序
+  })).sort(sortByOrderId);
+
+}
