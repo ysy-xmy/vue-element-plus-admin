@@ -118,7 +118,6 @@ const crudSchemas = reactive<CrudSchema[]>([
         label: '年龄',
         form: {
             hidden: true
-
         },
         search: {
             hidden: true

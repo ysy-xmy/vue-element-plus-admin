@@ -8,13 +8,16 @@ export const getRoleListApi = () => {
         id: 1,
         RoleName: '超级管理员',
         description: '拥有所有权限',
-        status: 1
+        status: 1,
+        Roleid: 1,
+
       },
       {
         id: 2,
         RoleName: '管理员',
         description: '拥有管理本店权限',
-        status: 1
+        status: 1,
+        Roleid: 2
       },
 
       // {
@@ -37,7 +40,9 @@ export const roleApi = () => {
         label: '学员',
         RoleName: 'student',
         description: '普通用户',
-        status: 1
+        status: 1,
+        Roleid: 4
+
       },
       {
 
@@ -45,7 +50,8 @@ export const roleApi = () => {
         label: '教练',
         RoleName: 'coach',
         description: '教练权限',
-        status: 1
+        status: 1,
+        Roleid: 4
       }
     ]
 

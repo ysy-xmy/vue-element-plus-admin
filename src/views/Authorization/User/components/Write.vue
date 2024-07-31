@@ -19,9 +19,15 @@ const props = defineProps({
 })
 
 const rules = reactive({
-  username: [required()],
-  account: [required()],
-  'department.id': [required()]
+  // username: [required()],
+  // account: [required()],
+  // 'department.id': [required()],
+  OpenID: [required()],
+  Username: [required()],
+  RoleName: [required()],
+  Password: [required(), { min: 6, message: '密码长度不能小于6位' }, { trigger: 'blur' }],
+  Enabel: [required(), { messages: '请选择状态' }],
+
 })
 
 const { formRegister, formMethods } = useForm()

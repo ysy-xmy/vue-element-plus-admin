@@ -15,3 +15,8 @@ export const getuserlistApi = (data: UserParams) => {
 }
 
 
+export const addAdminApi = (data: any) => {
+    return request.post({ url: '/api/user/add', data })
+}
+
+

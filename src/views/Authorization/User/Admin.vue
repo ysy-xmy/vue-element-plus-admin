@@ -17,7 +17,7 @@ import { Dialog } from '@/components/Dialog'
 import { getRoleListApi } from '@/api/role'
 import { CrudSchema, useCrudSchemas } from '@/hooks/web/useCrudSchemas'
 import { BaseButton } from '@/components/Button'
-import { getuserlistApi } from '@/api/Permission'
+import { getuserlistApi, addAdminApi } from '@/api/Permission'
 
 const { t } = useI18n()
 
@@ -84,11 +84,37 @@ const crudSchemas = reactive<CrudSchema[]>([
     search: {
       hidden: true
     },
+    form: {
+      component: 'Input',
+      componentProps: {
+        placeholder: '唯一标识openid',
+        rules: [
+          {
+            required: true,
+
+          }
+        ]
+      },
+    },
   },
 
   {
     field: 'Username',
     label: '用户名',
+    form: {
+      component: 'Input',
+      componentProps: {
+        popable: true,
+        clearable: true,
+        placeholder: '用户名即账号',
+        rules: [
+          {
+            required: true,
+            trigger: 'blur'
+          }
+        ]
+      }
+    },
     search: {
       hidden: true
     },
@@ -149,9 +175,12 @@ const crudSchemas = reactive<CrudSchema[]>([
       component: 'Select',
       value: [],
       componentProps: {
-        multiple: true,
         collapseTags: true,
-        maxCollapseTags: 1
+        maxCollapseTags: 1,
+        rules: [
+          { required: true, message: '请选择角色', trigger: 'change' }
+        ],
+
       },
       optionApi: async () => {
         const res = await getRoleListApi()
@@ -159,7 +188,7 @@ const crudSchemas = reactive<CrudSchema[]>([
 
         return res.data.map((v) => ({
           label: v.RoleName,
-          value: v.id
+          value: v.Roleid
         }))
       }
     }
@@ -193,6 +222,34 @@ const crudSchemas = reactive<CrudSchema[]>([
   //   }
   // },
   {
+    field: 'Password',
+    label: '密码',
+    table: {
+      hidden: true
+    },
+    search: {
+      hidden: true
+    },
+    form: {
+      component: 'Input',
+      componentProps: {
+        type: 'password',
+        'prefix-icon': 'el-icon-lock', // 可选，添加一个前缀图标
+        clearable: true,
+        placeholder: '请输入密码',
+        rules: [
+          { required: true, message: '请输入密码', trigger: 'blur' },
+          { min: 6, message: '密码长度不能少于6位', trigger: 'blur' }
+        ]
+
+      },
+
+
+    }
+
+  },
+
+  {
     field: 'CreatedAt',
     label: t('userDemo.createTime'),
     form: {
@@ -210,6 +267,7 @@ const crudSchemas = reactive<CrudSchema[]>([
       hidden: true
     },
     table: {
+
       slots: {
         default: (data: any) => {
           const status = data.row.Enable
@@ -227,15 +285,19 @@ const crudSchemas = reactive<CrudSchema[]>([
     form: {
       component: 'Select',
       componentProps: {
+        clearable: true,
+        placeholder: '请选择状态',
+        value: true,
         options: [
           {
-            value: 0,
-            label: t('userDemo.disable')
+            value: true,
+            label: '启用'
           },
           {
-            value: 1,
-            label: t('userDemo.enable')
-          }
+            value: false,
+            label: '禁用'
+          },
+
         ]
       }
     },
@@ -389,13 +451,20 @@ const saveLoading = ref(false)
 const save = async () => {
   const write = unref(writeRef)
   const formData = await write?.submit()
+  console.log(formData)
   if (formData) {
     saveLoading.value = true
     try {
-      const res = await saveUserApi(formData)
+      let data: object = {
+        Username: formData.Username,
+        Password: formData.Password,
+        Roleid: formData.RoleName[0],
+        OpenID: formData.OpenID,
+      }
+      const res = await addAdminApi(data)
       if (res) {
         currentPage.value = 1
-        getList()
+        fetchadminlist()
       }
     } catch (error) {
       console.log(error)
