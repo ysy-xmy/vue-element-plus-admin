@@ -12,14 +12,11 @@ export const loginApi = (data: UserType): Promise<IResponse<UserType>> => {
     Password: data.password
   }
   data = newdata
-
-
-
   return request.post({ url: '/api/user/login', data })
 }
 
 export const loginOutApi = (): Promise<IResponse> => {
-  return request.get({ url: '/mock/user/loginOut' })
+  return request.post({ url: '/api/user/logout' })
 }
 
 export const getUserListApi = ({ params }: AxiosConfig) => {

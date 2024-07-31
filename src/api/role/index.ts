@@ -16,6 +16,7 @@ export const getRoleListApi = () => {
         description: '拥有管理本店权限',
         status: 1
       },
+
       // {
       //   id: 3,
       //   RoleName: '普通用户',
@@ -26,3 +27,30 @@ export const getRoleListApi = () => {
     ]
   }
 }
+
+export const roleApi = () => {
+  return {
+    code: 200,
+    data: [
+      {
+        id: 3,
+        label: '学员',
+        RoleName: 'student',
+        description: '普通用户',
+        status: 1
+      },
+      {
+
+        id: 4,
+        label: '教练',
+        RoleName: 'coach',
+        description: '教练权限',
+        status: 1
+      }
+    ]
+
+  }
+}
+
+
+

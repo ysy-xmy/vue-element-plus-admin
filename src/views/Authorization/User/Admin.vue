@@ -216,7 +216,7 @@ const crudSchemas = reactive<CrudSchema[]>([
           console.log(status)
           return (
             <>
-              <ElTag type={status == true ? 'danger' : 'success'}>
+              <ElTag type={status == true ? 'success' : 'danger'}>
                 {status == true ? t('userDemo.enable') : t('userDemo.disable')}
               </ElTag>
             </>

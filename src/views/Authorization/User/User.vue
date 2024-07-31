@@ -12,7 +12,7 @@ import { Search } from '@/components/Search'
 import Write from './components/Write.vue'
 import Detail from './components/Detail.vue'
 import { Dialog } from '@/components/Dialog'
-import { getRoleListApi } from '@/api/role'
+import { roleApi } from '@/api/role'
 import { convertDateTime } from './components/utils/convertDateTime'
 import { ElTag } from 'element-plus'
 
@@ -20,6 +20,7 @@ import type { UserParams } from '@/api/Permission/type'
 // import { getRoleListApi } from '@/api/role'
 import { CrudSchema, useCrudSchemas } from '@/hooks/web/useCrudSchemas'
 import { BaseButton } from '@/components/Button'
+import { toUSVString } from 'util'
 
 const { t } = useI18n()
 
@@ -90,35 +91,33 @@ const crudSchemas = reactive<CrudSchema[]>([
         }
     },
     {
-        field: 'Username',
-        label: '账号',
+        field: 'OpenID',
+        label: 'OpenID',
         form: {
+            hidden: true
         },
         search: {
             hidden: true
         },
     },
     {
-        field: 'name',
-        label: '姓名',
+        field: 'Phone',
+        label: '手机号',
         form: {
+            hidden: true
         },
-    },
 
-    {
-        field: 'sex',
-        label: '性别',
-        form: {
-
-        },
         search: {
             hidden: true
         },
     },
+
+
     {
-        field: 'age',
+        field: 'Age',
         label: '年龄',
         form: {
+            hidden: true
 
         },
         search: {
@@ -167,12 +166,12 @@ const crudSchemas = reactive<CrudSchema[]>([
                 maxCollapseTags: 1
             },
             optionApi: async () => {
-                const res = await getRoleListApi()
+                const res = await roleApi()
                 console.log(res)
 
                 return res.data.map((v) => ({
-                    label: v.RoleName,
-                    value: v.id
+                    label: v.label,
+                    value: v.RoleName
                 }))
             }
         }
@@ -196,6 +195,56 @@ const crudSchemas = reactive<CrudSchema[]>([
         },
         search: {
             hidden: true
+        }
+    },
+    {
+        field: 'Enable',
+        label: '状态',
+        search: {
+            hidden: true
+        },
+        table: {
+            slots: {
+                default: (data: any) => {
+                    const status = data.row.Enable
+                    console.log(status)
+                    return (
+                        <>
+                            <ElTag type={status == true ? 'success' : 'danger'}>
+                                {status == true ? t('userDemo.enable') : t('userDemo.disable')}
+                            </ElTag>
+                        </>
+                    )
+                }
+            }
+        },
+        form: {
+            component: 'Select',
+            componentProps: {
+                options: [
+                    {
+                        value: true,
+                        label: '启用'
+                    },
+                    {
+                        value: false,
+                        label: '禁用'
+                    }
+                ]
+            }
+        },
+        detail: {
+            slots: {
+                default: (data: any) => {
+                    return (
+                        <>
+                            <ElTag type={data.status === 0 ? 'danger' : 'success'}>
+                                {data.status === 1 ? t('userDemo.enable') : t('userDemo.disable')}
+                            </ElTag>
+                        </>
+                    )
+                }
+            }
         }
     },
     {
@@ -273,7 +322,7 @@ const fetchUserlist = async () => {
             "OpenID": v.OpenID,
             "Username": v.Username,
             "Phone": v.Phone,
-            "RoleName": (v.RoleName == 'super_admin') ? '学员' : (v.RoleName == 'normal_admin') ? '教练' : '其他',
+            "RoleName": (v.RoleName == 'student') ? '学员' : (v.RoleName == 'coach') ? '教练' : '其他',
             "Enable": v.Enable,
             "LastLoginTime": v.LastLoginTime,
             "CreatedAt": convertDateTime(v.CreatedAt),
@@ -390,7 +439,7 @@ const save = async () => {
 </ElTree>
 </ContentWrap> -->
         <ContentWrap class="flex-[3] ml-20px h-full">
-            <Search :schema="allSchemas.searchSchema" @reset="setSearchParams" @search="setSearchParams" />
+            <!-- <Search :schema="allSchemas.searchSchema" @reset="setSearchParams" @search="setSearchParams" /> -->
 
             <div class="mb-10px">
 
@@ -405,8 +454,8 @@ const save = async () => {
             <Table height="100%" v-model:current-page="currentPage" :page-size="pageSize"
                 :columns="allSchemas.tableColumns" :data="Userlist" :loading="loading" @register="tableRegister"
                 :pagination="{
-                total
-            }" />
+                        total
+                    }" />
         </ContentWrap>
 
         <Dialog v-model="dialogVisible" :title="dialogTitle">
