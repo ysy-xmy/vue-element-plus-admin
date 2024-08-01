@@ -1,74 +1,110 @@
 <script setup lang="ts">
-import { ref, computed, watch } from 'vue';
+import { ref, computed, watch, } from 'vue';
 import Actionitem from '@/views/resource/components/Actionitem.vue'
 import { actionrouter } from '../types'
 import { Dialog } from '@/components/Dialog'
 import { ElMessageBox } from 'element-plus'
 import Menuedit from '@/views/resource/components/Menuedit.vue'
+import { getFirstmenulist, getSecByFirst, getActionsBySec } from '@/api/resource'
+import { t } from '@wangeditor/editor';
+import Loading from 'xgplayer/es/plugins/loading';
 const dialogVisible = ref(false);
 const dialogTitle = ref('');
 const selectedSecondOption = ref('');
-var actionrouterList: actionrouter[] = [
-    {
-        title: '自重',
-        id: '1',
-        children: [
+const actionrouterList: any = ref([])
+// var actionrouterList: actionrouter[] = [
+//     {
+//         title: '自重',
+//         id: '1',
+//         children: [
 
-            {
-                id: '1-2',
-                title: '背',
-                children: [
-                    { title: '杠铃卧推', 'id': "234", 'picurl': '/resource/action/1', 'videoUrl': '', 'intro': "简介", children: [] },],
-                orderid: 2
+//             {
+//                 id: '1-2',
+//                 title: '背',
+//                 children: [
+//                     { title: '杠铃卧推', 'id': "234", 'picurl': '/resource/action/1', 'videoUrl': '', 'intro': "简介", children: [] },],
+//                 orderid: 2
 
-            },
-            {
-                id: '1-1',
-                title: '上胸',
-                children: [
-                    { title: '杠铃卧推', 'id': "902", 'picurl': '/resource/action/1', 'videoUrl': '', 'intro': "简介", children: [] },
-                ],
-                orderid: 5
+//             },
+//             {
+//                 id: '1-1',
+//                 title: '上胸',
+//                 children: [
+//                     { title: '杠铃卧推', 'id': "902", 'picurl': '/resource/action/1', 'videoUrl': '', 'intro': "简介", children: [] },
+//                 ],
+//                 orderid: 5
 
-            },
-            {
-                id: '1-3',
-                title: '腿', children: [
-                    { title: '杠铃卧推', 'id': "531", 'picurl': '/resource/action/1', 'videoUrl': '', 'intro': "简介", children: [] },],
-                orderid: 3
-            },
-            {
-                id: '1-4',
-                title: '手', children: [
-                    { title: '杠铃卧推', 'id': "2345", 'picurl': '/resource/action/1', 'videoUrl': '', 'intro': "简介", children: [] },
-                ],
-                orderid: 4
-            },
-        ],
-        orderid: 1
-    },
-    {
-        id: '2',
-        title: '杠铃',
-        children: [],
-        orderid: 4
+//             },
+//             {
+//                 id: '1-3',
+//                 title: '腿', children: [
+//                     { title: '杠铃卧推', 'id': "531", 'picurl': '/resource/action/1', 'videoUrl': '', 'intro': "简介", children: [] },],
+//                 orderid: 3
+//             },
+//             {
+//                 id: '1-4',
+//                 title: '手', children: [
+//                     { title: '杠铃卧推', 'id': "2345", 'picurl': '/resource/action/1', 'videoUrl': '', 'intro': "简介", children: [] },
+//                 ],
+//                 orderid: 4
+//             },
+//         ],
+//         orderid: 1
+//     },
+//     {
+//         id: '2',
+//         title: '杠铃',
+//         children: [],
+//         orderid: 4
 
-    },
-    {
-        id: '3',
-        title: '哑铃',
-        children: [],
-        orderid: 3
-    },
-]
+//     },
+//     {
+//         id: '3',
+//         title: '哑铃',
+//         children: [],
+//         orderid: 3
+//     },
+// ]
 const selectedFirstOption = ref<'' | null>(null);
+const menuloading = ref(false)
+// getFirstmenulist().then(res => {
+//     console.log(res)
+// })
+
+
+
+menuloading.value = true
+getFirstmenulist().then(res => {
+
+
+    for (let item of res.data) {
+        let data: actionrouter = {
+            title: item.Name,
+            id: item.ID,
+            orderid: item.OrderNum,
+            children: [],
+            isActive: true
+        }
+        actionrouterList.value.push(data)
+
+    }
+
+}).finally(() => {
+    menuloading.value = false
+})
+
+
+
+
+
 
 const firstoptions = computed(() => {
     return actionrouterList.map(({ title }) => ({ value: title, label: title }));
 });
 
+
 // 二级选项的响应式引用
-const secondOptionsRef = ref<Actionrouter[]>([]);
+const secondOptionsRef = ref<actionrouter[]>([]);
 // 计算属性，基于响应式引用secondOptionsRef
 const secondoptions = computed(() => {
     return secondOptionsRef.value.map(({ title }) => ({ value: title, label: title }));
@@ -122,41 +158,159 @@ const delData = async () => {
     })
 
 }
+const getSelection = (item) => {
+    var firstmenuid = item.id
+    console.log(item)
+
+    if (item.children.length > 0) {
+
+    } else {
+        menuloading.value = true
+        getSecByFirst(firstmenuid).then(res => {
+            console.log(res)
+            if (res.data.length > 0) {
+                actionrouterList.value.find(item => item.id === firstmenuid)!.children = res.data.map(item => {
+                    return {
+                        id: item.ID,
+                        title: item.Name,
+                        orderid: item.OrderNum,
+                        children: [],
+                        isActive: true
+
+                    }
+                })
+
+            }
+            else {
+                actionrouterList.value.find(item => item.id === firstmenuid)!.children = [
+                    {
+                        id: '-1',
+                        title: `------该目录下暂无数据------`,
+                        orderid: 100,
+                        children: [],
+                        isActive: false
+                    }
+                ]
+            }
+
+
+        }).finally(() => {
+            menuloading.value = false
+        })
+    }
+
+}
+
+const getActions = (item) => {
+    var secid = item.id
+    console.log(item)
+    if (item.children.length > 0) {
+        console.log('有子项')
+
+    } else {
+
+        menuloading.value = true
+        getActionsBySec(secid).then(res => {
+            if (res.data.length > 0) {
+                item.children = res.data.map(e => {
+                    return {
+                        id: e.ID,
+                        title: e.Name,
+                        orderid: e.OrderNum,
+                        children: [],
+                        intro: e.Description,
+                        picurl: e.Imgs,
+                        isActive: true
+                    }
+                })
+
+            }
+            else {
+                item.children = [
+                    {
+                        id: '-1',
+                        title: `------该目录下暂无数据------`,
+                        orderid: 100,
+                        children: [],
+                        isActive: false
+                    }
+                ]
+
+            }
+        }).finally(() => {
+            menuloading.value = false
+        })
+
+    }
+
+
+}
 
 
 </script>
 <template>
     <div class="flex w-100% h-100%">
-        <el-row class="tac">
+        <el-row v-loading="menuloading" class="tac">
             <el-col :span="8">
                 <h5 class="mb-2">动作库</h5>
                 <el-menu default-active="2" class="el-menu-vertical-demo">
                     <template v-for="item in actionrouterList" :key="item.title">
-                        <el-sub-menu v-if="item.children" :index="item.title">
+                        <el-sub-menu v-if="item.children.length > 0" :index="item.title">
                             <template #title>
                                 <Icon icon="ep:aim" />
                                 <span>{{ item.title }}</span>
                             </template>
                             <template v-for="child in item.children" :key="child.title">
-                                <el-sub-menu v-if="child.children" :index="child.title">
+                                <el-sub-menu v-if="child.children.length > 0" :index="child.title">
                                     <template #title>
                                         <Icon icon="ep:aim" />
                                         {{ child.title }}
                                     </template>
-                                    <el-menu-item v-for="subChild in child.children" :key="subChild.title"
-                                        :index="subChild.title">
-                                        {{ subChild.title }}
+                                    <el-menu-item :disabled="!child.isActive" v-for="subChild in child.children"
+                                        :key="subChild.title" :index="subChild.title">
+
+
+                                        <el-menu-item disabled v-if="subChild.id == '-1'">
+                                            <p style="font-size: 15px;color: #666;margin-top: 5px;">
+                                                <Icon icon="tabler:badge-hd"></Icon>
+                                                <el-text class="mx-1" type="warning">{{ subChild.title }}</el-text>
+
+                                            </p>
+
+                                        </el-menu-item>
+                                        <p v-else style="font-size: 15px;color: #666;margin-top: 5px;">
+                                            <Icon icon="tabler:badge-hd"></Icon>
+                                            <el-text class="mx-1" type="warning">{{ subChild.title }}</el-text>
+
+                                        </p>
+
                                     </el-menu-item>
                                 </el-sub-menu>
-                                <el-menu-item v-else :index="child.title">
+                                <el-menu-item :disabled="!child.isActive" @click="getActions(child)" v-else
+                                    :index="child.title">
                                     {{ child.title }}
                                 </el-menu-item>
                             </template>
                         </el-sub-menu>
-                        <el-menu-item v-else :index="item.title">
+                        <el-menu-item :disabled="!item.isActive" v-else @click="getSelection(item)" :index="item.title">
                             <Icon icon="ep:aim" />
                             <span>{{ item.title }}</span>
+
                         </el-menu-item>
+                        <!-- <el-sub-menu @click="getSelection(item.id)" v-else :index="item.title">
+                            <template #title>
+                                <Icon icon="ep:aim" />
+                                <span>{{ item.title }}</span>
+                            </template>
+                            <template>
+
+                                <el-menu-item>
+                                    没有数据
+                                </el-menu-item>
+                            </template>
+                        </el-sub-menu> -->
+
+
                     </template>
                     <el-menu-item index="4">
                         <BaseButton style="width: 100%;" type="primary" size="large"
@@ -170,9 +324,6 @@ const delData = async () => {
             </el-col>
 
         </el-row>
-
-
-
         <Dialog height="700" v-model="dialogVisible" :title="dialogTitle">
             <!-- <div v-if="actionType === 'add'" class=" ">
                 <h1>删除目录</h1>

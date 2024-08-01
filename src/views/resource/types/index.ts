@@ -24,10 +24,12 @@ interface ActionItem {
     id: string;
     children: ActionItem[];
     orderid?: number;
-    picurl?: string;
+    picurl?: string | [];
     videoUrl?: string;
     intro?: string;
-    editorder?: boolean
+    editorder?: boolean;
+
+    isActive?: boolean;
 
 }
 
