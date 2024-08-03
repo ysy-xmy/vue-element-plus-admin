@@ -12,6 +12,7 @@ const dialogVisible = ref(false);
 const dialogTitle = ref('');
 const selectedSecondOption = ref('');
 const actionrouterList: any = ref([])
+const selectedAction = ref<actionrouter | null>(null);
 // var actionrouterList: actionrouter[] = [
 //     {
 //         title: '自重',
@@ -70,7 +71,7 @@ const menuloading = ref(false)
 // getFirstmenulist().then(res => {
 //     console.log(res)
 // })
-
+const actionlist = ref([])
 
 
 menuloading.value = true
@@ -120,16 +121,6 @@ watch(selectedFirstOption, (newValue, oldValue) => {
     console.log(newValue, oldValue);
 });
 
-// 用于更新一级选项的方法
-function updateFirstOption(value: string) {
-    const selected = actionrouterList.find(item => item.title === value);
-    selectedFirstOption.value = selected || null;
-}
-
-const inputfirstmenu = ref('');
-const inputsecondmenu = ref('');
-
-
 
 const actionType = ref('')
 const currentRow = ref<actionrouter>()
@@ -142,22 +133,22 @@ const action = (row: actionrouter, type: string) => {
     console.log(dialogVisible.value)
 };
 
-const addData = async () => {
-    // if (inputfirstmenu.value && inputsecondmenu.value) {
-    //     actionrouterList.push({ title: inputfirstmenu.value, children: [{ title: inputsecondmenu.value }] });
-    //     inputfirstmenu.value = '';
-    //     inputsecondmenu.value = '';
-    // }
-}
+// const addData = async () => {
+//     // if (inputfirstmenu.value && inputsecondmenu.value) {
+//     //     actionrouterList.push({ title: inputfirstmenu.value, children: [{ title: inputsecondmenu.value }] });
+//     //     inputfirstmenu.value = '';
+//     //     inputsecondmenu.value = '';
+//     // }
+// }
 
-const delData = async () => {
-    ElMessageBox.confirm(`确认删除该目录及其下所有动作资源？`, '提示', {
-        confirmButtonText: '确认',
-        cancelButtonText: '取消',
-        type: 'warning'
-    })
+// const delData = async () => {
+//     ElMessageBox.confirm(`确认删除该目录及其下所有动作资源？`, '提示', {
+//         confirmButtonText: '确认',
+//         cancelButtonText: '取消',
+//         type: 'warning'
+//     })
 
-}
+// }
 const getSelection = (item) => {
     var firstmenuid = item.id
     console.log(item)
@@ -201,31 +192,30 @@ const getSelection = (item) => {
 
 }
 
-const getActions = (item) => {
-    var secid = item.id
-    console.log(item)
+const getActions = async (item) => {
+    const secid = item.id;
+    actionlist.value = []
     if (item.children.length > 0) {
-        console.log('有子项')
 
+        actionlist.value = item.children;
+        console.log(item.children)
     } else {
-
-        menuloading.value = true
-        getActionsBySec(secid).then(res => {
+        menuloading.value = true;
+        try {
+            const res = await getActionsBySec(secid);
             if (res.data.length > 0) {
-                item.children = res.data.map(e => {
-                    return {
-                        id: e.ID,
-                        title: e.Name,
-                        orderid: e.OrderNum,
-                        children: [],
-                        intro: e.Description,
-                        picurl: e.Imgs,
-                        isActive: true
-                    }
-                })
+                item.children = res.data.map(e => ({
+                    id: e.ID,
+                    title: e.Name,
+                    orderid: e.OrderNum,
+                    children: [],
+                    intro: e.Description,
+                    picurl: e.Imgs,
+                    videos: e.Videos,
+                    isActive: true
+                }));
 
-            }
-            else {
+            } else {
                 item.children = [
                     {
                         id: '-1',
@@ -234,26 +224,47 @@ const getActions = (item) => {
                         children: [],
                         isActive: false
                     }
-                ]
-
+                ];
+                menuloading.value = false;
+                actionlist.value = item.children;
+                console.log(item.children)
             }
-        }).finally(() => {
-            menuloading.value = false
-        })
+        } catch (error) {
+            console.error("Error fetching actions:", error);
+            // Handle error appropriately
+        } finally {
+            menuloading.value = false;
+            actionlist.value = item.children;
+            console.log(item.children)
+
+        }
+    }
+};
+
+const selectaction = ref(false)
+const currentAction = ref('')
+const selectedkeyPath = ref<string[]>([])
+const handleSelect = (key: string, keyPath: string[]) => {
+    console.log(key, keyPath)
+    currentAction.value = key
+    if (keyPath.length > 1) {
+        selectaction.value = true
 
     }
-
-
+    selectedkeyPath.value = keyPath
+}
+const actiondetail = (item) => {
+    console.log(item)
 }
 
 
 </script>
 <template>
     <div class="flex w-100% h-100%">
-        <el-row v-loading="menuloading" class="tac">
+        <el-row v-loading="menuloading" class="tac w-full">
             <el-col :span="8">
                 <h5 class="mb-2">动作库</h5>
-                <el-menu default-active="2" class="el-menu-vertical-demo">
+                <el-menu @select="handleSelect" default-active="2" class="el-menu-vertical-demo">
                     <template v-for="item in actionrouterList" :key="item.title">
                         <el-sub-menu v-if="item.children.length > 0" :index="item.title">
                             <template #title>
@@ -261,13 +272,26 @@ const getActions = (item) => {
                                 <span>{{ item.title }}</span>
                             </template>
                             <template v-for="child in item.children" :key="child.title">
-                                <el-sub-menu v-if="child.children.length > 0" :index="child.title">
+                                <el-menu-item @click="getActions(child)" v-if="child.children.length > 0"
+                                    :index="child.title">
                                     <template #title>
                                         <Icon icon="ep:aim" />
                                         {{ child.title }}
                                     </template>
-                                    <el-menu-item :disabled="!child.isActive" v-for="subChild in child.children"
-                                        :key="subChild.title" :index="subChild.title">
+                                    <!-- <el-menu-item>
+
+
+                                        <p style="font-size: 15px;color: #666;margin-top: 5px;">
+                                            <Icon icon="tabler:badge-hd"></Icon>
+                                            <el-text class="mx-1" type="warning">{{ child.title }}</el-text>
+
+                                        </p>
+
+                                    </el-menu-item> -->
+
+                                    <!-- <el-menu-item @click="actiondetail(child)" :disabled="!child.isActive"
+                                        v-for="subChild in child.children" :key="subChild.title"
+                                        :index="subChild.title">
 
 
                                         <el-menu-item disabled v-if="subChild.id == '-1'">
@@ -278,16 +302,23 @@ const getActions = (item) => {
                                             </p>
 
                                         </el-menu-item>
-                                        <p v-else style="font-size: 15px;color: #666;margin-top: 5px;">
-                                            <Icon icon="tabler:badge-hd"></Icon>
-                                            <el-text class="mx-1" type="warning">{{ subChild.title }}</el-text>
+                                        <el-menu-item disabled v-else>
 
-                                        </p>
 
-                                    </el-menu-item>
-                                </el-sub-menu>
+                                            <p style="font-size: 15px;color: #666;margin-top: 5px;">
+                                                <Icon icon="tabler:badge-hd"></Icon>
+                                                <el-text class="mx-1" type="warning">{{ subChild.title }}</el-text>
+
+                                            </p>
+
+                                        </el-menu-item>
+
+
+                                    </el-menu-item> -->
+                                </el-menu-item>
                                 <el-menu-item :disabled="!child.isActive" @click="getActions(child)" v-else
                                     :index="child.title">
+                                    <Icon icon="ep:aim" />
                                     {{ child.title }}
                                 </el-menu-item>
                             </template>
@@ -320,7 +351,12 @@ const getActions = (item) => {
                 </el-menu>
             </el-col>
             <el-col :span="16">
-                <Actionitem />
+                <Actionitem :actionlist="actionlist" v-if="selectaction" />
+                <div v-else class="demo-image flex wrap justify-space-between w-full  px-8 justify-center">
+                    <el-empty description="暂无数据" />
+
+                </div>
+
             </el-col>
 
         </el-row>

@@ -293,12 +293,7 @@ import Menu from './components/Menu.vue'
 <template>
   <div class="mb-2">动作库内容管理</div>
   <ContentWrap>
-
-
     <Menu />
-
-
-
   </ContentWrap>
 
   <Dialog v-model="dialogVisible" :title="dialogTitle">

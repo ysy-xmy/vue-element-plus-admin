@@ -21,7 +21,7 @@
 
 interface ActionItem {
     title: string;
-    id: string;
+    id?: string;
     children: ActionItem[];
     orderid?: number;
     picurl?: string | [];
@@ -34,11 +34,13 @@ interface ActionItem {
 }
 
 interface actionrouter {
-    id: string;
+    id?: string;
     title: string;
     children: ActionItem[];
-    orderid: number;
+    orderid?: number;
     editorder?: boolean
+    isActive?: boolean;
+
 
 }
 

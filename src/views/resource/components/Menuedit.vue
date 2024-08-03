@@ -14,7 +14,7 @@
 
                     </el-button>
                     <div class="flex-1  ">
-                        <el-button style="width: 20px;" @click.stop="renameMenu(index)" type="primary">
+                        <el-button style="width: 20px;" @click.stop="renameMenu(index, menu.id)" type="primary">
                             <Icon :size="20" icon="ep:edit" />
                         </el-button>
 
@@ -39,7 +39,7 @@
                                 }}</el-button>
 
                             <div class="flex-1 flex justify-start items-center">
-                                <el-button style="width: 20px" @click.stop="renameSubMenu(index, subIndex)"
+                                <el-button style="width: 20px" @click.stop="renameSubMenu(index, subIndex, menu.id)"
                                     type="primary">
                                     <Icon :size="20" icon="ep:edit" />
                                 </el-button>
@@ -76,7 +76,7 @@
 
 
                         </li>
-                        <el-button class="add-menu-btn " @click="addSubMenu(index)" type="primary" plain
+                        <el-button class="add-menu-btn " @click="addSubMenu(index, menu.id)" type="primary" plain
                             size="large">新建二级目录</el-button>
 
                     </ul>
@@ -84,7 +84,7 @@
             </li>
         </ul>
         <el-button style="font-size: 18px; width: 50%" class="add-menu-btn" type="primary" size="large" plain
-            @click="addMenu">新建一级目录</el-button>
+            @click="addfirstMenu">新建一级目录</el-button>
     </div>
 
 </template>
@@ -94,6 +94,7 @@ import { ref, defineProps, PropType } from 'vue';
 import { actionrouter } from '../types'
 import { ElMessageBox } from 'element-plus';
 import { orderlist } from '@/store/modules/permission'
+import { addFirst, addSec, updateFirst, updateSec } from '@/api/resource'
 
 const editorderid = ref<number | undefined>()
 const confirmOrder = (orderid: number, subIndex: number) => {
@@ -138,6 +139,29 @@ const moveUp = (index: number) => {
         menus.value.splice(index, 1);
         menus.value.splice(index - 1, 0, currentMenu);
     }
+    menus.value = orderlist(menus.value)
+    let downorder = menus.value[index].orderid
+    let uporder = menus.value[index - 1].orderid
+
+    updateFirst(
+        {
+            Name: menus.value[index].title,
+            ID: menus.value[index].id,
+            OrderNum: uporder,
+        }
+
+
+    ).then((res) => {
+        updateFirst(
+            {
+                Name: menus.value[index - 1].title,
+                ID: menus.value[index - 1].id,
+                OrderNum: downorder,
+            }).then(res => {
+                console.log(res)
+            })
+
+    })
 };
 
 const moveDown = (index: number) => {
@@ -147,6 +171,31 @@ const moveDown = (index: number) => {
         menus.value.splice(index, 1);
         menus.value.splice(index + 1, 0, currentMenu);
     }
+    menus.value = orderlist(menus.value)
+    let downorder = menus.value[index].orderid
+    let uporder = menus.value[index + 1].orderid
+
+    updateFirst(
+        {
+            Name: menus.value[index].title,
+            ID: menus.value[index].id,
+            OrderNum: downorder,
+        }
+
+
+    ).then((res) => {
+        updateFirst(
+            {
+                Name: menus.value[index + 1].title,
+                ID: menus.value[index + 1].id,
+                OrderNum: uporder,
+            }).then(res => {
+                console.log(res)
+            })
+
+
+
+    })
 };
 
 const toggleSubMenu = (index: number) => {
@@ -182,25 +231,54 @@ const deleteSubMenu = (menuIndex: number, subMenuIndex: number) => {
         // catch error
     })
 };
-const renameMenu = (index: number) => {
+const renameMenu = (index: number, firstmenuid: string) => {
     const newName = prompt('请输入新的菜单名称', menus.value[index].title);
+    var orderid = menus.value[index].orderid
     if (newName && newName.trim() !== '') {
         menus.value[index].title = newName;
     }
+    updateFirst(
+        {
+            Name: newName,
+            ID: firstmenuid,
+            OrderNum: orderid,
+        }
+
+
+    ).then(res => {
+        console.log(res)
+    })
+
 };
 
-const addMenu = () => {
+const addfirstMenu = () => {
     const newName = prompt('请输入新的菜单名称');
+    console.log(typeof (menus.value[menus.value.length - 1].orderid + + 1), '222')
+    let orderid = menus.value[menus.value.length - 1].orderid + 1
     if (newName && newName.trim() !== '') {
         menus.value.push({
             title: newName,
             isActive: false,
             children: []
         });
+        addFirst([
+            {
+                Name: newName,
+                OrderNum: orderid,
+            }
+        ]
+
+        ).then(res => {
+            console.log(res)
+
+        })
+
+
+
     }
 };
 
-const renameSubMenu = (menuIndex: number, subMenuIndex: number) => {
+const renameSubMenu = (menuIndex: number, subMenuIndex: number, firstmenuid: string) => {
     if (menus.value[menuIndex].children?.length) {
         const newName = prompt('请输入新的子菜单名称', menus.value[menuIndex].children[subMenuIndex].title);
         if (newName && newName.trim() !== '') {
@@ -208,17 +286,49 @@ const renameSubMenu = (menuIndex: number, subMenuIndex: number) => {
         }
 
     }
+    updateSec(
+        {
+            Name: menus.value[menuIndex].children[subMenuIndex].title,
+            ID: menus.value[menuIndex].children[subMenuIndex].id,
+            OrderNum: menus.value[menuIndex].children[subMenuIndex].orderid,
+            FirstCategoryID: firstmenuid,
+        }
+
+
+    ).then(res => {
+        console.log(res)
+    })
+
+
 
 };
 
-const addSubMenu = (menuIndex: number) => {
+const addSubMenu = (menuIndex: number, firstmenuid: string) => {
     const newName = prompt('请输入新的子菜单名称');
+    let orderid = 34567
+    console.log(orderid, 'orderid')
     if (newName && newName.trim() !== '') {
         console.log(menus.value[menuIndex].children)
-        menus.value[menuIndex].children.push({
-            title: newName,
-            children: []
-        });
+        menus.value[menuIndex].children.push(
+            {
+                title: newName,
+                children: []
+            }
+        );
+
+        addSec([
+            {
+                Name: newName,
+                OrderNum: orderid,
+                FirstCategoryID: firstmenuid,
+            }
+        ]
+
+        ).then(res => {
+            console.log(res)
+
+        })
+
     }
 };
 </script>

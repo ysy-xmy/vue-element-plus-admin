@@ -17,6 +17,7 @@ export const getActionsBySec = (SecID: string) => {
 }
 
 export const addFromFirst = (data: any) => {
+    console.log(data)
     return request.post({ url: '/api/action/addFromFirst', data })
 }
 

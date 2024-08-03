@@ -230,6 +230,7 @@ watch(
 // 登录
 const signIn = async () => {
   const formRef = await getElFormExpose()
+
   await formRef?.validate(async (isValid) => {
 
     if (isValid) {
@@ -250,6 +251,7 @@ const signIn = async () => {
           } else {
             userStore.setLoginInfo(undefined)
           }
+
           userStore.setToken(res.data.Token)
           userStore.setRememberMe(unref(remember))
           userStore.setUserInfo(res.data)
