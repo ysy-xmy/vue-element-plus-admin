@@ -103,35 +103,63 @@ interface ActionItem {
   editorder?: boolean;
 }
 
-interface ActionRouter {
-  id: string;
+
+
+// export const orderlist = (routers: ActionRouter[]): ActionRouter[] => {
+
+//   // 排序函数，根据orderid排序
+//   const sortByOrderId = (a: ActionItem, b: ActionItem) => {
+//     if (a.orderid && b.orderid) {
+//       return a.orderid - b.orderid;
+//     }
+//     return 0;
+//   };
+
+//   // 递归排序每个路由及其子项
+//   const sortChildren = (items: ActionItem[]): ActionItem[] => {
+//     return items.map(item => ({
+//       ...item,
+//       children: sortChildren(item.children) // 递归排序子项
+//     })).sort(sortByOrderId);
+//   };
+
+//   // 对顶级路由进行排序，并对每个路由的子项进行排序
+//   return routers.map(router => ({
+//     ...router,
+//     children: sortChildren(router.children) // 对每个路由的子项进行排序
+//   })).sort(sortByOrderId);
+
+// }
+
+
+type ActionRouter = {
   title: string;
-  children: ActionItem[];
+  id: number;
   orderid: number;
-}
-
+  children: ActionRouter[];
+  isActive: boolean;
+};
 export const orderlist = (routers: ActionRouter[]): ActionRouter[] => {
-
-  // 排序函数，根据orderid排序
-  const sortByOrderId = (a: ActionItem, b: ActionItem) => {
-    if (a.orderid && b.orderid) {
-      return a.orderid - b.orderid;
+  // 反序排序函数，首先根据orderid降序排序，如果orderid相同，则根据id降序排序
+  const sortByOrderIdAndIdDesc = (a: ActionRouter, b: ActionRouter): number => {
+    if (a.orderid !== b.orderid) {
+      return b.orderid - a.orderid;
     }
-    return 0;
+    // 如果orderid相同，则比较id
+    return b.id - a.id;
   };
 
   // 递归排序每个路由及其子项
-  const sortChildren = (items: ActionItem[]): ActionItem[] => {
+  const sortChildren = (items: ActionRouter[]): ActionRouter[] => {
     return items.map(item => ({
       ...item,
       children: sortChildren(item.children) // 递归排序子项
-    })).sort(sortByOrderId);
+    })).sort(sortByOrderIdAndIdDesc);
   };
 
   // 对顶级路由进行排序，并对每个路由的子项进行排序
   return routers.map(router => ({
     ...router,
     children: sortChildren(router.children) // 对每个路由的子项进行排序
-  })).sort(sortByOrderId);
-
-}
+  })).sort(sortByOrderIdAndIdDesc);
+};

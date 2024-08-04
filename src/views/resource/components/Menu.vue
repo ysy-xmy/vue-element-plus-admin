@@ -8,6 +8,7 @@ import Menuedit from '@/views/resource/components/Menuedit.vue'
 import { getFirstmenulist, getSecByFirst, getActionsBySec } from '@/api/resource'
 import { t } from '@wangeditor/editor';
 import Loading from 'xgplayer/es/plugins/loading';
+import { orderlist } from '@/store/modules/permission'
 const dialogVisible = ref(false);
 const dialogTitle = ref('');
 const selectedSecondOption = ref('');
@@ -89,6 +90,7 @@ getFirstmenulist().then(res => {
         actionrouterList.value.push(data)
 
     }
+    actionrouterList.value = orderlist(actionrouterList.value)
 
 }).finally(() => {
     menuloading.value = false
@@ -99,27 +101,14 @@ getFirstmenulist().then(res => {
 
 
 
-const firstoptions = computed(() => {
-    return actionrouterList.map(({ title }) => ({ value: title, label: title }));
-});
-
 
 // 二级选项的响应式引用
 const secondOptionsRef = ref<actionrouter[]>([]);
 // 计算属性，基于响应式引用secondOptionsRef
-const secondoptions = computed(() => {
-    return secondOptionsRef.value.map(({ title }) => ({ value: title, label: title }));
-});
+
 
 // 监听selectedFirstOption的变化
-watch(selectedFirstOption, (newValue, oldValue) => {
-    if (newValue && newValue.children) {
-        secondOptionsRef.value = newValue.children;
-    } else {
-        secondOptionsRef.value = []; // 如果没有子项，则清空二级菜单
-    }
-    console.log(newValue, oldValue);
-});
+
 
 
 const actionType = ref('')
@@ -186,7 +175,10 @@ const getSelection = (item) => {
 
 
         }).finally(() => {
+            actionrouterList.value = orderlist(actionrouterList.value)
+
             menuloading.value = false
+
         })
     }
 
@@ -241,6 +233,8 @@ const getActions = async (item) => {
     }
 };
 
+
+
 const selectaction = ref(false)
 const currentAction = ref('')
 const selectedkeyPath = ref<string[]>([])
@@ -255,6 +249,29 @@ const handleSelect = (key: string, keyPath: string[]) => {
 }
 const actiondetail = (item) => {
     console.log(item)
+}
+const dialogclose = () => {
+    actionrouterList.value = []
+    menuloading.value = true
+    getFirstmenulist().then(res => {
+
+
+        for (let item of res.data) {
+            let data: actionrouter = {
+                title: item.Name,
+                id: item.ID,
+                orderid: item.OrderNum,
+                children: [],
+                isActive: true
+            }
+            actionrouterList.value.push(data)
+
+        }
+        actionrouterList.value = orderlist(actionrouterList.value)
+
+    }).finally(() => {
+        menuloading.value = false
+    })
 }
 
 
@@ -360,7 +377,7 @@ const actiondetail = (item) => {
             </el-col>
 
         </el-row>
-        <Dialog height="700" v-model="dialogVisible" :title="dialogTitle">
+        <Dialog height="700" v-model="dialogVisible" @close="dialogclose" :title="dialogTitle">
             <!-- <div v-if="actionType === 'add'" class=" ">
                 <h1>删除目录</h1>
                 <div class="delete-box w-100% h-100% flex justify-evenly items-center">

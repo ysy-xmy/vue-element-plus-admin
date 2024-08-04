@@ -1,5 +1,5 @@
 <template>
-    <div class="menu-component flex justify-center flex-wrap flex-col">
+    <div v-loading="menuloading" class="menu-component flex justify-center flex-wrap flex-col">
         <ul class="menu-list">
             <li v-for="(menu, index) in menus" :key="index" class="menu-item">
                 <div class="menu-title  flex flex-wrap   ">
@@ -53,7 +53,7 @@
                             <div class="flex items-center">
                                 <span>优先级：</span>
                                 <el-input-number class="mr-5" v-model="subMenu.orderid" :min="1" :max="100"
-                                    @change="inedit(index, subIndex)" />
+                                    @change="inedit(index, subIndex)" @focus="inedit(index, subIndex)" />
 
                                 <div v-if="subMenu.editorder" class="flex items-center mr-5">
                                     <Icon class="opacity-70 mr-3" :size="25" icon="dashicons:yes"
@@ -94,13 +94,29 @@ import { ref, defineProps, PropType } from 'vue';
 import { actionrouter } from '../types'
 import { ElMessageBox } from 'element-plus';
 import { orderlist } from '@/store/modules/permission'
-import { addFirst, addSec, updateFirst, updateSec } from '@/api/resource'
+import { addFirst, addSec, updateFirst, updateSec, getAll } from '@/api/resource'
+import { transformToTargetFormat } from './transale'
+const menuloading = ref(false)
 
 const editorderid = ref<number | undefined>()
 const confirmOrder = (orderid: number, subIndex: number) => {
     menus.value[orderid].children[subIndex].orderid = editorderid.value
     menus.value[orderid].children[subIndex].editorder = false
+
+    updateSec(
+        {
+            Name: menus.value[orderid].children[subIndex].title,
+            ID: menus.value[orderid].children[subIndex].id,
+            OrderNum: editorderid.value,
+            FirstCategoryID: menus.value[orderid].id,
+        }
+
+
+    )
     menus.value = orderlist(menus.value)
+
+
+
 
 }
 const cancelOrder = (orderid: number, subIndex: number) => {
@@ -110,27 +126,39 @@ const cancelOrder = (orderid: number, subIndex: number) => {
 
 }
 const inedit = (menuIndex: number, subIndex: number) => {
+    console.log('在编辑')
     editorderid.value = menus.value[menuIndex].children[subIndex].orderid
     menus.value[menuIndex].children[subIndex].editorder = true
 }
-const props = defineProps({
-    actionrouterList: {
-        // type: Array as PropType<Menu[]>,
-        type: Array as PropType<actionrouter[]>,
-        default: () => []
-    },
-    defaultActive: {
-        type: String,
-        default: '0'
-    }
-});
-var menus = ref(orderlist(props.actionrouterList))
+// const props = defineProps({
+//     actionrouterList: {
+//         // type: Array as PropType<Menu[]>,
+//         type: Array as PropType<actionrouter[]>,
+//         default: () => []
+//     },
+//     defaultActive: {
+//         type: String,
+//         default: '0'
+//     }
+// });
+menuloading.value = true
+var menus = ref<any[]>([])
+getAll().then(res => {
+    menuloading.value = false
+    console.log(res)
+    menus.value = orderlist(transformToTargetFormat(res.data))
+})
 
 
 
 
 
-
+function removeItemById(items, idToRemove) {
+    return items.map(item => ({
+        ...item,
+        children: item.children.filter(child => child.id !== idToRemove)
+    }));
+}
 
 
 const moveUp = (index: number) => {
@@ -139,7 +167,6 @@ const moveUp = (index: number) => {
         menus.value.splice(index, 1);
         menus.value.splice(index - 1, 0, currentMenu);
     }
-    menus.value = orderlist(menus.value)
     let downorder = menus.value[index].orderid
     let uporder = menus.value[index - 1].orderid
 
@@ -162,6 +189,7 @@ const moveUp = (index: number) => {
             })
 
     })
+
 };
 
 const moveDown = (index: number) => {
@@ -171,7 +199,6 @@ const moveDown = (index: number) => {
         menus.value.splice(index, 1);
         menus.value.splice(index + 1, 0, currentMenu);
     }
-    menus.value = orderlist(menus.value)
     let downorder = menus.value[index].orderid
     let uporder = menus.value[index + 1].orderid
 
@@ -196,6 +223,7 @@ const moveDown = (index: number) => {
 
 
     })
+
 };
 
 const toggleSubMenu = (index: number) => {

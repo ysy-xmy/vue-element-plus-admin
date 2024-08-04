@@ -74,7 +74,9 @@ export const updateFirst = (data: any) => {
 export const updateSec = (data: any) => {
     return request.put({ url: '/api/action/updateSec', data })
 }
-
+export const getAll = () => {
+    return request.get({ url: '/api/action/getAll' })
+}
 
 
 
