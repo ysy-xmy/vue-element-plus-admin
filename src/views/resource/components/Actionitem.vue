@@ -54,10 +54,9 @@ const props = defineProps({
             <el-empty v-else description="暂无数据" />
 
         </div>
-        <div class=" flex justify-center items-center flex-col p-3" style="width: 20%">
-            <el-image style='width: 80%;height: 80%;'
-                src="https://ts1.cn.mm.bing.net/th/id/R-C.cbf575a289a1ea48c05aa15ffe0a08a2?rik=6dHrZgUo2XFdXA&riu=http%3a%2f%2fpic.616pic.com%2fys_img%2f00%2f26%2f90%2foQMuCvSN6V.jpg&ehk=tJjjw9cSbgncY5cp9wdfx0DA0dd8Dm1vhdJMHWMFO7c%3d&risl=&pid=ImgRaw&r=0&sres=1&sresct=1"
-                fit="fill" />
+        <div class="flex justify-center items-center flex-col p-3 mt-10" style="width: 15%">
+            <Icon :size="150" icon="fluent:add-square-48-regular" />
+
             <span class="demonstration mt-2 ">添加新的动作</span>
         </div>
 

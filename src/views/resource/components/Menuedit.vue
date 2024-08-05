@@ -94,7 +94,7 @@ import { ref, defineProps, PropType } from 'vue';
 import { actionrouter } from '../types'
 import { ElMessageBox } from 'element-plus';
 import { orderlist } from '@/store/modules/permission'
-import { addFirst, addSec, updateFirst, updateSec, getAll } from '@/api/resource'
+import { addFirst, addSec, updateFirst, updateSec, getAll, delFirst, delSec } from '@/api/resource'
 import { transformToTargetFormat } from './transale'
 const menuloading = ref(false)
 
@@ -239,6 +239,10 @@ const deleteMenu = (menuIndex: number,) => {
     }).then(async () => {
 
         menus.value.splice(menuIndex, 1);
+        delFirst(
+            [menus.value[menuIndex].id]).then(res => {
+                console.log(res)
+            })
     })
         .catch(() => {
             // catch error
@@ -253,7 +257,11 @@ const deleteSubMenu = (menuIndex: number, subMenuIndex: number) => {
         cancelButtonText: '取消',
         type: 'warning'
     }).then(async () => {
+        delSec(
+            [menus.value[menuIndex].children[subMenuIndex].id]).then(() => {
+            })
         menus.value[menuIndex].children.splice(subMenuIndex, 1);
+
 
     }).catch(() => {
         // catch error

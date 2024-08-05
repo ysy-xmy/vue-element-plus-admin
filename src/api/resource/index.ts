@@ -52,6 +52,10 @@ export const delFirst = (data: any) => {
     return request.delete({ url: '/api/action/delFirst', data })
 }
 
+export const delSec = (data: any) => {
+    console.log(data)
+    return request.delete({ url: '/api/action/delSec', data })
+}
 
 export const delAction = (data: any) => {
     return request.delete({ url: '/api/action/delAction', data })
