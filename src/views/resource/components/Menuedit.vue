@@ -163,68 +163,65 @@ function removeItemById(items, idToRemove) {
 
 const moveUp = (index: number) => {
     if (index > 0) {
-        const currentMenu = menus.value[index];
-        menus.value.splice(index, 1);
-        menus.value.splice(index - 1, 0, currentMenu);
-    }
-    let downorder = menus.value[index].orderid
-    let uporder = menus.value[index - 1].orderid
 
-    updateFirst(
-        {
+
+        menuloading.value = true
+        // 更新一级菜单项的OrderNum
+        let downorder = menus.value[index].orderid;
+        let uporder = menus.value[index - 1].orderid;
+        updateFirst({
             Name: menus.value[index].title,
             ID: menus.value[index].id,
             OrderNum: uporder,
-        }
-
-
-    ).then((res) => {
-        updateFirst(
-            {
+        }).then(() => {
+            updateFirst({
                 Name: menus.value[index - 1].title,
                 ID: menus.value[index - 1].id,
                 OrderNum: downorder,
-            }).then(res => {
-                console.log(res)
-            })
+            }).then(() => {
+                const currentMenu = menus.value[index];
+                menus.value.splice(index, 1);
+                menus.value.splice(index - 1, 0, currentMenu);
+                menuloading.value = false
 
-    })
+            });
+        });
+
+
+    }
 
 };
 
 const moveDown = (index: number) => {
     const lastIndex = menus.value.length - 1;
     if (index < lastIndex) {
-        const currentMenu = menus.value[index];
-        menus.value.splice(index, 1);
-        menus.value.splice(index + 1, 0, currentMenu);
-    }
-    let downorder = menus.value[index].orderid
-    let uporder = menus.value[index + 1].orderid
+        menuloading.value = true
 
-    updateFirst(
-        {
+        // 更新一级菜单项的OrderNum
+        let downorder = menus.value[index].orderid;
+        let uporder = menus.value[index + 1].orderid;
+        updateFirst({
             Name: menus.value[index].title,
             ID: menus.value[index].id,
-            OrderNum: downorder,
-        }
-
-
-    ).then((res) => {
-        updateFirst(
-            {
+            OrderNum: uporder,
+        }).then(() => {
+            updateFirst({
                 Name: menus.value[index + 1].title,
                 ID: menus.value[index + 1].id,
-                OrderNum: uporder,
-            }).then(res => {
-                console.log(res)
+                OrderNum: downorder,
+            }).then(() => {
+                const currentMenu = menus.value[index];
+                menus.value.splice(index, 1);
+                menus.value.splice(index + 1, 0, currentMenu);
+                menuloading.value = false
+
             })
 
 
+        })
 
-    })
-
-};
+    };
+}
 
 const toggleSubMenu = (index: number) => {
     menus.value[index].isActive = !menus.value[index].isActive;
@@ -238,9 +235,10 @@ const deleteMenu = (menuIndex: number,) => {
 
     }).then(async () => {
 
-        menus.value.splice(menuIndex, 1);
         delFirst(
             [menus.value[menuIndex].id]).then(res => {
+                menus.value.splice(menuIndex, 1);
+
                 console.log(res)
             })
     })
@@ -259,8 +257,9 @@ const deleteSubMenu = (menuIndex: number, subMenuIndex: number) => {
     }).then(async () => {
         delSec(
             [menus.value[menuIndex].children[subMenuIndex].id]).then(() => {
+                menus.value[menuIndex].children.splice(subMenuIndex, 1);
+
             })
-        menus.value[menuIndex].children.splice(subMenuIndex, 1);
 
 
     }).catch(() => {
