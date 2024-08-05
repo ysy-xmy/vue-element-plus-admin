@@ -12,14 +12,14 @@ export const loginApi = (data: UserType): Promise<IResponse<UserType>> => {
     Password: data.password
   }
   data = newdata
-  // return request.post({ url: '/api/user/login', data })
-  return {
-    code: 200,
-    data: {
-      Token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJVc2VySUQiOjEsIk9wZW5JRCI6ImFkbWluIiwiVXNlcm5hbWUiOiJhZG1pbiIsIkF1dGhvcml0eUlkIjpbMV0sIkJ1ZmZlclRpbWUiOjg2NDAwLCJpc3MiOiJQT1NURVIiLCJhdWQiOlsiQ0MiXSwiZXhwIjoxNzIzMTIzNTgwLCJuYmYiOjE3MjI1MTg3ODB9.gFtTwZO82jyEO-JW6sk-GUaMdsX00sZqzsfNoeUlJHY',
-      user: data
-    }
-  }
+  return request.post({ url: '/api/user/login', data })
+  // return {
+  //   code: 200,
+  //   data: {
+  //     Token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJVc2VySUQiOjEsIk9wZW5JRCI6ImFkbWluIiwiVXNlcm5hbWUiOiJhZG1pbiIsIkF1dGhvcml0eUlkIjpbMV0sIkJ1ZmZlclRpbWUiOjg2NDAwLCJpc3MiOiJQT1NURVIiLCJhdWQiOlsiQ0MiXSwiZXhwIjoxNzIzMTIzNTgwLCJuYmYiOjE3MjI1MTg3ODB9.gFtTwZO82jyEO-JW6sk-GUaMdsX00sZqzsfNoeUlJHY',
+  //     user: data
+  //   }
+  // }
 }
 
 export const loginOutApi = (): Promise<IResponse> => {
