@@ -13,10 +13,12 @@ export const getuserlistApi = (data: UserParams) => {
     }
     return request.get({ url: '/api/user/page', params: params })
 }
-
-
 export const addAdminApi = (data: any) => {
     return request.post({ url: '/api/user/add', data })
+}
+
+export const disableUserApi = (id: number) => {
+    return request.delete({ url: `/api/user/disable`, params: { ID: id } })
 }
 
 

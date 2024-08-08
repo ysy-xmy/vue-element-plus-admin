@@ -377,10 +377,14 @@ const fetchadminlist = async () => {
 
   const res = await getuserlistApi(params)
 
+  pageSize.value = res.data.Size
+  total.value = res.data.TotalCount
 
 
 
-  adminlist.value = res.data.map((v) => {
+
+
+  adminlist.value = res.data.AdminUserInfos.map((v) => {
     return {
       "ID": v.ID,
       "OpenID": v.OpenID,
@@ -509,9 +513,7 @@ const save = async () => {
 
       </div>
       <Table v-model:current-page="currentPage" v-model:page-size="pageSize" :columns="allSchemas.tableColumns"
-        :data="adminlist" :loading="loading" @register="tableRegister" :pagination="{
-          total
-        }" />
+        :data="adminlist" :loading="loading" @register="tableRegister" :pagination="{ total }" />
     </ContentWrap>
 
     <Dialog v-model="dialogVisible" :title="dialogTitle">

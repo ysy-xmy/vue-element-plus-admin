@@ -5,7 +5,7 @@ import { Table } from '@/components/Table'
 import { ref, unref, nextTick, watch, reactive } from 'vue'
 import { ElTree } from 'element-plus'
 import { getUserByIdApi, saveUserApi, deleteUserByIdApi } from '@/api/department'
-import { getuserlistApi } from '@/api/Permission'
+import { getuserlistApi, disableUserApi } from '@/api/Permission'
 import type { DepartmentUserItem } from '@/api/department/types'
 import { useTable } from '@/hooks/web/useTable'
 import { Search } from '@/components/Search'
@@ -14,7 +14,8 @@ import Detail from './components/Detail.vue'
 import { Dialog } from '@/components/Dialog'
 import { roleApi } from '@/api/role'
 import { convertDateTime } from './components/utils/convertDateTime'
-import { ElTag } from 'element-plus'
+import { ElTag, ElMessageBox } from 'element-plus'
+
 
 import type { UserParams } from '@/api/Permission/type'
 // import { getRoleListApi } from '@/api/role'
@@ -206,18 +207,53 @@ const crudSchemas = reactive<CrudSchema[]>([
             slots: {
                 default: (data: any) => {
                     const status = data.row.Enable
-                    console.log(status)
                     return (
                         <>
                             <ElTag type={status == true ? 'success' : 'danger'}>
                                 {status == true ? t('userDemo.enable') : t('userDemo.disable')}
                             </ElTag>
+                            <el-switch onChange={() => {
+                                var ID = data.row.ID
+                                if (status) {
+                                    ElMessageBox.confirm(`确认将该用户禁用？`, '提示', {
+                                        confirmButtonText: '确认',
+                                        cancelButtonText: '取消',
+                                        type: 'warning',
+                                    }).catch(() => {
+                                        data.row.Enable = true
+                                    }).then(async () => {
+                                        const res = await disableUserApi(ID)
+                                        if (res) {
+                                            console.log(res)
+                                        }
+
+
+                                    })
+                                } else {
+                                    ElMessageBox.confirm(`确认将该用户启用？`, '提示', {
+                                        confirmButtonText: '确认',
+                                        cancelButtonText: '取消',
+                                        type: 'warning',
+                                    }).catch(() => {
+                                        data.row.Enable = false
+                                    }).then(async () => {
+                                        const res = await disableUserApi(ID)
+                                        if (res) {
+                                            console.log(res)
+                                        }
+                                    })
+
+
+                                }
+                            }} class="ml-2" v-model={data.row.Enable} />
+
                         </>
                     )
                 }
             }
         },
         form: {
+            hidden: true,
             component: 'Select',
             componentProps: {
                 options: [
@@ -285,6 +321,9 @@ const crudSchemas = reactive<CrudSchema[]>([
     }
 ])
 
+
+
+
 const { allSchemas } = useCrudSchemas(crudSchemas)
 
 const searchParams = ref({})
@@ -300,22 +339,22 @@ const Userlist = ref([])
 const fetchUserlist = async () => {
     loading.value = true
     let params: UserParams = {
-        Page: '1',
-        Size: '10',
+        Page: String(currentPage.value),
+        Size: String(pageSize.value),
         UserSelectType: select.value,
     }
 
-    console.log(params)
 
     const res = await getuserlistApi(params).finally(() => {
         loading.value = false
     })
+    total.value = res.data.total
 
 
 
 
     //对拿到的列表做一个简单的处理
-    Userlist.value = res.data.map((v) => {
+    Userlist.value = res.data.CoachStudentUserInfos.map((v) => {
         return {
             "ID": v.ID,
             "OpenID": v.OpenID,
@@ -419,26 +458,8 @@ const save = async () => {
 
 <template>
     <div class="flex w-full h-full">
-        <!-- <ContentWrap class="w-250px">
-            <div class="flex justify-center items-center">
-                <div class="flex-1">{{ t('userDemo.Userlist') }}</div>
-                <ElInput v-model="currentDepartment" class="flex-[2]" :placeholder="t('userDemo.searchDepartment')"
-                    clearable />
-            </div>
-            <ElDivider />
-            <ElTree ref="treeEl" :data="Userlist" default-expand-all :expand-on-click-node="false" node-key="id"
-                :current-node-key="currentNodeKey" :props="{
-                    label: 'departmentName'
-                }" :filter-node-method="filterNode" @current-change="currentChange">
-                <template #default="{ data }">
-                    <div :title="data.departmentName" class="whitespace-nowrap overflow-ellipsis overflow-hidden">
-                        {{ data.departmentName }}
-                    </div>
-                </template>
-</ElTree>
-</ContentWrap> -->
+
         <ContentWrap class="flex-[3] ml-20px h-full">
-            <!-- <Search :schema="allSchemas.searchSchema" @reset="setSearchParams" @search="setSearchParams" /> -->
 
             <div class="mb-10px">
 

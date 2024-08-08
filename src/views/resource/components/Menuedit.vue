@@ -232,7 +232,6 @@ const deleteMenu = (menuIndex: number,) => {
         confirmButtonText: '确认',
         cancelButtonText: '取消',
         type: 'warning',
-
     }).then(async () => {
 
         delFirst(

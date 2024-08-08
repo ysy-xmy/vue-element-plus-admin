@@ -1,7 +1,25 @@
 <script setup lang="ts">
-import { ref, watch, defineProps, PropType } from 'vue'
-import type { actionitemArray } from '../types/index'
+import { ref, reactive, defineProps, PropType } from 'vue'
+import { Dialog } from '@/components/Dialog'
+import { Form, FormSchema } from '@/components/Form'
+import {
 
+    ElMessage,
+    ElMessageBox,
+    imageEmits,
+
+} from 'element-plus'
+import { delAction, updateAction, addAction } from '@/api/resource'
+import { useForm } from '@/hooks/web/useForm'
+
+const { formRegister, formMethods } = useForm()
+const { getFormData, getElFormExpose } = formMethods
+
+
+const loading = ref(false)
+const dialogVisible = ref(false)
+const dialogTitle = ref('')
+const actionType = ref('')
 interface IPicUrl {
     ID: number;
     URL: string;
@@ -17,48 +35,308 @@ interface IItem {
     isActive: boolean;
 }
 
+
+const submit = async () => {
+    const elForm = await getElFormExpose()
+    const valid = await elForm?.validate().catch((err) => {
+        console.log(err)
+    })
+    if (valid) {
+        const formData = await getFormData()
+        return formData
+    }
+}
+
+
+
 const props = defineProps({
     actionlist: {
         type: Array as PropType<IItem[]>,
         default: () => []
     },
+    SecondCategoryID:
+    {
+        type: Number,
+        default: 0
+    },
+
     defaultActive: {
         type: String,
         default: '0'
     }
 });
 
+const dialogclose = () => {
+    dialogVisible.value = false
+}
+console.log(props.actionlist)
+const formData = reactive({
+    Name: '',
+    Description: '',
+    Videos: [],
+    Imgs: [],
+    ID: '',
+    OrderNum: 0
+})
+const action = (type: string, item: any) => {
+    if (type === 'add') {
+        dialogTitle.value = '新增动作';
+        actionType.value = type;
+        dialogVisible.value = true;
+        formData.Name = ''
+        formData.Description = ''
+        formData.Videos = []
+        formData.Imgs = []
+        formData.ID = ''
+    } else if (type === 'edit') {
+        dialogTitle.value = '编辑动作';
+        actionType.value = type;
+        dialogVisible.value = true;
+        formData.Name = item.title;
+        formData.ID = item.id
+        formData.Description = item.intro
+        formData.Videos = item.picurl.filter(i => i.URL.includes('video')).map(i => i.URL)
+        formData.Imgs = item.picurl.filter(i => i.URL.includes('image')).map(i => i.URL)
+        formData.OrderNum = item.orderid
+    }
+};
+const saveLoading = ref(false)
+const save = async () => {
+    saveLoading.value = true
+    const inputdata = await submit()
+
+    if (actionType.value === 'edit') {
+
+        updateAction({
+            ID: inputdata.ID || '',
+            Name: inputdata.Name,
+            SecondCategoryID: props.SecondCategoryID,
+            OrderNum: formData.OrderNum,
+        }).then((res) => {
+            console.log(res)
+            saveLoading.value = false
+            dialogVisible.value = false
+            ElMessage.success('保存成功')
+
+        })
+
+    }
+    else if (actionType.value === 'add') {
+        addAction([
+            {
+                "ActionInfos": {
+                    "Name": inputdata.Name,
+                    "SecondCategoryID": props.SecondCategoryID,
+                    "Description": inputdata.Description,
+                    "OrderNum": formData.OrderNum,
+                },
+                "ActionImgInfos": [
+                    {
+                        "URL": "http://cdprcqczv.eh/rbxnvx"
+                    }
+                ],
+                "ActionVideoInfos": [
+                    {
+                        "URL": "http://cdprcqczv.eh/rbxnvx"
+                    }
+                ],
+            },
+        ]).then((res) => {
+            console.log(res)
+            saveLoading.value = false
+            dialogVisible.value = false
+            ElMessage.success('保存成功')
+        })
+
+
+    }
+}
+
+
+
+
+const schema = reactive<FormSchema[]>([
+    {
+        field: 'Name',
+        component: 'Input',
+        label: '名称',
+        colProps: {
+            span: 24
+
+        },
+        componentProps: {
+            rules: [
+                { required: true, message: '请输入名称' },
+                { type: 'string', message: '请输入正确的名称' }
+            ]
+        }
+
+
+    },
+    {
+        field: 'Description',
+        component: 'Input',
+        value: 'Description',
+        label: '描述',
+        colProps: {
+            span: 24
+
+
+
+        },
+        componentProps: {
+            type: 'textarea',
+
+
+        }
+
+
+    },
+    {
+        field: 'Imgs',
+        component: 'Upload',
+        value: 'Imgs',
+        label: `默认`,
+        componentProps: {
+            limit: 3,
+            action: 'https://run.mocky.io/v3/9d059bf9-4660-45f2-925d-ce80ad6c4d15',
+            fileList: [
+                {
+                    name: 'element-plus-logo.svg',
+                    url: 'https://element-plus.org/images/element-plus-logo.svg'
+                },
+                {
+                    name: 'element-plus-logo2.svg',
+                    url: 'https://element-plus.org/images/element-plus-logo.svg'
+                }
+            ],
+            listType: 'picture-card',
+            multiple: true,
+            onPreview: (uploadFile) => {
+                console.log(uploadFile)
+            },
+            onRemove: (file) => {
+                console.log(file)
+            },
+            beforeRemove: (uploadFile) => {
+                return ElMessageBox.confirm(`Cancel the transfer of ${uploadFile.name} ?`).then(
+                    () => true,
+                    () => false
+                )
+            },
+            onExceed: (files, uploadFiles) => {
+                ElMessage.warning(
+                    `The limit is 3, you selected ${files.length} files this time, add up to ${files.length + uploadFiles.length
+                    } totally`
+                )
+            },
+        }
+
+    },
+
+
+    {
+        field: 'Videos',
+        component: 'Upload',
+        value: 'Videos',
+        label: '视频',
+        colProps: {
+            span: 24
+        },
+        componentProps: {
+            type: 'drag',
+            action: '/upload',
+            multiple: true,
+            listType: 'picture-card',
+            fileList: [],
+            beforeUpload: (file: any) => {
+                console.log(file)
+                return false
+            },
+            onPreview: (file: any) => {
+                console.log(file)
+            },
+            onRemove: (file: any) => {
+                console.log(file)
+            },
+            onChange: (file: any) => {
+                console.log(file)
+            }
+        }
+
+    },
+
+])
+
+const deteleAction = (item: any) => {
+
+    ElMessageBox.confirm('确认删除该动作吗？').then(() => {
+        loading.value = true
+
+        delAction([item.id]).then(() => {
+            loading.value = false
+            ElMessage.success('删除成功')
+            props.actionlist.splice(props.actionlist.indexOf(item), 1)
+        })
+    })
+}
+
 
 </script>
 
 <template>
-    <div style="flex-wrap: wrap;" class="demo-image flex wrap justify-space-between w-full  px-8 justify-start">
-        <div v-for="item in props.actionlist" :key="item.id" style="width: 22%"
-            class=" flex justify-center items-center flex-col p-3 ">
+    <div v-loading="loading" style="flex-wrap: wrap;"
+        class="demo-image relative flex wrap justify-space-between w-full  px-8 justify-start items-center">
+        <template v-for="item in props.actionlist" :key="item.id" style="width: 22%"
+            class=" flex justify-center items-center w-full flex-wrap p-3 ">
+            <div v-if="item.id !== '-1'" class=" flex px-5 my-5 justify-center flex-col items-center">
+                <el-image style="width: 100px;height: 100px;margin-top: 10px;"
+                    src="https://th.bing.com/th/id/OIP.O6ZIKh-BK0SK9X_aM6GJkgHaHa?rs=1&pid=ImgDetMain" fit="fill" />
+                <div class="mt-2 w-full flex flex-col justify-around items-center content-center">
 
+                    <div class="demonstration w-full font-600 text-center my-2">{{ item.title }}</div>
 
-            <el-image v-if="item.id !== '-1'" :src="item.picurl[0].URL" fit="fill" />
-            <div v-if="item.id !== '-1'" class="mt-2 w-full flex flex-col justify-around items-center content-center">
-
-                <div class="demonstration w-full font-600 text-center">{{ item.title }}</div>
-
-                <div class='flex flex-row mt-1'>
-                    <BaseButton type="primary">
-                        编辑
-                    </BaseButton>
-                    <BaseButton type="danger">
-                        删除
-                    </BaseButton>
+                    <div class='flex w- flex-row mt-1'>
+                        <BaseButton @click="action('edit', item)" type="primary">
+                            编辑
+                        </BaseButton>
+                        <BaseButton @click="deteleAction(item)" type="danger">
+                            删除
+                        </BaseButton>
+                    </div>
                 </div>
+
             </div>
-            <el-empty v-else description="暂无数据" />
+
+
+
+
+
+        </template>
+
+        <div @click="action('add', {})" class="flex justify-center items-center flex-col content-center  "
+            style="width:170px;height: 170px;border-width: 1px;border-color: black;border-style: dashed;">
+
+            <Icon size="100" icon="fluent:add-square-48-regular" />
+            <span>添加动作</span>
 
         </div>
-        <div class="flex justify-center items-center flex-col p-3 mt-10" style="width: 15%">
-            <Icon :size="150" icon="fluent:add-square-48-regular" />
 
-            <span class="demonstration mt-2 ">添加新的动作</span>
-        </div>
+
+        <Dialog height="700" v-model="dialogVisible" @close="dialogclose" :title="dialogTitle">
+            <div class="flex w-full h-100% justify-center items-start content-start">
+                <Form @register="formRegister" :model="formData" :schema="schema" />
+
+            </div>
+            <template #footer>
+                <BaseButton v-if="actionType !== 'detail'" type="primary" :loading="saveLoading" @click="save">
+                    保存
+                </BaseButton>
+                <BaseButton @click="dialogVisible = false">关闭</BaseButton>
+            </template>
+        </Dialog>
+
 
     </div>
+
 </template>
