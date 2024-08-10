@@ -214,7 +214,7 @@ export const asyncRouterMap: AppRouteRecordRaw[] = [
       {
         path: 'operation',
         name: '基础日志',
-        component: () => import('@/views/Level/Menu2.vue'),
+        component: () => import('@/views/Level/baselog.vue'),
         meta: {
           title: '基础日志',
           icon: 'carbon:user-role'
@@ -223,7 +223,7 @@ export const asyncRouterMap: AppRouteRecordRaw[] = [
       {
         path: 'clock',
         name: '打卡日志',
-        component: () => import('@/views/Level/Menu2.vue'),
+        component: () => import('@/views/Level/plan.vue'),
         meta: {
           title: '打卡日志',
           icon: 'carbon:user-role'
@@ -232,7 +232,7 @@ export const asyncRouterMap: AppRouteRecordRaw[] = [
       {
         path: 'order',
         name: '订单日志',
-        component: () => import('@/views/Level/Menu2.vue'),
+        component: () => import('@/views/Level/payment.vue'),
         meta: {
           title: '订单日志',
           icon: 'carbon:user-role'
@@ -241,7 +241,7 @@ export const asyncRouterMap: AppRouteRecordRaw[] = [
       {
         path: 'error',
         name: '异常日志',
-        component: () => import('@/views/Level/Menu2.vue'),
+        component: () => import('@/views/Level/error.vue'),
         meta: {
           title: '异常日志',
           icon: 'carbon:user-role'
@@ -261,7 +261,7 @@ export const asyncRouterMap: AppRouteRecordRaw[] = [
       {
         path: 'base-config',
         name: '基础设置',
-        component: () => import('@/views/Level/Menu2.vue'),
+        component: () => import('@/views/Level/error.vue'),
         meta: {
           title: '基础设置'
         }
@@ -269,7 +269,7 @@ export const asyncRouterMap: AppRouteRecordRaw[] = [
       {
         path: 'info',
         name: '系统设置',
-        component: () => import('@/views/Level/Menu2.vue'),
+        component: () => import('@/views/Level/error.vue'),
         meta: {
           title: '系统设置'
         }

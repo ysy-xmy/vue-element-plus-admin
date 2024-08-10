@@ -27,16 +27,7 @@ const { t } = useI18n()
 const { tableRegister, tableState, tableMethods } = useTable({
   fetchDataApi: async () => {
     const { pageSize, currentPage } = tableState
-    const res = await getUserByIdApi({
-      id: unref(currentNodeKey),
-      pageIndex: unref(currentPage),
-      pageSize: unref(pageSize),
-      ...unref(searchParams)
-    })
-    return {
-      list: res.data.list || [],
-      total: res.data.total || 0
-    }
+
   },
   fetchDelApi: async () => {
     const res = await deleteUserByIdApi(unref(ids))

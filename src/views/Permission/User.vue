@@ -1,5 +1,4 @@
 <script setup lang="ts">
-console.log()
 import User from '@/views/Authorization/User/User.vue'
 
 </script>

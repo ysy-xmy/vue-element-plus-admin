@@ -117,16 +117,6 @@ const crudSchemas = reactive<CrudSchema[]>([
             )
         }
     },
-    // {
-    //   field: 'email',
-    //   label: t('userDemo.email'),
-    //   form: {
-    //     component: 'Input'
-    //   },
-    //   search: {
-    //     hidden: true
-    //   }
-    // },
     {
         field: 'createTime',
         label: t('userDemo.createTime'),

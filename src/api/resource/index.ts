@@ -84,4 +84,21 @@ export const getAll = () => {
 
 
 
+export const getGymInfo = (data: any) => {
+    return request.get({ url: '/api/gym/getInfo', data })
+}
 
+
+export const addGym = (data: any) => {
+    return request.post({ url: '/api/gym/add', data })
+}
+
+
+export const updateGym = (data: any) => {
+    return request.put({ url: '/api/gym/update', data })
+}
+
+
+export const delGym = (data: any) => {
+    return request.delete({ url: '/api/gym/delete', data })
+}

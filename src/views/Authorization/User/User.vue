@@ -327,11 +327,7 @@ const crudSchemas = reactive<CrudSchema[]>([
 const { allSchemas } = useCrudSchemas(crudSchemas)
 
 const searchParams = ref({})
-const setSearchParams = (params: any) => {
-    currentPage.value = 1
-    searchParams.value = params
-    getList()
-}
+
 const treeEl = ref<typeof ElTree>()
 
 const currentNodeKey = ref('')
