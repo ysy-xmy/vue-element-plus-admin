@@ -1,11 +1,10 @@
 import axios, { AxiosError } from 'axios'
 import { defaultRequestInterceptors, defaultResponseInterceptors } from './config'
-
 import { AxiosInstance, InternalAxiosRequestConfig, RequestConfig, AxiosResponse } from './types'
 import { ElMessage } from 'element-plus'
 import { REQUEST_TIMEOUT } from '@/constants'
-
 export const PATH_URL = import.meta.env.VITE_API_BASE_PATH
+import { useUserStoreWithOut } from '@/store/modules/user'
 
 const abortControllerMap: Map<string, AbortController> = new Map()
 
@@ -33,9 +32,16 @@ axiosInstance.interceptors.response.use(
     return res
   },
   (error: AxiosError) => {
-    console.log('err： ' + error) // for debug
+    console.log(error) // for debug
+    if (error.response.data.code === 401) {
+      ElMessage.error('登录失效,请重新登录')
+      const userStore = useUserStoreWithOut()
+      userStore.logout()
+    } else {
 
-    ElMessage.error(error.message)
+      ElMessage.error(error)
+    }
+
     return Promise.reject(error)
   }
 )

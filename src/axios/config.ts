@@ -36,14 +36,20 @@ const defaultRequestInterceptors = (config: InternalAxiosRequestConfig) => {
 }
 
 const defaultResponseInterceptors = (response: AxiosResponse) => {
+  console.log('相应链球菌s')
   if (response?.config?.responseType === 'blob') {
+    console.log(33)
     // 如果是文件流，直接过
     return response
   } else if (response.data.code === SUCCESS_CODE) {
+    console.log(33)
     return response.data
   } else {
-    ElMessage.error(response?.data?.message)
-    if (response?.data?.code === 401) {
+    console.log(55)
+
+    ElMessage.error(response?.msg)
+    if (response?.code === 401) {
+      console.log(222)
       const userStore = useUserStoreWithOut()
       userStore.logout()
     }

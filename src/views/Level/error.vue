@@ -26,19 +26,8 @@ const { tableRegister, tableState, tableMethods } = useTable({
   fetchDataApi: async () => {
     const { pageSize, currentPage } = tableState
 
-    loading.value = true
-    let params: UserParams = {
-      Page: String(currentPage.value),
-      Size: String(pageSize.value),
-    }
-    const res = await getGymInfo(params).finally(() => {
-      loading.value = false
-    })
-    total.value = res.data.total
-    return {
-      list: res.data.list || [],
-      total: res.data.total || 0
-    }
+    await fetchloglist()
+
   },
   fetchDelApi: async () => {
     const res = await delGym(unref(ids))

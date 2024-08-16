@@ -192,6 +192,15 @@ export const asyncRouterMap: AppRouteRecordRaw[] = [
         }
       },
       {
+        path: 'course',
+        name: '课程设置',
+        component: () => import('@/views/resource/course.vue'),
+        meta: {
+          title: '课程设置',
+          icon: 'carbon:user-role'
+        }
+      },
+      {
         path: 'gym',
         name: '健身房信息',
         component: () => import('@/views/resource/gymInfo.vue'),
@@ -208,7 +217,6 @@ export const asyncRouterMap: AppRouteRecordRaw[] = [
     name: '日志模块',
     meta: {
       title: '日志模块',
-      icon: 'carbon:user-role'
     },
     children: [
       {
@@ -217,7 +225,6 @@ export const asyncRouterMap: AppRouteRecordRaw[] = [
         component: () => import('@/views/Level/baselog.vue'),
         meta: {
           title: '基础日志',
-          icon: 'carbon:user-role'
         }
       },
       {
@@ -226,7 +233,6 @@ export const asyncRouterMap: AppRouteRecordRaw[] = [
         component: () => import('@/views/Level/plan.vue'),
         meta: {
           title: '打卡日志',
-          icon: 'carbon:user-role'
         }
       },
       {
@@ -235,7 +241,6 @@ export const asyncRouterMap: AppRouteRecordRaw[] = [
         component: () => import('@/views/Level/payment.vue'),
         meta: {
           title: '订单日志',
-          icon: 'carbon:user-role'
         }
       },
       {
@@ -244,7 +249,6 @@ export const asyncRouterMap: AppRouteRecordRaw[] = [
         component: () => import('@/views/Level/error.vue'),
         meta: {
           title: '异常日志',
-          icon: 'carbon:user-role'
         }
       }
     ]
@@ -269,7 +273,7 @@ export const asyncRouterMap: AppRouteRecordRaw[] = [
       {
         path: 'info',
         name: '系统设置',
-        component: () => import('@/views/Level/error.vue'),
+        component: () => import('@/views/system/systemconfig.vue'),
         meta: {
           title: '系统设置'
         }

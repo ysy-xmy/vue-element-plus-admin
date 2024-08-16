@@ -4,15 +4,13 @@ import { useI18n } from '@/hooks/web/useI18n'
 import { Table } from '@/components/Table'
 import { ref, unref, nextTick, watch, reactive } from 'vue'
 import { ElTree } from 'element-plus'
-import { getGymInfo, addGym, updateGym, delGym } from '@/api/resource'
 import type { DepartmentUserItem } from '@/api/department/types'
 import { useTable } from '@/hooks/web/useTable'
 import Write from './Write.vue'
 import Detail from './Detail.vue'
 import { Dialog } from '@/components/Dialog'
 import { convertDateTime } from './utils/convertDateTime'
-import { ElTag, ElMessageBox } from 'element-plus'
-import type { UserParams } from '@/api/Permission/type'
+
 // import { getRoleListApi } from '@/api/role'
 import { CrudSchema, useCrudSchemas } from '@/hooks/web/useCrudSchemas'
 import { BaseButton } from '@/components/Button'
@@ -26,27 +24,18 @@ const { tableRegister, tableState, tableMethods } = useTable({
   fetchDataApi: async () => {
     const { pageSize, currentPage } = tableState
 
-    loading.value = true
-    let params: UserParams = {
-      Page: String(currentPage.value),
-      Size: String(pageSize.value),
-    }
-    const res = await getGymInfo(params).finally(() => {
-      loading.value = false
-    })
-    total.value = res.data.total
+    const res: any = await fetchloglist()
     return {
-      list: res.data.list || [],
-      total: res.data.total || 0
+      list: res,
+      total: total.value,
     }
   },
   fetchDelApi: async () => {
-    const res = await delGym(unref(ids))
-    return !!res
+
   }
 })
 const { total, loading, pageSize, currentPage } = tableState
-const { getList, getElTableExpose, delList } = tableMethods
+const { getList, getElTableExpose } = tableMethods
 
 const crudSchemas = reactive<CrudSchema[]>([
   {
@@ -238,7 +227,7 @@ const fetchloglist = async () => {
   await nextTick()
   unref(treeEl)?.setCurrentKey(currentNodeKey.value)
 }
-fetchloglist()
+
 
 const currentDepartment = ref('')
 watch(
@@ -279,61 +268,14 @@ const save = async () => {
     const formData = await write?.submit()
     if (formData) {
       saveLoading.value = true
-      let data = {
-        ID: Number(formData.ID),
-        Name: formData.Name,
-        Phone: formData.Phone,
-        Address: formData.Address,
-        Website: formData.Website,
-        Description: formData.Description,
-        Logo: formData.Logo,
-      }
-      // try {
-      //   const res = await addGym(data)
-      //   if (res) {
-      //     currentPage.value = 1
-      //     getList()
-      //     fetchloglist()
-      //   }
-      // } catch (error) {
-      //   console.log(error)
-      // } finally {
-      //   saveLoading.value = false
-      //   dialogVisible.value = false
-      // }
+  
     }
 
   }
 
 }
 
-const delData = async (row) => {
 
-  delLoading.value = true
-
-  const elTableExpose = await getElTableExpose()
-  ids.value = row
-    ? [row.ID]
-    : elTableExpose?.getSelectionRows().map((v) => v.ID) || []
-  delLoading.value = true
-
-  try {
-    const res = await delGym(ids.value)
-    if (res) {
-      currentPage.value = 1
-      getList()
-    }
-  } catch (error) {
-    console.log(error)
-  } finally {
-    delLoading.value = false
-    fetchloglist()
-  }
-
-
-
-
-}
 
 </script>
 

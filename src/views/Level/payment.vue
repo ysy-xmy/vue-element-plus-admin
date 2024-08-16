@@ -26,19 +26,7 @@ const { tableRegister, tableState, tableMethods } = useTable({
   fetchDataApi: async () => {
     const { pageSize, currentPage } = tableState
 
-    loading.value = true
-    let params: UserParams = {
-      Page: String(currentPage.value),
-      Size: String(pageSize.value),
-    }
-    const res = await getGymInfo(params).finally(() => {
-      loading.value = false
-    })
-    total.value = res.data.total
-    return {
-      list: res.data.list || [],
-      total: res.data.total || 0
-    }
+    await fetchloglist()
   },
   fetchDelApi: async () => {
     const res = await delGym(unref(ids))
@@ -127,7 +115,7 @@ const crudSchemas = reactive<CrudSchema[]>([
 
   {
     field: 'Resp',
-    label: '相应',
+    label: '响应',
 
     search: {
       hidden: true
@@ -238,7 +226,6 @@ const fetchloglist = async () => {
   await nextTick()
   unref(treeEl)?.setCurrentKey(currentNodeKey.value)
 }
-fetchloglist()
 
 const currentDepartment = ref('')
 watch(

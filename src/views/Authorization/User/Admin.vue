@@ -23,10 +23,17 @@ const { t } = useI18n()
 
 
 
-
 const { tableRegister, tableState, tableMethods } = useTable({
   fetchDataApi: async () => {
     const { pageSize, currentPage } = tableState
+    const res: any = await fetchadminlist()
+    return {
+      list: res,
+      total: total.value,
+    }
+
+
+
 
   },
   fetchDelApi: async () => {
@@ -393,7 +400,6 @@ const fetchadminlist = async () => {
   await nextTick()
   unref(treeEl)?.setCurrentKey(currentNodeKey.value)
 }
-fetchadminlist()
 
 const currentDepartment = ref('')
 watch(

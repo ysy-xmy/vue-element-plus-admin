@@ -40,16 +40,8 @@ const changeSelect = (value: string) => {
 const { tableRegister, tableState, tableMethods } = useTable({
     fetchDataApi: async () => {
         const { pageSize, currentPage } = tableState
-        const res = await getUserByIdApi({
-            id: unref(currentNodeKey),
-            pageIndex: unref(currentPage),
-            pageSize: unref(pageSize),
-            ...unref(searchParams)
-        })
-        return {
-            list: res.data.list || [],
-            total: res.data.total || 0
-        }
+        await fetchUserlist()
+
     },
     fetchDelApi: async () => {
         const res = await deleteUserByIdApi(unref(ids))
@@ -370,7 +362,7 @@ const fetchUserlist = async () => {
     await nextTick()
     unref(treeEl)?.setCurrentKey(currentNodeKey.value)
 }
-fetchUserlist()
+
 
 const currentDepartment = ref('')
 watch(
