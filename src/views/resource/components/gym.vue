@@ -34,10 +34,10 @@ const { tableRegister, tableState, tableMethods } = useTable({
         const res = await getGymInfo(params).finally(() => {
             loading.value = false
         })
-        total.value = res.data.total
+        total.value = res.data.Total
         return {
             list: res.data.list || [],
-            total: res.data.total || 0
+            total: total.value
         }
     },
     fetchDelApi: async () => {
@@ -207,8 +207,6 @@ const crudSchemas = reactive<CrudSchema[]>([
 
 const { allSchemas } = useCrudSchemas(crudSchemas)
 
-
-
 const treeEl = ref<typeof ElTree>()
 
 const currentNodeKey = ref('')
@@ -254,22 +252,11 @@ const fetchgymlist = async () => {
 
 fetchgymlist()
 
-const currentDepartment = ref('')
-watch(
-    () => currentDepartment.value,
-    (val) => {
-        unref(treeEl)!.filter(val)
-    }
-)
-
-
 const dialogVisible = ref(false)
 const dialogTitle = ref('')
 
 const currentRow = ref<DepartmentUserItem>()
 const actionType = ref('')
-
-
 
 const delLoading = ref(false)
 const ids = ref<string[]>([])

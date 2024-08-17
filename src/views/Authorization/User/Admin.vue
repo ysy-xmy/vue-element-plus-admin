@@ -376,7 +376,7 @@ const fetchadminlist = async () => {
   const res = await getuserlistApi(params)
 
   pageSize.value = res.data.Size
-  total.value = res.data.TotalCount
+  total.value = res.data.Total
 
 
 

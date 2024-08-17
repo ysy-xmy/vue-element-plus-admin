@@ -217,10 +217,12 @@ export const asyncRouterMap: AppRouteRecordRaw[] = [
     name: '日志模块',
     meta: {
       title: '日志模块',
+      icon: 'carbon:skill-level-advanced'
+
     },
     children: [
       {
-        path: 'operation',
+        path: 'baselog',
         name: '基础日志',
         component: () => import('@/views/Level/baselog.vue'),
         meta: {

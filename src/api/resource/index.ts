@@ -102,3 +102,10 @@ export const updateGym = (data: any) => {
 export const delGym = (data: any) => {
     return request.delete({ url: '/api/gym/delete', data })
 }
+
+export const getcourseInfo = (data: any) => {
+    return request.get({ url: '/api/course/page', data })
+}
+export const deletecourse = (data: any) => {
+    return request.delete({ url: '/api/course/delete', data })
+}

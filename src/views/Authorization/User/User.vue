@@ -336,7 +336,7 @@ const fetchUserlist = async () => {
     const res = await getuserlistApi(params).finally(() => {
         loading.value = false
     })
-    total.value = res.data.total
+    total.value = res.data.Total
 
 
 

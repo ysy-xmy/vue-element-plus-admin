@@ -7,8 +7,8 @@
 
                 <!-- <span class="mt-20px mr-10">SystemName:</span> -->
                 <div class="w-4/5 h-full flex justify-start ml-40 mt-10  flex-wrap ">
-                    <el-input v-model="systemConfig.systemName" style="max-width: 600px ;height: 50px;font-size: 20px;"
-                        placeholder="Please input">
+                    <el-input v-model="systemConfig.SystemName" style="max-width: 600px ;height: 50px;font-size: 20px;"
+                        placeholder="请输入">
                         <template #prepend>系统名称</template>
                     </el-input>
                     <div class="w-full my-30px flex  justify-start flex-nowrap">
@@ -65,13 +65,16 @@
 <script setup lang="ts">
 import { ContentWrap } from '@/components/ContentWrap'
 import { reactive, ref } from 'vue';
-import { saveconfig } from '@/api/system'
+import { saveconfig, getconfig } from '@/api/system'
 
 const systemConfig = ref({
-    systemName: 'systemName',
-    SystemLogo: 'SystemLogo',
-    SystemDescription: 'SystemDescription',
-    CoachSalary: 'CoachSalary',
+    SystemName: '',
+    SystemLogo: '',
+    SystemDescription: '',
+    CoachSalary: '',
+})
+getconfig().then(res => {
+    systemConfig.value = res.data
 })
 
 //logo上传

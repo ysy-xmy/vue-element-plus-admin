@@ -36,7 +36,6 @@ const defaultRequestInterceptors = (config: InternalAxiosRequestConfig) => {
 }
 
 const defaultResponseInterceptors = (response: AxiosResponse) => {
-  console.log('相应链球菌s')
   if (response?.config?.responseType === 'blob') {
     console.log(33)
     // 如果是文件流，直接过

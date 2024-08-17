@@ -15,16 +15,16 @@ import { convertDateTime } from './utils/convertDateTime'
 import { CrudSchema, useCrudSchemas } from '@/hooks/web/useCrudSchemas'
 import { BaseButton } from '@/components/Button'
 import { getlog } from '@/api/log'
-
 const { t } = useI18n()
 
 // 1为学员，2为教练，3为游客
 
 const { tableRegister, tableState, tableMethods } = useTable({
   fetchDataApi: async () => {
+    const res: any = await fetchloglist()
+
     const { pageSize, currentPage } = tableState
 
-    const res: any = await fetchloglist()
     return {
       list: res,
       total: total.value,
@@ -201,10 +201,10 @@ const fetchloglist = async () => {
     Size: String(pageSize.value),
     Type: 'base'
   }
-  const res = await getlog(params).finally(() => {
-    loading.value = false
-  })
-  total.value = res.data.total
+  const res = await getlog(params)
+  console.log(res.data.Total)
+  console.log(total.value)
+  total.value = res.data.Total
 
   //对拿到的列表做一个简单的处理
   loglist.value = res.data.Logs.map((v) => {
@@ -219,6 +219,7 @@ const fetchloglist = async () => {
 
     }
   })
+  loading.value = false
 
 
 
@@ -230,12 +231,7 @@ const fetchloglist = async () => {
 
 
 const currentDepartment = ref('')
-watch(
-  () => currentDepartment.value,
-  (val) => {
-    unref(treeEl)!.filter(val)
-  }
-)
+
 
 
 const dialogVisible = ref(false)
@@ -243,15 +239,19 @@ const dialogTitle = ref('')
 
 const currentRow = ref<DepartmentUserItem>()
 const actionType = ref('')
+watch(pageSize, () => {
+  currentPage.value = 1
+  fetchloglist()
+  console.log('pageSize change')
+})
 
 
 
-const delLoading = ref(false)
-const ids = ref<string[]>([])
+
 
 
 const action = (row: DepartmentUserItem, type: string) => {
-  dialogTitle.value = t(type === 'edit' ? 'exampleDemo.edit' : 'exampleDemo.detail')
+  dialogTitle.value = type === 'edit' ? '编辑' : '查看'
   actionType.value = type
   currentRow.value = { ...row, department: unref(treeEl)?.getCurrentNode() || {} }
   dialogVisible.value = true
@@ -268,7 +268,7 @@ const save = async () => {
     const formData = await write?.submit()
     if (formData) {
       saveLoading.value = true
-  
+
     }
 
   }
