@@ -1,10 +1,8 @@
 <script setup lang="tsx">
 import { ContentWrap } from '@/components/ContentWrap'
-import { Search } from '@/components/Search'
 import { Dialog } from '@/components/Dialog'
 import { useI18n } from '@/hooks/web/useI18n'
 import { ElTag } from 'element-plus'
-import { Table } from '@/components/Table'
 import {
   getDepartmentApi,
   getDepartmentTableApi,
@@ -23,16 +21,7 @@ const ids = ref<string[]>([])
 
 const { tableRegister, tableState, tableMethods } = useTable({
   fetchDataApi: async () => {
-    const { currentPage, pageSize } = tableState
-    const res = await getDepartmentTableApi({
-      pageIndex: unref(currentPage),
-      pageSize: unref(pageSize),
-      ...unref(searchParams)
-    })
-    return {
-      list: res.data.list,
-      total: res.data.total
-    }
+
   },
   fetchDelApi: async () => {
     const res = await deleteDepartmentApi(unref(ids))
@@ -98,10 +87,7 @@ const crudSchemas = reactive<CrudSchema[]>([
           label: 'departmentName'
         }
       },
-      optionApi: async () => {
-        const res = await getDepartmentApi()
-        return res.data.list
-      }
+
     },
     detail: {
       slots: {
@@ -282,7 +268,7 @@ const save = async () => {
     if (res) {
       dialogVisible.value = false
       currentPage.value = 1
-      getList()
+
     }
   }
 }
