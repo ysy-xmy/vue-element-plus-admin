@@ -382,9 +382,8 @@ const delData = async (row) => {
                 <BaseButton :loading="delLoading" type="danger" @click="delData(null)">
                     {{ t('exampleDemo.del') }}
                 </BaseButton>
-
             </div>
-            <Table height="100%" v-model:current-page="currentPage" :page-size="pageSize"
+            <Table height="100%" v-model:current-page="currentPage" v-model:page-size="pageSize"
                 :columns="allSchemas.tableColumns" :data="gymlist" :loading="loading" @register="tableRegister"
                 :pagination="{
                     total

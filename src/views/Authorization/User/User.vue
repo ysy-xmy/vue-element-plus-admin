@@ -2,7 +2,7 @@
 import { ContentWrap } from '@/components/ContentWrap'
 import { useI18n } from '@/hooks/web/useI18n'
 import { Table } from '@/components/Table'
-import { ref, unref, nextTick, watch, reactive } from 'vue'
+import { ref, watch, unref, nextTick, reactive } from 'vue'
 import { ElTree } from 'element-plus'
 import { getUserByIdApi, saveUserApi, deleteUserByIdApi } from '@/api/department'
 import { getuserlistApi, disableUserApi } from '@/api/Permission'
@@ -32,24 +32,24 @@ const changeSelect = (value: string) => {
     select.value = value
     fetchUserlist()
 
-
-
-
 }
 
 const { tableRegister, tableState, tableMethods } = useTable({
     fetchDataApi: async () => {
         const { pageSize, currentPage } = tableState
-        await fetchUserlist()
-
+        const res: any = await fetchUserlist()
+        return {
+            list: res,
+            total: total.value,
+        }
     },
     fetchDelApi: async () => {
         const res = await deleteUserByIdApi(unref(ids))
         return !!res
     }
 })
-const { total, loading, dataList, pageSize, currentPage } = tableState
-const { getList, getElTableExpose, delList } = tableMethods
+const { total, loading, pageSize, currentPage } = tableState
+const { getList } = tableMethods
 
 const crudSchemas = reactive<CrudSchema[]>([
     {
@@ -312,13 +312,7 @@ const crudSchemas = reactive<CrudSchema[]>([
         }
     }
 ])
-
-
-
-
 const { allSchemas } = useCrudSchemas(crudSchemas)
-
-const searchParams = ref({})
 
 const treeEl = ref<typeof ElTree>()
 
@@ -332,15 +326,11 @@ const fetchUserlist = async () => {
         UserSelectType: select.value,
     }
 
-
     const res = await getuserlistApi(params).finally(() => {
         loading.value = false
     })
+    pageSize.value = res.data.Size
     total.value = res.data.Total
-
-
-
-
     //对拿到的列表做一个简单的处理
     Userlist.value = res.data.CoachStudentUserInfos.map((v) => {
         return {
@@ -354,14 +344,12 @@ const fetchUserlist = async () => {
             "CreatedAt": convertDateTime(v.CreatedAt),
         }
     })
-
-
-
     currentNodeKey.value =
         (res.data[0] && res.data[0]?.children && res.data[0].children[0].id) || ''
     await nextTick()
     unref(treeEl)?.setCurrentKey(currentNodeKey.value)
 }
+
 
 
 const currentDepartment = ref('')
@@ -372,45 +360,16 @@ watch(
     }
 )
 
-// const currentChange = (data: DepartmentItem) => {
-//   // if (data.children) return
-//   currentNodeKey.value = data.id
-//   currentPage.value = 1
-//   getList()
-// }
 
-// const filterNode = (value: string, data: DepartmentItem) => {
-//   if (!value) return true
-//   return data.departmentName.includes(value)
-// }
 
 const dialogVisible = ref(false)
 const dialogTitle = ref('')
 
 const currentRow = ref<DepartmentUserItem>()
 const actionType = ref('')
-
-const AddAction = () => {
-    dialogTitle.value = t('exampleDemo.add')
-    currentRow.value = undefined
-    dialogVisible.value = true
-    actionType.value = ''
-}
-
-const delLoading = ref(false)
 const ids = ref<string[]>([])
 
-const delData = async (row?: DepartmentUserItem) => {
-    const elTableExpose = await getElTableExpose()
-    ids.value = row
-        ? [row.id]
-        : elTableExpose?.getSelectionRows().map((v: DepartmentUserItem) => v.id) || []
-    delLoading.value = true
 
-    await delList(unref(ids).length).finally(() => {
-        delLoading.value = false
-    })
-}
 
 const action = (row: DepartmentUserItem, type: string) => {
     dialogTitle.value = t(type === 'edit' ? 'exampleDemo.edit' : 'exampleDemo.detail')
@@ -442,6 +401,9 @@ const save = async () => {
         }
     }
 }
+
+
+
 </script>
 
 <template>
@@ -459,7 +421,7 @@ const save = async () => {
                     </el-radio-group>
                 </div>
             </div>
-            <Table height="100%" v-model:current-page="currentPage" :page-size="pageSize"
+            <Table height="100%" v-model:current-page="currentPage" v-model:page-size="pageSize"
                 :columns="allSchemas.tableColumns" :data="Userlist" :loading="loading" @register="tableRegister"
                 :pagination="{
                         total

@@ -31,10 +31,6 @@ const { tableRegister, tableState, tableMethods } = useTable({
       list: res,
       total: total.value,
     }
-
-
-
-
   },
   fetchDelApi: async () => {
     const res = await deleteUserByIdApi(unref(ids))
@@ -378,10 +374,6 @@ const fetchadminlist = async () => {
   pageSize.value = res.data.Size
   total.value = res.data.Total
 
-
-
-
-
   adminlist.value = res.data.AdminUserInfos.map((v) => {
     return {
       "ID": v.ID,
@@ -479,23 +471,6 @@ const save = async () => {
 
 <template>
   <div class="flex w-100% h-100%">
-    <!-- <ContentWrap class="w-250px">
-      <div class="flex justify-center items-center">
-        <div class="flex-1">{{ t('userDemo.adminlist') }}</div>
-        <ElInput v-model="currentDepartment" class="flex-[2]" :placeholder="t('userDemo.searchDepartment')" clearable />
-      </div>
-      <ElDivider />
-      <ElTree ref="treeEl" :data="adminlist" default-expand-all :expand-on-click-node="false" node-key="id"
-        :current-node-key="currentNodeKey" :props="{
-          label: 'departmentName'
-        }" :filter-node-method="filterNode" @current-change="currentChange">
-        <template #default="{ data }">
-          <div :title="data.departmentName" class="whitespace-nowrap overflow-ellipsis overflow-hidden">
-            {{ data.departmentName }}
-          </div>
-        </template>
-</ElTree>
-</ContentWrap> -->
 
 
 

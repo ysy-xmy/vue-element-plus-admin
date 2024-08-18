@@ -314,7 +314,7 @@ const save = async () => {
                     {{ t('exampleDemo.del') }}
                 </BaseButton>
             </div>
-            <Table v-model:current-page="currentPage" v-model:page-size="pageSize" :columns="allSchemas.tableColumns"
+            <Table @ v-model:current-page="currentPage" v-model:page-size="pageSize" :columns="allSchemas.tableColumns"
                 :data="dataList" :loading="loading" @register="tableRegister" :pagination="{
                 total
             }" />

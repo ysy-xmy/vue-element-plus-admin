@@ -337,7 +337,7 @@ const delData = async (row) => {
         </BaseButton> -->
 
             </div>
-            <Table height="100%" v-model:current-page="currentPage" :page-size="pageSize"
+            <Table height="100%" v-model:current-page="currentPage" v-model:page-size="pageSize"
                 :columns="allSchemas.tableColumns" :data="loglist" :loading="loading" @register="tableRegister"
                 :pagination="{
                 total
