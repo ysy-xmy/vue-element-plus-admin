@@ -13,11 +13,20 @@ import { TableData } from '@/api/table/types'
 import { ref } from 'vue'
 // import { ElTag } from 'element-plus'
 // import { BaseButton } from '@/components/Button'
+import { getAccountingPageByType } from '@/api/finance'
+import { useTable } from '@/hooks/web/useTable'
 
-interface Params {
-    pageIndex?: number
-    pageSize?: number
-}
+const { tableRegister, tableState } = useTable({
+    fetchDataApi: async () => {
+        const res: any = await getTableList()
+        return {
+            list: res,
+            total: res.data.Total,
+        }
+    },
+
+})
+const { total, pageSize, currentPage } = tableState
 
 const { t } = useI18n()
 
@@ -28,87 +37,62 @@ const columns: TableColumn[] = [
         type: 'index'
     },
     {
-        field: '教练',
+        field: 'ID',
+        label: 'id',
+    },
+    {
+        field: 'Username',
         label: '教练'
     },
     {
-        field: '授课总节数',
-        label: '授课总节数',
+        field: 'Description',
+        label: '描述',
         sortable: true
     },
-    // {
-    //   field: 'display_time',
-    //   label: t('tableDemo.displayTime'),
-    //   sortable: true
-    // },
-    // {
-    //   field: 'importance',
-    //   label: t('tableDemo.importance'),
-    //   formatter: (_: Recordable, __: TableColumn, cellValue: number) => {
-    //     return h(
-    //       ElTag,
-    //       {
-    //         type: cellValue === 1 ? 'success' : cellValue === 2 ? 'warning' : 'danger'
-    //       },
-    //       () =>
-    //         cellValue === 1
-    //           ? t('tableDemo.important')
-    //           : cellValue === 2
-    //             ? t('tableDemo.good')
-    //             : t('tableDemo.commonly')
-    //     )
-    //   }
-    // },
+
     {
-        field: 'pageviews',
-        label: '应结课程费',
+        field: 'Amount',
+        label: '总额',
         sortable: true
-    }
-    // {
-    //   field: 'action',
-    //   label: t('tableDemo.action'),
-    //   slots: {
-    //     default: (data) => {
-    //       return (
-    //         <BaseButton type="primary" onClick={() => actionFn(data)}>
-    //           {t('tableDemo.action')}
-    //         </BaseButton>
-    //       )
-    //     }
-    //   }
-    // }
+    },
+    {
+        field: 'Remark',
+        label: '备注',
+    },
 ]
 
 const loading = ref(true)
 
 let tableDataList = ref<TableData[]>([])
 
-const getTableList = async (params?: Params) => {
-    const res = await getTableListApi(
-        params || {
-            pageIndex: 1,
-            pageSize: 10
+const getTableList = async () => {
+    loading.value = true
+    const res: any = await getAccountingPageByType(
+        {
+            Page: currentPage.value,
+            Size: pageSize.value,
         }
     )
-        .catch(() => { })
-        .finally(() => {
-            loading.value = false
-        })
+
     if (res) {
-        tableDataList.value = res.data.list
+        total.value = res.data.Total
+
+        loading.value = false
+        tableDataList.value = res.data.AccountingInfo
     }
 }
 
 getTableList()
 
-// const actionFn = (data: any) => {
-//   console.log(data)
-// }
+
 </script>
 
 <template>
     <ContentWrap title="教练教学情况" :message="t('tableDemo.tableDes')">
-        <Table :columns="columns" :data="tableDataList" :loading="loading"
-            :defaultSort="{ prop: 'display_time', order: 'descending' }" />
+        <Table v-model:currentPage="currentPage" v-model:pageSize="pageSize" :columns="columns" :data="tableDataList"
+            :loading="loading" :defaultSort="{ prop: 'display_time', order: 'descending' }" @register="tableRegister"
+            :pagination="{
+        total
+    }" />
     </ContentWrap>
 </template>

@@ -35,24 +35,9 @@ const { tableRegister, tableState, tableMethods } = useTable({
   }
 })
 const { total, loading, pageSize, currentPage } = tableState
-const { getList, getElTableExpose } = tableMethods
 
 const crudSchemas = reactive<CrudSchema[]>([
-  {
-    field: 'selection',
-    search: {
-      hidden: true
-    },
-    form: {
-      hidden: true
-    },
-    detail: {
-      hidden: true
-    },
-    table: {
-      type: 'selection'
-    }
-  },
+
   {
     field: 'index',
     label: t('userDemo.index'),
@@ -72,7 +57,6 @@ const crudSchemas = reactive<CrudSchema[]>([
   {
     field: 'ID',
     label: 'ID',
-
     search: {
       hidden: true
     },
@@ -80,8 +64,6 @@ const crudSchemas = reactive<CrudSchema[]>([
   {
     field: 'UserID',
     label: '操作者id',
-
-
     search: {
       hidden: true
     },
@@ -205,6 +187,8 @@ const fetchloglist = async () => {
   console.log(res.data.Total)
   console.log(total.value)
   total.value = res.data.Total
+  pageSize.value = res.data.Size
+  currentPage.value = res.data.Page
 
   //对拿到的列表做一个简单的处理
   loglist.value = res.data.Logs.map((v) => {
@@ -230,7 +214,6 @@ const fetchloglist = async () => {
 }
 
 
-const currentDepartment = ref('')
 
 
 
@@ -239,14 +222,6 @@ const dialogTitle = ref('')
 
 const currentRow = ref<DepartmentUserItem>()
 const actionType = ref('')
-watch(pageSize, () => {
-  currentPage.value = 1
-  fetchloglist()
-  console.log('pageSize change')
-})
-
-
-
 
 
 
@@ -263,7 +238,6 @@ const saveLoading = ref(false)
 
 const save = async () => {
   if (actionType.value === 'add') {
-
     const write = unref(writeRef)
     const formData = await write?.submit()
     if (formData) {

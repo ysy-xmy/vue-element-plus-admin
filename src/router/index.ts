@@ -158,7 +158,7 @@ export const asyncRouterMap: AppRouteRecordRaw[] = [
         name: 'coach-finance',
         component: () => import('@/views/finance/coach-finance.vue'),
         meta: {
-          title: '教练提成',
+          title: '教练薪资',
           icon: 'carbon:user-role'
         }
       },
@@ -267,7 +267,7 @@ export const asyncRouterMap: AppRouteRecordRaw[] = [
       {
         path: 'base-config',
         name: '基础设置',
-        component: () => import('@/views/Level/error.vue'),
+        component: () => import('@/views/system/systemconfig.vue'),
         meta: {
           title: '基础设置'
         }
