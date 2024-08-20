@@ -21,4 +21,12 @@ export const disableUserApi = (id: number) => {
     return request.delete({ url: `/api/user/disable`, params: { ID: id } })
 }
 
+export const updataAdminApi = (data: any) => {
+    return request.put({ url: '/api/user/update', data })
+}
+
+export const updatauserapi = (data: any) => {
+    return request.put({ url: '/api/user/update', data })
+}
+
 

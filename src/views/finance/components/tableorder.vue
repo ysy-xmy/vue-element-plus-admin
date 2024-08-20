@@ -15,6 +15,7 @@ import { ref } from 'vue'
 // import { BaseButton } from '@/components/Button'
 import { getAccountingPageByType } from '@/api/finance'
 import { useTable } from '@/hooks/web/useTable'
+import { convertDateTime } from '../utils/convertDateTime'
 
 const { tableRegister, tableState } = useTable({
     fetchDataApi: async () => {
@@ -32,35 +33,36 @@ const { t } = useI18n()
 
 const columns: TableColumn[] = [
     {
-        field: '排名',
-        label: '排名',
+        field: 'NO',
+        label: '序号',
         type: 'index'
     },
     {
         field: 'ID',
-        label: 'id',
+        label: 'id'
     },
     {
         field: 'Username',
-        label: '教练'
+        label: '购买者',
     },
+
     {
         field: 'Description',
         label: '描述',
-        sortable: true
     },
-
     {
         field: 'Amount',
-        label: '总额',
+        label: '金额',
         sortable: true
     },
     {
-        field: 'Remark',
-        label: '备注',
-    },
-]
+        field: 'Date',
+        label: '日期',
+        sortable: true
 
+    }
+
+]
 const loading = ref(true)
 
 let tableDataList = ref<TableData[]>([])
@@ -69,8 +71,8 @@ const getTableList = async () => {
     loading.value = true
     const res: any = await getAccountingPageByType(
         {
-            Type: 'EXPENSE',
-            Remark: 'COACH_SALARIES_EXPENSE',
+            Type: 'INCOME',
+            Remark: 'CourseIncome',
             Page: currentPage.value,
             Size: pageSize.value,
         }
@@ -83,11 +85,10 @@ const getTableList = async () => {
                 ID: item.ID,
                 Username: item.Username,
                 Description: item.Description,
-                Amount: Number(item.Amount).toFixed(2),
-                Remark: item.Remark,
+                Amount: Number(item.Amount),
+                Date: convertDateTime(item.Date),
             }
         })
-
     }
 }
 
@@ -97,7 +98,7 @@ getTableList()
 </script>
 
 <template>
-    <ContentWrap title="教练教学情况" :message="t('tableDemo.tableDes')">
+    <ContentWrap title="课程销量" :message="t('tableDemo.tableDes')">
         <Table v-model:currentPage="currentPage" v-model:pageSize="pageSize" :columns="columns" :data="tableDataList"
             :loading="loading" :defaultSort="{ prop: 'display_time', order: 'descending' }" @register="tableRegister"
             :pagination="{

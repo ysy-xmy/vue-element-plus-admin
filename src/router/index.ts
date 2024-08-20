@@ -267,7 +267,7 @@ export const asyncRouterMap: AppRouteRecordRaw[] = [
       {
         path: 'base-config',
         name: '基础设置',
-        component: () => import('@/views/system/systemconfig.vue'),
+        component: () => import('@/views/system/systembase.vue'),
         meta: {
           title: '基础设置'
         }

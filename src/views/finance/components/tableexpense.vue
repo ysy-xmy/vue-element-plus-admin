@@ -32,35 +32,34 @@ const { t } = useI18n()
 
 const columns: TableColumn[] = [
     {
-        field: '排名',
-        label: '排名',
+        field: 'NO',
+        label: '序号',
         type: 'index'
     },
     {
-        field: 'ID',
-        label: 'id',
+        field: 'OrderNo',
+        label: '订单号'
     },
     {
-        field: 'Username',
-        label: '教练'
+        field: 'CourseName',
+        label: '内容',
     },
     {
-        field: 'Description',
-        label: '描述',
+        field: 'display_time',
+        label: t('tableDemo.displayTime'),
+        sortable: true
+    },
+    {
+        field: 'buyer',
+        label: '购买者',
+    },
+    {
+        field: 'pageviews',
+        label: '金额',
         sortable: true
     },
 
-    {
-        field: 'Amount',
-        label: '总额',
-        sortable: true
-    },
-    {
-        field: 'Remark',
-        label: '备注',
-    },
 ]
-
 const loading = ref(true)
 
 let tableDataList = ref<TableData[]>([])
@@ -70,7 +69,7 @@ const getTableList = async () => {
     const res: any = await getAccountingPageByType(
         {
             Type: 'EXPENSE',
-            Remark: 'COACH_SALARIES_EXPENSE',
+            Remark: 'CoachSalariesExpense',
             Page: currentPage.value,
             Size: pageSize.value,
         }
@@ -78,16 +77,7 @@ const getTableList = async () => {
     if (res) {
         total.value = res.data.Total
         loading.value = false
-        tableDataList.value = res.data.AccountingInfo.map((item: any) => {
-            return {
-                ID: item.ID,
-                Username: item.Username,
-                Description: item.Description,
-                Amount: Number(item.Amount).toFixed(2),
-                Remark: item.Remark,
-            }
-        })
-
+        tableDataList.value = res.data.AccountingInfo
     }
 }
 
@@ -97,7 +87,7 @@ getTableList()
 </script>
 
 <template>
-    <ContentWrap title="教练教学情况" :message="t('tableDemo.tableDes')">
+    <ContentWrap title="支出表" :message="t('tableDemo.tableDes')">
         <Table v-model:currentPage="currentPage" v-model:pageSize="pageSize" :columns="columns" :data="tableDataList"
             :loading="loading" :defaultSort="{ prop: 'display_time', order: 'descending' }" @register="tableRegister"
             :pagination="{

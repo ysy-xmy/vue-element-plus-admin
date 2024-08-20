@@ -38,7 +38,7 @@ export const roleApi = () => {
       {
         id: 3,
         label: '学员',
-        RoleName: 'student',
+        RoleName: '学员',
         description: '普通用户',
         status: 1,
         Roleid: 4
@@ -48,10 +48,10 @@ export const roleApi = () => {
 
         id: 4,
         label: '教练',
-        RoleName: 'coach',
+        RoleName: '教练',
         description: '教练权限',
         status: 1,
-        Roleid: 4
+        Roleid: 3
       }
     ]
 

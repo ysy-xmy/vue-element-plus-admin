@@ -144,7 +144,9 @@ const crudSchemas = reactive<CrudSchema[]>([
         },
         search: {
             hidden: true
-        }
+        },
+        sortable: true
+
     },
     {
         field: 'action',
@@ -190,7 +192,14 @@ const { allSchemas } = useCrudSchemas(crudSchemas)
 
 
 const treeEl = ref<typeof ElTree>()
-
+function displayObjectAsStrings(obj: { [key: string]: any }) {
+    if (obj === null || obj === undefined) {
+        return ''
+    }
+    else {
+        return obj.msg
+    }
+}
 const currentNodeKey = ref('')
 const loglist = ref([])
 currentPage.value = 1
@@ -213,8 +222,8 @@ const fetchloglist = async () => {
             UserID: v.UserID,
             Path: v.Path,
             Method: v.Method,
-            Params: v.Params,
-            Resp: v.Resp,
+            Params: displayObjectAsStrings(v.Params),
+            Resp: displayObjectAsStrings(v.Resp),
             CreatedAt: convertDateTime(v.CreatedAt),
 
         }

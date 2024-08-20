@@ -17,7 +17,7 @@ import { Dialog } from '@/components/Dialog'
 import { getRoleListApi } from '@/api/role'
 import { CrudSchema, useCrudSchemas } from '@/hooks/web/useCrudSchemas'
 import { BaseButton } from '@/components/Button'
-import { getuserlistApi, addAdminApi } from '@/api/Permission'
+import { getuserlistApi, addAdminApi, updataAdminApi } from '@/api/Permission'
 
 const { t } = useI18n()
 
@@ -147,7 +147,7 @@ const crudSchemas = reactive<CrudSchema[]>([
   // },
   {
     field: 'RoleName',
-    label: t('userDemo.role'),
+    label: '角色',
     search: {
       hidden: true
     },
@@ -277,6 +277,8 @@ const crudSchemas = reactive<CrudSchema[]>([
       }
     },
     form: {
+      hidden: true,
+
       component: 'Select',
       componentProps: {
         clearable: true,
@@ -306,7 +308,7 @@ const crudSchemas = reactive<CrudSchema[]>([
             </>
           )
         }
-      }
+      },
     }
   },
   {
@@ -442,30 +444,59 @@ const writeRef = ref<ComponentRef<typeof Write>>()
 const saveLoading = ref(false)
 
 const save = async () => {
+  console.log('currentRow', currentRow.value)
   const write = unref(writeRef)
   const formData = await write?.submit()
   console.log(formData)
-  if (formData) {
-    saveLoading.value = true
-    try {
-      let data: object = {
-        Username: formData.Username,
-        Password: formData.Password,
-        Roleid: formData.RoleName[0],
-        OpenID: formData.OpenID,
+  if (actionType.value === 'edit') {
+    if (formData) {
+      saveLoading.value = true
+      try {
+        let data: object = {
+          ID: currentRow.value.ID,
+          Username: formData.Username,
+          Password: formData.Password ? formData.Password : '',
+          Roleid: formData.RoleName,
+          OpenID: formData.OpenID,
+        }
+        const res = await updataAdminApi(data)
+        if (res) {
+          currentPage.value = 1
+          fetchadminlist()
+        }
+      } catch (error) {
+        console.log(error)
+      } finally {
+        saveLoading.value = false
+        dialogVisible.value = false
       }
-      const res = await addAdminApi(data)
-      if (res) {
-        currentPage.value = 1
-        fetchadminlist()
+    }
+
+
+  } else {
+    if (formData) {
+      saveLoading.value = true
+      try {
+        let data: object = {
+          Username: formData.Username,
+          Password: formData.Password,
+          Roleid: formData.RoleName[0],
+          OpenID: formData.OpenID,
+        }
+        const res = await addAdminApi(data)
+        if (res) {
+          currentPage.value = 1
+          fetchadminlist()
+        }
+      } catch (error) {
+        console.log(error)
+      } finally {
+        saveLoading.value = false
+        dialogVisible.value = false
       }
-    } catch (error) {
-      console.log(error)
-    } finally {
-      saveLoading.value = false
-      dialogVisible.value = false
     }
   }
+
 }
 </script>
 

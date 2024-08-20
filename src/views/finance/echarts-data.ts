@@ -248,6 +248,78 @@ export const pieOptions: EChartsOption = {
     }
   ]
 }
+export const pieOptionsincome: EChartsOption = {
+  title: {
+    text: '收入分布图',
+    left: 'center'
+  },
+  tooltip: {
+    trigger: 'item',
+    formatter: '{a} <br/>{b} : {c} ({d}%)'
+  },
+  legend: {
+    orient: 'vertical',
+    left: 'left',
+    data: [
+      '课程收入',
+      '会员收入',
+      '广告收入',
+      '学员打赏',
+      '其他收入'
+    ]
+  },
+  series: [
+    {
+      name: t('analysis.userAccessSource'),
+      type: 'pie',
+      radius: '55%',
+      center: ['50%', '60%'],
+      data: [
+        { value: 335, name: '课程收入' },
+        { value: 310, name: '会员收入' },
+        { value: 234, name: '广告收入' },
+        { value: 135, name: '学员打赏' },
+        { value: 1548, name: '其他收入' }
+      ]
+    }
+  ]
+}
+export const pieOptionsexpense: EChartsOption = {
+  title: {
+    text: '支出分布图',
+    left: 'center'
+  },
+  tooltip: {
+    trigger: 'item',
+    formatter: '{a} <br/>{b} : {c} ({d}%)'
+  },
+  legend: {
+    orient: 'vertical',
+    left: 'left',
+    data: [
+      '器材支出',
+      '场地支出',
+      '广告支出',
+      '教练费用',
+      '其他支出'
+    ]
+  },
+  series: [
+    {
+      name: t('analysis.userAccessSource'),
+      type: 'pie',
+      radius: '55%',
+      center: ['50%', '60%'],
+      data: [
+        { value: 335, name: '器材支出' },
+        { value: 310, name: '场地支出' },
+        { value: 234, name: '广告支出' },
+        { value: 135, name: '教练费用' },
+        { value: 1548, name: '其他支出' }
+      ]
+    }
+  ]
+}
 
 export const barOptions: EChartsOption = {
   title: {

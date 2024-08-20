@@ -5,7 +5,7 @@ import { Table } from '@/components/Table'
 import { ref, watch, unref, nextTick, reactive } from 'vue'
 import { ElTree } from 'element-plus'
 import { getUserByIdApi, saveUserApi, deleteUserByIdApi } from '@/api/department'
-import { getuserlistApi, disableUserApi } from '@/api/Permission'
+import { getuserlistApi, disableUserApi, updatauserapi } from '@/api/Permission'
 import type { DepartmentUserItem } from '@/api/department/types'
 import { useTable } from '@/hooks/web/useTable'
 import { Search } from '@/components/Search'
@@ -131,7 +131,7 @@ const crudSchemas = reactive<CrudSchema[]>([
     // },
     {
         field: 'RoleName',
-        label: t('userDemo.role'),
+        label: '角色',
         search: {
             hidden: true
         },
@@ -153,21 +153,25 @@ const crudSchemas = reactive<CrudSchema[]>([
             component: 'Select',
             value: [],
             componentProps: {
-                multiple: true,
                 collapseTags: true,
-                maxCollapseTags: 1
+                maxCollapseTags: 1,
+                rules: [
+                    { required: true, message: '请选择角色', trigger: 'change' }
+                ],
+
             },
             optionApi: async () => {
                 const res = await roleApi()
                 console.log(res)
 
                 return res.data.map((v) => ({
-                    label: v.label,
+                    label: v.RoleName,
                     value: v.RoleName
                 }))
             }
         }
     },
+
     // {
     //   field: 'email',
     //   label: t('userDemo.email'),
@@ -383,22 +387,19 @@ const writeRef = ref<ComponentRef<typeof Write>>()
 const saveLoading = ref(false)
 
 const save = async () => {
+
     const write = unref(writeRef)
     const formData = await write?.submit()
+
     if (formData) {
         saveLoading.value = true
-        try {
-            const res = await saveUserApi(formData)
-            if (res) {
-                currentPage.value = 1
-                getList()
-            }
-        } catch (error) {
-            console.log(error)
-        } finally {
-            saveLoading.value = false
-            dialogVisible.value = false
+        let data: object = {
+            ID: currentRow.value.ID,
+            OpenID: currentRow.value.OpenID,
+            Username: currentRow.value.Username,
+            Roleid: formData.RoleName == '学员' ? 4 : 3,
         }
+        const res = await updatauserapi(data)
     }
 }
 

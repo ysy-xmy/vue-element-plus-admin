@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ElRow, ElCol, ElCard, ElSkeleton } from 'element-plus'
 import { Echart } from '@/components/Echart'
-import { pieOptions, barOptions, corporateLineOptions } from './echarts-data'
+import { pieOptionsexpense, pieOptionsincome, barOptions, corporateLineOptions } from './echarts-data'
 import { ref, reactive } from 'vue'
 import {
     getUserAccessSourceApi,
@@ -11,12 +11,14 @@ import {
 import { set } from 'lodash-es'
 import { EChartsOption } from 'echarts'
 import { useI18n } from '@/hooks/web/useI18n'
+import tableincome from './components/tableincome.vue'
+import tableexpense from './components/tableexpense.vue'
 
 const { t } = useI18n()
 
 const loading = ref(true)
 
-const pieOptionsData = reactive<EChartsOption>(pieOptions) as EChartsOption
+const pieOptionsData = reactive<EChartsOption>(pieOptionsexpense) as EChartsOption
 
 // 用户来源
 const getUserAccessSource = async () => {
@@ -38,7 +40,6 @@ const getUserAccessSource = async () => {
 
 const barOptionsData = reactive<EChartsOption>(barOptions) as EChartsOption
 
-// 周活跃量
 const getWeeklyUserActivity = async () => {
     const res = await getWeeklyUserActivityApi().catch(() => { })
     if (res) {
@@ -110,23 +111,28 @@ getAllApi()
                 </ElSkeleton>
             </ElCard>
         </ElCol>
+
         <ElCol :xl="10" :lg="10" :md="24" :sm="24" :xs="24">
             <ElCard shadow="hover" class="mb-20px">
                 <ElSkeleton :loading="loading" animated :rows="4">
-                    <Echart :options="pieOptions" :height="350" />
+                    <Echart :options="pieOptionsincome" :height="350" />
                 </ElSkeleton>
             </ElCard>
         </ElCol>
         <ElCol :xl="10" :lg="10" :md="24" :sm="24" :xs="24">
             <ElCard shadow="hover" class="mb-20px">
                 <ElSkeleton :loading="loading" animated :rows="4">
-                    <Echart :options="pieOptions" :height="350" />
+                    <Echart :options="pieOptionsexpense" :height="350" />
                 </ElSkeleton>
             </ElCard>
         </ElCol>
-        <!-- 
         <ElCol :span="24">
-            <tableRecord :loading="loading" :data="[]" :columns="[]" />
-        </ElCol> -->
+            <tableincome :loading="loading" :data="[]" :columns="[]" />
+
+        </ElCol>
+        <ElCol :span="24">
+            <tableexpense :loading="loading" :data="[]" :columns="[]" />
+
+        </ElCol>
     </ElRow>
 </template>

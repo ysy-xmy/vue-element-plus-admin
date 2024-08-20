@@ -116,7 +116,7 @@ const crudSchemas = reactive<CrudSchema[]>([
 
   {
     field: 'Resp',
-    label: '相应',
+    label: '响应',
 
     search: {
       hidden: true
@@ -144,7 +144,9 @@ const crudSchemas = reactive<CrudSchema[]>([
     },
     search: {
       hidden: true
-    }
+    },
+    sortable: true
+
   },
   {
     field: 'action',
@@ -184,6 +186,14 @@ const crudSchemas = reactive<CrudSchema[]>([
     }
   }
 ])
+function displayObjectAsStrings(obj: { [key: string]: any }) {
+  if (obj === null || obj === undefined) {
+    return ''
+  }
+  else {
+    return obj.msg
+  }
+}
 
 
 const { allSchemas } = useCrudSchemas(crudSchemas)
@@ -213,8 +223,8 @@ const fetchloglist = async () => {
       UserID: v.UserID,
       Path: v.Path,
       Method: v.Method,
-      Params: v.Params,
-      Resp: v.Resp,
+      Params: displayObjectAsStrings(v.Params),
+      Resp: displayObjectAsStrings(v.Resp),
       CreatedAt: convertDateTime(v.CreatedAt),
 
     }

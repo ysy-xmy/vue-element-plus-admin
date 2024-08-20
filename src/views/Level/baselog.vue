@@ -35,12 +35,13 @@ const { tableRegister, tableState, tableMethods } = useTable({
   }
 })
 const { total, loading, pageSize, currentPage } = tableState
+const { getList, getElTableExpose, delList } = tableMethods
 
 const crudSchemas = reactive<CrudSchema[]>([
 
   {
     field: 'index',
-    label: t('userDemo.index'),
+    label: '序号',
     form: {
       hidden: true
     },
@@ -98,26 +99,12 @@ const crudSchemas = reactive<CrudSchema[]>([
 
   {
     field: 'Resp',
-    label: '相应',
+    label: '响应',
 
     search: {
       hidden: true
     },
   },
-  // {
-  //     field: 'Username',
-  //     label: t('userDemo.nickName'),
-  //     form: {
-  //         hidden: true
-  //     },
-  //     detail: {
-  //         hidden: true
-  //     },
-  //     search: {
-  //         hidden: true
-  //     },
-  // },
-
   {
     field: 'CreatedAt',
     label: t('userDemo.createTime'),
@@ -126,7 +113,8 @@ const crudSchemas = reactive<CrudSchema[]>([
     },
     search: {
       hidden: true
-    }
+    },
+
   },
   {
     field: 'action',
@@ -154,9 +142,6 @@ const crudSchemas = reactive<CrudSchema[]>([
                 <BaseButton type="success" onClick={() => action(row, 'detail')}>
                   查看
                 </BaseButton>
-
-
-
               </div>
 
             </>
@@ -167,12 +152,23 @@ const crudSchemas = reactive<CrudSchema[]>([
   }
 ])
 
-
+const setSearchParams = (params: any) => {
+  currentPage.value = 1
+  searchParams.value = params
+  getList()
+}
 const { allSchemas } = useCrudSchemas(crudSchemas)
 
 
 const treeEl = ref<typeof ElTree>()
-
+function displayObjectAsStrings(obj: { [key: string]: any }) {
+  if (obj === null || obj === undefined) {
+    return ''
+  }
+  else {
+    return obj.msg
+  }
+}
 const currentNodeKey = ref('')
 const loglist = ref([])
 currentPage.value = 1
@@ -192,15 +188,15 @@ const fetchloglist = async () => {
 
   //对拿到的列表做一个简单的处理
   loglist.value = res.data.Logs.map((v) => {
+    console.log(v.Resp)
     return {
       ID: v.ID,
       UserID: v.UserID,
       Path: v.Path,
       Method: v.Method,
-      Params: v.Params,
-      Resp: v.Resp,
+      Params: displayObjectAsStrings(v.Params),
+      Resp: displayObjectAsStrings(v.Resp),
       CreatedAt: convertDateTime(v.CreatedAt),
-
     }
   })
   loading.value = false
@@ -223,7 +219,20 @@ const dialogTitle = ref('')
 const currentRow = ref<DepartmentUserItem>()
 const actionType = ref('')
 
+const delData = async (row?: DepartmentUserItem) => {
+  const elTableExpose = await getElTableExpose()
+  ids.value = row
+    ? [row.id]
+    : elTableExpose?.getSelectionRows().map((v: DepartmentUserItem) => v.id) || []
+  delLoading.value = true
 
+  await delList(unref(ids).length).finally(() => {
+    delLoading.value = false
+  })
+}
+
+const delLoading = ref(false)
+const ids = ref<number[]>([])
 
 const action = (row: DepartmentUserItem, type: string) => {
   dialogTitle.value = type === 'edit' ? '编辑' : '查看'
@@ -234,20 +243,7 @@ const action = (row: DepartmentUserItem, type: string) => {
 
 const writeRef = ref<ComponentRef<typeof Write>>()
 
-const saveLoading = ref(false)
 
-const save = async () => {
-  if (actionType.value === 'add') {
-    const write = unref(writeRef)
-    const formData = await write?.submit()
-    if (formData) {
-      saveLoading.value = true
-
-    }
-
-  }
-
-}
 
 
 
@@ -258,31 +254,26 @@ const save = async () => {
 
     <ContentWrap class="flex-[3] ml-20px h-full">
 
-      <div class="mb-10px">
-        <!-- <BaseButton type="primary" @click="addgym">新增</BaseButton> -->
-        <!-- <BaseButton :loading="delLoading" type="danger" @click="delData(null)">
-          {{ t('exampleDemo.del') }}
-        </BaseButton> -->
 
-      </div>
-      <Table height="100%" v-model:current-page="currentPage" v-model:page-size="pageSize"
-        :columns="allSchemas.tableColumns" :data="loglist" :loading="loading" @register="tableRegister" :pagination="{
+      <Table v-model:current-page="currentPage" v-model:page-size="pageSize" :columns="allSchemas.tableColumns"
+        :data="loglist" :loading="loading" @register="tableRegister" :pagination="{
         total
       }" />
+
+
+
     </ContentWrap>
 
     <Dialog v-model="dialogVisible" :title="dialogTitle">
-      <Write v-if="actionType !== 'detail'" ref="writeRef" :form-schema="allSchemas.formSchema"
-        :current-row="currentRow" />
+      <Write v-if="actionType !== 'detail'" ref="writeRef" :form-schema="allSchemas.formSchema" />
 
-      <Detail v-if="actionType === 'detail'" :detail-schema="allSchemas.detailSchema" :current-row="currentRow" />
+      <Detail v-if="actionType === 'detail'" :detail-schema="allSchemas.detailSchema" />
 
       <template #footer>
-        <BaseButton v-if="actionType !== 'detail'" type="primary" :loading="saveLoading" @click="save">
-          {{ t('exampleDemo.save') }}
-        </BaseButton>
+
         <BaseButton @click="dialogVisible = false">{{ t('dialogDemo.close') }}</BaseButton>
       </template>
+
     </Dialog>
   </div>
 </template>

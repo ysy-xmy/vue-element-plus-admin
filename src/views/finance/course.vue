@@ -11,7 +11,7 @@ import {
 import { set } from 'lodash-es'
 import { EChartsOption } from 'echarts'
 import { useI18n } from '@/hooks/web/useI18n'
-
+import tableorder from './components/tableorder.vue'
 const { t } = useI18n()
 
 const loading = ref(true)
@@ -112,7 +112,7 @@ import tableRecord from '../Components/Table/tableRecord.vue'
         </ElCol>
 
         <ElCol :span="24">
-            <tableRecord :loading="loading" :data="[]" :columns="[]" />
+            <tableorder :loading="loading" :data="[]" :columns="[]" />
         </ElCol>
     </ElRow>
 </template>

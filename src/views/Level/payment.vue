@@ -143,7 +143,9 @@ const crudSchemas = reactive<CrudSchema[]>([
     },
     search: {
       hidden: true
-    }
+    },
+    sortable: true
+
   },
   {
     field: 'action',
@@ -212,8 +214,8 @@ const fetchloglist = async () => {
       UserID: v.UserID,
       Path: v.Path,
       Method: v.Method,
-      Params: v.Params,
-      Resp: v.Resp,
+      Params: displayObjectAsStrings(v.Params),
+      Resp: displayObjectAsStrings(v.Resp),
       CreatedAt: convertDateTime(v.CreatedAt),
 
     }
@@ -225,6 +227,14 @@ const fetchloglist = async () => {
     (res.data[0] && res.data[0]?.children && res.data[0].children[0].id) || ''
   await nextTick()
   unref(treeEl)?.setCurrentKey(currentNodeKey.value)
+}
+function displayObjectAsStrings(obj: { [key: string]: any }) {
+  if (obj === null || obj === undefined) {
+    return ''
+  }
+  else {
+    return obj.msg
+  }
 }
 
 const currentDepartment = ref('')
