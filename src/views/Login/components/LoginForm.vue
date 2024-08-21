@@ -251,10 +251,11 @@ const signIn = async () => {
           } else {
             userStore.setLoginInfo(undefined)
           }
-
           userStore.setToken(res.data.Token)
+
           userStore.setRememberMe(unref(remember))
           userStore.setUserInfo(res.data)
+
           appStore.setDynamicRouter(false)
           // 是否使用动态路由
           if (appStore.getDynamicRouter) {

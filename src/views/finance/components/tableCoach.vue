@@ -70,7 +70,7 @@ const getTableList = async () => {
     const res: any = await getAccountingPageByType(
         {
             Type: 'EXPENSE',
-            Remark: 'COACH_SALARIES_EXPENSE',
+            Remark: 'COACH_COMMISSION_EXPENSE',
             Page: currentPage.value,
             Size: pageSize.value,
         }

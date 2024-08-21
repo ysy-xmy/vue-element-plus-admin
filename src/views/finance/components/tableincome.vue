@@ -32,34 +32,33 @@ const { t } = useI18n()
 
 const columns: TableColumn[] = [
     {
-        field: 'NO',
-        label: '序号',
+        field: '排名',
+        label: '排名',
         type: 'index'
     },
     {
         field: 'ID',
-        label: 'id'
+        label: 'id',
     },
     {
         field: 'Username',
-        label: '购买者',
+        label: '购买者'
     },
-
     {
         field: 'Description',
         label: '描述',
+
     },
+
     {
         field: 'Amount',
-        label: '金额',
+        label: '总额',
         sortable: true
     },
     {
-        field: 'Date',
-        label: '日期',
-        sortable: true
-
-    }
+        field: 'Remark',
+        label: '备注',
+    },
 
 ]
 const loading = ref(true)
@@ -71,7 +70,6 @@ const getTableList = async () => {
     const res: any = await getAccountingPageByType(
         {
             Type: 'INCOME',
-            Remark: 'COURSE_INCOME',
             Page: currentPage.value,
             Size: pageSize.value,
         }

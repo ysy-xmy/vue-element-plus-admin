@@ -72,7 +72,7 @@ const getTableList = async () => {
     const res: any = await getAccountingPageByType(
         {
             Type: 'INCOME',
-            Remark: 'CourseIncome',
+            Remark: 'COURSE_INCOME',
             Page: currentPage.value,
             Size: pageSize.value,
         }
