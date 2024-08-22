@@ -9,6 +9,7 @@ import '@/plugins/svgIcon'
 // 初始化多语言
 import { setupI18n } from '@/plugins/vueI18n'
 
+// 引入全局变量
 // 引入状态管理
 import { setupStore } from '@/store'
 
