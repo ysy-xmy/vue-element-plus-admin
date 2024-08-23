@@ -121,7 +121,7 @@ const save = async () => {
 
     }
     else if (actionType.value === 'add') {
-        addAction([
+        let data = [
             {
                 "ActionInfos": {
                     "Name": inputdata.Name,
@@ -140,11 +140,17 @@ const save = async () => {
                     }
                 ],
             },
-        ]).then((res) => {
+        ]
+        addAction(data
+
+        ).then((res) => {
             console.log(res)
             saveLoading.value = false
             dialogVisible.value = false
             ElMessage.success('保存成功')
+            console.log(res.data[0])
+            emit('updateValue', data[0]);
+
         })
 
 
@@ -152,7 +158,9 @@ const save = async () => {
 }
 
 
-
+const emit = defineEmits<{
+    (e: 'updateValue', value: any);
+}>();
 
 const schema = reactive<FormSchema[]>([
     {
@@ -175,21 +183,14 @@ const schema = reactive<FormSchema[]>([
     {
         field: 'Description',
         component: 'Input',
-        value: 'Description',
         label: '描述',
         colProps: {
             span: 24
-
-
-
         },
         componentProps: {
             type: 'textarea',
-
-
+            autosize: { minRows: 2 } // 可以设置最小行数和最大行数
         }
-
-
     },
     {
         field: 'Imgs',

@@ -197,6 +197,47 @@ const dialogclose = () => {
     })
 }
 
+const handleUpdateValue = async (value: any) => {
+    try {
+        let data
+        const res = await getActionsBySec(String(SecondCategoryID.value));
+        if (res.data.length > 0) {
+            data = res.data.map(e => ({
+                id: e.ID,
+                title: e.Name,
+                orderid: e.OrderNum,
+                children: [],
+                intro: e.Description,
+                picurl: e.Imgs,
+                videos: e.Videos,
+                isActive: true
+            }));
+            actionlist.value = data;
+
+        } else {
+            data = [
+                {
+                    id: '-1',
+                    title: `------该目录下暂无数据------`,
+                    orderid: 100,
+                    children: [],
+                    isActive: false
+                }
+            ];
+            menuloading.value = false;
+            actionlist.value = data;
+        }
+    } catch (error) {
+        console.error("Error fetching actions:", error);
+        // Handle error appropriately
+    } finally {
+        menuloading.value = false;
+
+
+    }
+
+}
+
 
 </script>
 <template>
@@ -291,7 +332,8 @@ const dialogclose = () => {
                 </el-menu>
             </el-col>
             <el-col :span="16">
-                <Actionitem :SecondCategoryID :actionlist="actionlist" v-if="selectaction" />
+                <Actionitem @updateValue="handleUpdateValue" :SecondCategoryID :actionlist="actionlist"
+                    v-if="selectaction" />
                 <div v-else class="demo-image flex wrap justify-space-between w-full  px-8 justify-center">
                     <el-empty description="暂无数据" />
 

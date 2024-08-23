@@ -11,7 +11,6 @@ import { setupI18n } from '@/plugins/vueI18n'
 
 // 引入全局变量
 
-
 import { setupStore } from '@/store'
 
 // 全局组件
