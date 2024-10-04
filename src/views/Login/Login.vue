@@ -6,9 +6,8 @@ import { useI18n } from '@/hooks/web/useI18n'
 import { getCssVar } from '@/utils'
 import { useAppStore } from '@/store/modules/app'
 import { useDesign } from '@/hooks/web/useDesign'
-import { ref } from 'vue'
 import { ElScrollbar } from 'element-plus'
-
+import { ref } from 'vue'
 const { getPrefixCls } = useDesign()
 
 const prefixCls = getPrefixCls('login')
@@ -27,7 +26,10 @@ const themeChange = () => {
   const color = getCssVar('--el-bg-color')
   appStore.setMenuTheme(color)
   appStore.setHeaderTheme(color)
+  console.log(appStore.getTitle)
 }
+
+
 </script>
 
 <template>
@@ -39,14 +41,14 @@ const themeChange = () => {
           <div class="flex items-center relative text-white">
             <img src="@/assets/imgs/logo.png" alt="" class="w-48px h-48px mr-10px" />
             <!-- <span class="text-20px font-bold">{{ underlineToHump(appStore.getTitle) }}</span> -->
-            <span class="text-20px font-bold">健管家后台管理系统</span>
+            <span class="text-20px font-bold">{{ appStore.getTitle }}</span>
           </div>
           <div class="flex justify-center items-center h-[calc(100%-60px)]">
             <TransitionGroup appear tag="div" enter-active-class="animate__animated animate__bounceInLeft">
               <img src="@/assets/svgs/login-box-bg.svg" key="1" alt="" class="w-350px" />
-              <div class="text-3xl text-white" key="2">{{ t('login.welcome') }}</div>
+              <div class="text-3xl text-white" key="2">欢迎使用{{ appStore.getTitle }}系统</div>
               <div class="mt-5 font-normal text-white text-14px" key="3">
-                {{ t('login.message') }}
+                统一管理小程序的数据
               </div>
             </TransitionGroup>
           </div>
@@ -56,7 +58,7 @@ const themeChange = () => {
             <div class="flex items-center at-2xl:hidden at-xl:hidden">
               <img src="@/assets/imgs/logo.png" alt="" class="w-48px h-48px mr-10px" />
               <!-- <span class="text-20px font-bold">{{ underlineToHump(appStore.getTitle) }}</span> -->
-              <span class="text-20px font-bold">健管家后台管理系统</span>
+              <span class="text-20px font-bold">{{ appStore.getTitle }}</span>
             </div>
 
             <div class="flex justify-end items-center space-x-10px">
