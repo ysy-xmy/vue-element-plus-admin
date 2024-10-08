@@ -11,10 +11,11 @@ import {
 } from 'element-plus'
 import { delAction, updateAction, addAction } from '@/api/resource'
 import { useForm } from '@/hooks/web/useForm'
-
+import { defineEmits } from 'vue';
 const { formRegister, formMethods } = useForm()
 const { getFormData, getElFormExpose } = formMethods
 
+// 定义可以发出的事件
 
 const loading = ref(false)
 const dialogVisible = ref(false)
@@ -69,16 +70,16 @@ const props = defineProps({
 const dialogclose = () => {
     dialogVisible.value = false
 }
-console.log(props.actionlist)
 const formData = reactive({
     Name: '',
     Description: '',
     Videos: [],
     Imgs: [],
     ID: '',
-    OrderNum: 0
+    OrderNum: 0,
+    index: 0
 })
-const action = (type: string, item: any) => {
+const action = (type: string, item: any, index: number) => {
     if (type === 'add') {
         dialogTitle.value = '新增动作';
         actionType.value = type;
@@ -98,13 +99,14 @@ const action = (type: string, item: any) => {
         formData.Videos = item.picurl.filter(i => i.URL.includes('video')).map(i => i.URL)
         formData.Imgs = item.picurl.filter(i => i.URL.includes('image')).map(i => i.URL)
         formData.OrderNum = item.orderid
+        formData.index = index
     }
 };
 const saveLoading = ref(false)
 const save = async () => {
     saveLoading.value = true
     const inputdata = await submit()
-
+    console.log(inputdata)
     if (actionType.value === 'edit') {
 
         updateAction({
@@ -113,10 +115,12 @@ const save = async () => {
             SecondCategoryID: props.SecondCategoryID,
             OrderNum: formData.OrderNum,
         }).then((res) => {
-            console.log(res)
+            ElMessage.success('保存成功')
+            props.actionlist[formData.index].title = inputdata.Name
+            props.actionlist[formData.index].picurl = inputdata.Imgs.map(i => ({ ID: 0, URL: i }))
+        }).finally(() => {
             saveLoading.value = false
             dialogVisible.value = false
-            ElMessage.success('保存成功')
         })
 
     }
@@ -149,7 +153,6 @@ const save = async () => {
             dialogVisible.value = false
             ElMessage.success('保存成功')
             console.log(res.data[0])
-            emit('updateValue', data[0]);
 
         })
 
@@ -158,9 +161,7 @@ const save = async () => {
 }
 
 
-const emit = defineEmits<{
-    (e: 'updateValue', value: any);
-}>();
+
 
 const schema = reactive<FormSchema[]>([
     {
@@ -287,7 +288,7 @@ const deteleAction = (item: any) => {
 <template>
     <div v-loading="loading" style="flex-wrap: wrap;"
         class="demo-image relative flex wrap justify-space-between w-full  px-8 justify-start items-center">
-        <template v-for="item in props.actionlist" :key="item.id" style="width: 22%"
+        <template v-for="(item, index) in props.actionlist" :key="item.id" style="width: 22%"
             class=" flex justify-center items-center w-full flex-wrap p-3 ">
             <div v-if="item.id !== '-1'" class=" flex px-5 my-5 justify-center flex-col items-center">
                 <el-image style="width: 100px;height: 100px;margin-top: 10px;"
@@ -297,7 +298,7 @@ const deteleAction = (item: any) => {
                     <div class="demonstration w-full font-600 text-center my-2">{{ item.title }}</div>
 
                     <div class='flex w- flex-row mt-1'>
-                        <BaseButton @click="action('edit', item)" type="primary">
+                        <BaseButton @click="action('edit', item, index)" type="primary">
                             编辑
                         </BaseButton>
                         <BaseButton @click="deteleAction(item)" type="danger">
