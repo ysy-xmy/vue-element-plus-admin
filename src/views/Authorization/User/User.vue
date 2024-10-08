@@ -3,7 +3,7 @@ import { ContentWrap } from '@/components/ContentWrap'
 import { useI18n } from '@/hooks/web/useI18n'
 import { Table } from '@/components/Table'
 import { ref, watch, unref, nextTick, reactive } from 'vue'
-import { ElTree } from 'element-plus'
+import { ElMessage, ElTree, messageConfig } from 'element-plus'
 import { getUserByIdApi, saveUserApi, deleteUserByIdApi } from '@/api/department'
 import { getuserlistApi, disableUserApi, updatauserapi } from '@/api/Permission'
 import type { DepartmentUserItem } from '@/api/department/types'
@@ -94,6 +94,41 @@ const crudSchemas = reactive<CrudSchema[]>([
         },
     },
     {
+        field: 'Avatar',
+        label: '头像',
+        form: {
+            hidden: true
+        },
+        detail: {
+            hidden: true
+        },
+        search: {
+            hidden: true
+        },
+        table: {
+            width: 100,
+            slots: {
+                default: (data: any) => {
+                    const Avatar = data.row.Avatar
+                    return (
+                        <>
+                            <div class="flex justify-center items-center w-full">
+                                <img src={Avatar} class='w-50px rounded-full h-50px' />
+                            </div>
+                        </>
+                    )
+                }
+            }
+        }
+    },
+    {
+        field: 'Username',
+        label: '用户名',
+        form: {
+            hidden: true
+        },
+    },
+    {
         field: 'Phone',
         label: '手机号',
         form: {
@@ -129,6 +164,7 @@ const crudSchemas = reactive<CrudSchema[]>([
     //         hidden: true
     //     },
     // },
+
     {
         field: 'RoleName',
         label: '角色',
@@ -138,12 +174,12 @@ const crudSchemas = reactive<CrudSchema[]>([
         table: {
             slots: {
                 default: (data: any) => {
-                    const role = data.row.RoleName
+                    const RoleName = data.row.RoleName
                     return (
                         <>
-                            <ElTag type={role === '学员' ? 'success' : role === '教练' ? 'warning' : 'danger'}>
-                                {role}
-                            </ElTag >
+                            <ElTag type={RoleName === '学员' ? 'success' : RoleName === '教练' ? 'warning' : 'info'}>
+                                {RoleName}
+                            </ElTag>
                         </>
                     )
                 }
@@ -171,6 +207,31 @@ const crudSchemas = reactive<CrudSchema[]>([
             }
         }
     },
+    {
+        field: 'Sex',
+        label: '性别',
+        search: {
+            hidden: true
+        },
+        table: {
+            slots: {
+                default: (data: any) => {
+                    const Sex = data.row.Sex
+                    return (
+                        <>
+                            <ElTag type={Sex === 0 ? 'success' : Sex === 1 ? 'warning' : 'danger'}>
+                                {Sex === 0 ? '男' : Sex === 1 ? '女' : '未知'}
+                            </ElTag >
+                        </>
+                    )
+                }
+            }
+        },
+        form: {
+            hidden: true
+
+        }
+    },
 
     // {
     //   field: 'email',
@@ -191,6 +252,9 @@ const crudSchemas = reactive<CrudSchema[]>([
         },
         search: {
             hidden: true
+        },
+        table: {
+            width: 200,
         }
     },
     {
@@ -340,12 +404,16 @@ const fetchUserlist = async () => {
         return {
             "ID": v.ID,
             "OpenID": v.OpenID,
+            "Avatar": v.Avatar,
+            "Age": v.Age,
             "Username": v.Username,
             "Phone": v.Phone,
             "RoleName": (v.RoleName == 'student') ? '学员' : (v.RoleName == 'coach') ? '教练' : '其他',
             "Enable": v.Enable,
             "LastLoginTime": v.LastLoginTime,
+            "Sex": v.Sex,
             "CreatedAt": convertDateTime(v.CreatedAt),
+
         }
     })
     currentNodeKey.value =
@@ -400,6 +468,16 @@ const save = async () => {
             Roleid: formData.RoleName == '学员' ? 4 : 3,
         }
         const res = await updatauserapi(data)
+        if (res.code == 200) {
+            ElMessage.success('保存成功')
+
+            fetchUserlist()
+        } else {
+            ElMessage.error('保存失败')
+        }
+        dialogVisible.value = false
+        saveLoading.value = false
+
     }
 }
 
