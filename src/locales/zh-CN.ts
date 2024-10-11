@@ -105,8 +105,8 @@ export default {
     small: '小'
   },
   login: {
-    welcome: '欢迎使用健管家后台管理系统',
-    message: '统一管理健管家小程序',
+    welcome: '欢迎使用轻律健身后台管理系统',
+    message: '统一管理轻律健身小程序',
     username: '用户名',
     password: '密码',
     register: '注册',

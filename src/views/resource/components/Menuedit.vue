@@ -287,8 +287,13 @@ const renameMenu = (index: number, firstmenuid: string) => {
 
 const addfirstMenu = () => {
     const newName = prompt('请输入新的菜单名称');
-    console.log(typeof (menus.value[menus.value.length - 1].orderid + + 1), '222')
-    let orderid = menus.value[menus.value.length - 1].orderid + 1
+    var orderid
+    if (menus.value[menus.value.length - 1]) {
+        orderid = menus.value[menus.value.length - 1].orderid + 1
+    } else {
+        orderid = 1
+    }
+
     if (newName && newName.trim() !== '') {
         menus.value.push({
             title: newName,

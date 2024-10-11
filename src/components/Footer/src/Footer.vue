@@ -9,14 +9,12 @@ const prefixCls = getPrefixCls('footer')
 
 const appStore = useAppStore()
 
-const title = computed(() => appStore.getTitle)
+const title = '轻律健身后台管理系统'
 </script>
 
 <template>
-  <div
-    :class="prefixCls"
-    class="shrink-0 text-center text-[var(--el-text-color-placeholder)] bg-[var(--app-content-bg-color)] h-[var(--app-footer-height)] leading-[var(--app-footer-height)] dark:bg-[var(--el-bg-color)]"
-  >
+  <div :class="prefixCls"
+    class="shrink-0 text-center text-[var(--el-text-color-placeholder)] bg-[var(--app-content-bg-color)] h-[var(--app-footer-height)] leading-[var(--app-footer-height)] dark:bg-[var(--el-bg-color)]">
     Copyright ©2021-present {{ title }}
   </div>
 </template>

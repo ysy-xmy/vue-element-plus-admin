@@ -41,7 +41,7 @@ export const useAppStore = defineStore('app', {
       sizeMap: ['default', 'large', 'small'],
       mobile: false, // 是否是移动端
       // title: import.meta.env.VITE_APP_TITLE, // 标题
-      title: '健管家后台管理系统', // 标题
+      title: '轻律健身后台管理系统', // 标题
       pageLoading: true, // 路由跳转loading
       breadcrumb: true, // 面包屑
       breadcrumbIcon: true, // 面包屑图标

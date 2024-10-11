@@ -12,7 +12,7 @@ const appStore = useAppStore()
 
 const { t } = useI18n()
 
-const title = computed(() => appStore.getTitle)
+const title = '轻律健身后台管理系统'
 
 const asyncTitle = ref('')
 
@@ -47,15 +47,12 @@ const disabledClick = () => {
       <ElCol :xl="6" :lg="6" :md="12" :sm="24" :xs="24">
         <ElCard shadow="hover" class="mb-10px text-center">
           <div class="font-bold">{{ t('qrcodeDemo.style') }}</div>
-          <Qrcode
-            :text="title"
-            :options="{
-              color: {
-                dark: '#55D187',
-                light: '#2d8cf0'
-              }
-            }"
-          />
+          <Qrcode :text="title" :options="{
+    color: {
+      dark: '#55D187',
+      light: '#2d8cf0'
+    }
+  }" />
         </ElCard>
       </ElCol>
       <ElCol :xl="6" :lg="6" :md="12" :sm="24" :xs="24">
@@ -85,16 +82,13 @@ const disabledClick = () => {
       <ElCol :xl="6" :lg="6" :md="12" :sm="24" :xs="24">
         <ElCard shadow="hover" class="mb-10px text-center">
           <div class="font-bold">{{ t('qrcodeDemo.logoStyle') }}</div>
-          <Qrcode
-            :text="title"
-            :logo="{
-              src: logoImg,
-              logoSize: 0.2,
-              borderSize: 0.05,
-              borderRadius: 50,
-              bgColor: 'blue'
-            }"
-          />
+          <Qrcode :text="title" :logo="{
+    src: logoImg,
+    logoSize: 0.2,
+    borderSize: 0.05,
+    borderRadius: 50,
+    bgColor: 'blue'
+  }" />
         </ElCard>
       </ElCol>
       <ElCol :xl="6" :lg="6" :md="12" :sm="24" :xs="24">

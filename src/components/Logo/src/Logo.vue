@@ -20,9 +20,6 @@ const collapse = computed(() => appStore.getCollapse)
 
 onMounted(async () => {
   if (unref(collapse)) show.value = false
-  const res = await getconfig()
-  if (!res) return
-  appStore.setTitle(res.data.SystemName)
 
 
 })
