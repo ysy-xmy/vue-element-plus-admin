@@ -149,7 +149,7 @@ export default ({ command, mode }: ConfigEnv): UserConfig => {
       proxy: {
         // 选项写法
         '/api': {
-          target: 'http://8.134.61.141:8081',
+          target: 'https://meet.ysyxmy.top:2317',
           changeOrigin: true,
           rewrite: (path) => path.replace(/^\/api/, '')
         }
