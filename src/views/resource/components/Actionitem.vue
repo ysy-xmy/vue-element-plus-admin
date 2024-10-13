@@ -12,6 +12,7 @@ import {
 import { delAction, updateAction, addAction } from '@/api/resource'
 import { useForm } from '@/hooks/web/useForm'
 import { defineEmits } from 'vue';
+const emit = defineEmits(['updataActionlist']);
 const { formRegister, formMethods } = useForm()
 const { getFormData, getElFormExpose } = formMethods
 
@@ -55,12 +56,10 @@ const props = defineProps({
         type: Array as PropType<IItem[]>,
         default: () => []
     },
-    SecondCategoryID:
-    {
+    SecondCategoryID: {
         type: Number,
         default: 0
     },
-
     defaultActive: {
         type: String,
         default: '0'
@@ -106,7 +105,6 @@ const saveLoading = ref(false)
 const save = async () => {
     saveLoading.value = true
     const inputdata = await submit()
-    console.log(inputdata)
     if (actionType.value === 'edit') {
 
         updateAction({
@@ -145,18 +143,16 @@ const save = async () => {
                 ],
             },
         ]
-        addAction(data
-
-        ).then((res) => {
+        addAction(data).then((res) => {
             console.log(res)
             saveLoading.value = false
             dialogVisible.value = false
             ElMessage.success('保存成功')
-            console.log(res.data[0])
+            emit('updataActionlist', props.SecondCategoryID);
+
+
 
         })
-
-
     }
 }
 
@@ -202,14 +198,6 @@ const schema = reactive<FormSchema[]>([
             limit: 3,
             action: 'https://run.mocky.io/v3/9d059bf9-4660-45f2-925d-ce80ad6c4d15',
             fileList: [
-                {
-                    name: 'element-plus-logo.svg',
-                    url: 'https://element-plus.org/images/element-plus-logo.svg'
-                },
-                {
-                    name: 'element-plus-logo2.svg',
-                    url: 'https://element-plus.org/images/element-plus-logo.svg'
-                }
             ],
             listType: 'picture-card',
             multiple: true,
@@ -315,7 +303,7 @@ const deteleAction = (item: any) => {
 
         </template>
 
-        <div @click="action('add', {})" class="flex justify-center items-center flex-col content-center  "
+        <div @click="action('add')" class="flex justify-center items-center flex-col content-center  "
             style="width:170px;height: 170px;border-width: 1px;border-color: black;border-style: dashed;">
 
             <Icon size="100" icon="fluent:add-square-48-regular" />
