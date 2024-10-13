@@ -112,10 +112,10 @@ const save = async () => {
             Name: inputdata.Name,
             SecondCategoryID: props.SecondCategoryID,
             OrderNum: formData.OrderNum,
+            Description: inputdata.Description,
         }).then((res) => {
             ElMessage.success('保存成功')
-            props.actionlist[formData.index].title = inputdata.Name
-            props.actionlist[formData.index].picurl = inputdata.Imgs.map(i => ({ ID: 0, URL: i }))
+            emit('updataActionlist', props.SecondCategoryID);
         }).finally(() => {
             saveLoading.value = false
             dialogVisible.value = false
