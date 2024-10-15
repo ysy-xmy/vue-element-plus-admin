@@ -15,14 +15,22 @@
                         <span style="" class="logotext mt-20px mr-10 ">logo
                         </span>
 
-                        <el-upload class="avatar-uploader w-full mt-10"
+                        <!-- <el-upload class="avatar-uploader w-full mt-10"
                             action="https://run.mocky.io/v3/9d059bf9-4660-45f2-925d-ce80ad6c4d15"
                             :show-file-list="false" :on-success="handleAvatarSuccess"
                             :before-upload="beforeAvatarUpload" :limit='1' :auto-upload="false">
                             <img v-if="imageUrl" :src="imageUrl" width="100px" class="avatar mr-10" />
                             <el-button type="primary" size="big">更换</el-button>
-                        </el-upload>
+                        </el-upload> -->
 
+                        <el-upload class="avatar-uploader" :data="signature"
+                            action="https://zhanjiang-fitness.oss-cn-guangzhou.aliyuncs.com" :show-file-list="false"
+                            :on-success="handleAvatarSuccess" :before-upload="beforeAvatarUpload">
+                            <img v-if="imageUrl" :src="imageUrl" class="avatar" />
+                            <el-icon v-else class="avatar-uploader-icon">
+                                <Plus />
+                            </el-icon>
+                        </el-upload>
                     </div>
                     <div class="w-full my-30px items-center flex  justify-start flex-nowrap">
                         <span style="" class="logotext mt-20px mr-5 ">系统描述
@@ -81,17 +89,29 @@ getconfig().then(res => {
 import { ElMessage } from 'element-plus'
 
 import type { UploadProps } from 'element-plus'
+import axios from '@/axios';
+import { resolve } from 'path';
 
 const imageUrl = ref('https://element-plus-admin.cn/assets/logo-CRQ9AZN7.png')
 
-const handleAvatarSuccess: UploadProps['onSuccess'] = (
-    response,
-    uploadFile
-) => {
-    imageUrl.value = URL.createObjectURL(uploadFile.raw!)
+const signature = ref({
+    Policy: "",
+    OSSAccessKeyId: "",
+    Signature: "",
+    "x-oss-security-token": "",
+    key: "",
+})
+
+function getCurrentFormattedDate() {
+  const now = new Date();
+  const year = now.getFullYear();
+  const month = ("0" + (now.getMonth() + 1)).slice(-2); // 补零并截取
+  const day = ("0" + now.getDate()).slice(-2); // 补零并截取
+
+  return `${year}${month}${day}`;
 }
 
-const beforeAvatarUpload: UploadProps['beforeUpload'] = (rawFile) => {
+const beforeAvatarUpload: UploadProps['beforeUpload'] = async (rawFile) => {
     if (rawFile.type !== 'image/jpeg') {
         ElMessage.error('Avatar picture must be JPG format!')
         return false
@@ -99,7 +119,45 @@ const beforeAvatarUpload: UploadProps['beforeUpload'] = (rawFile) => {
         ElMessage.error('Avatar picture size can not exceed 2MB!')
         return false
     }
-    return true
+
+    try {
+        // 获取签名
+        const { data } = await axios.get({
+            url: '/api/user/oss',
+        });
+
+        // 填充签名信息
+        signature.value = {
+            Policy: data.PolicyBase64,
+            OSSAccessKeyId: data.AccessKeyId,
+            Signature: data.Signature,
+            "x-oss-security-token": data.SecurityToken,
+            key: getCurrentFormattedDate(),
+        };
+
+        // 检查签名是否有效
+        if (!signature.value.OSSAccessKeyId) {
+            ElMessage.error('签名的 AccessKeyId 没有获取到，请重试！');
+            return false; // 坏请求，返回 false
+        }
+
+        console.log("signature", signature.value);
+        return true; // 返回 true 以继续上传
+    } catch (error) {
+        // 处理错误
+        ElMessage.error('获取签名信息失败，请重试！');
+        console.error(error);
+        return false; // 坏请求，返回 false
+    }
+}
+
+const handleAvatarSuccess: UploadProps['onSuccess'] = (
+    response,
+    uploadFile
+) => {
+    imageUrl.value = URL.createObjectURL(uploadFile.raw!)
+    console.log("uploadFile", uploadFile)
+    console.log("imageUrl.value", imageUrl)
 }
 
 const saveConfig = () => {
