@@ -1,56 +1,33 @@
 <script setup lang="ts">
-import { ref, reactive, defineProps, PropType } from 'vue'
-import { Dialog } from '@/components/Dialog'
-import { Form, FormSchema } from '@/components/Form'
-import {
-
-    ElMessage,
-    ElMessageBox,
-    imageEmits,
-
-} from 'element-plus'
-import { delAction, updateAction, addAction } from '@/api/resource'
-import { useForm } from '@/hooks/web/useForm'
+import { ref, reactive, defineProps, PropType } from 'vue';
+import { Dialog } from '@/components/Dialog';
+import { Form, FormSchema } from '@/components/Form';
+import { ElMessage, ElMessageBox } from 'element-plus';
+import { delAction, updateAction, addAction } from '@/api/resource';
+import { useForm } from '@/hooks/web/useForm';
 import { defineEmits } from 'vue';
+import { getOss } from '@/api/utils/index';
+const loading = ref(false);
+const dialogVisible = ref(false);
+const dialogTitle = ref('');
+const actionType = ref('');
+const saveLoading = ref(false);
 const emit = defineEmits(['updataActionlist']);
-const { formRegister, formMethods } = useForm()
-const { getFormData, getElFormExpose } = formMethods
-
-// 定义可以发出的事件
-
-const loading = ref(false)
-const dialogVisible = ref(false)
-const dialogTitle = ref('')
-const actionType = ref('')
+const { formRegister, formMethods } = useForm();
+const { getFormData, getElFormExpose } = formMethods;
 interface IPicUrl {
     ID: number;
     URL: string;
 }
-
 interface IItem {
     id: number | string;
     title: string;
     orderid: number;
-    children: IItem[]; // 假设子项也是IItem类型的数组
+    children: IItem[]; // 假设子项也是 IItem 类型的数组
     intro: string;
     picurl: IPicUrl[];
     isActive: boolean;
 }
-
-
-const submit = async () => {
-    const elForm = await getElFormExpose()
-    const valid = await elForm?.validate().catch((err) => {
-        console.log(err)
-    })
-    if (valid) {
-        const formData = await getFormData()
-        return formData
-    }
-}
-
-
-
 const props = defineProps({
     actionlist: {
         type: Array as PropType<IItem[]>,
@@ -65,10 +42,13 @@ const props = defineProps({
         default: '0'
     }
 });
-
-const dialogclose = () => {
-    dialogVisible.value = false
-}
+const signature = ref({
+    Policy: "",
+    OSSAccessKeyId: "",
+    Signature: "",
+    "x-oss-security-token": "",
+    key: "",
+});
 const formData = reactive({
     Name: '',
     Description: '',
@@ -77,88 +57,7 @@ const formData = reactive({
     ID: '',
     OrderNum: 0,
     index: 0
-})
-const action = (type: string, item: any, index: number) => {
-    if (type === 'add') {
-        dialogTitle.value = '新增动作';
-        actionType.value = type;
-        dialogVisible.value = true;
-        formData.Name = ''
-        formData.Description = ''
-        formData.Videos = []
-        formData.Imgs = []
-        formData.ID = ''
-    } else if (type === 'edit') {
-        dialogTitle.value = '编辑动作';
-        actionType.value = type;
-        dialogVisible.value = true;
-        formData.Name = item.title;
-        formData.ID = item.id
-        formData.Description = item.intro
-        formData.Videos = item.picurl.filter(i => i.URL.includes('video')).map(i => i.URL)
-        formData.Imgs = item.picurl.filter(i => i.URL.includes('image')).map(i => i.URL)
-        formData.OrderNum = item.orderid
-        formData.index = index
-    }
-};
-const saveLoading = ref(false)
-const save = async () => {
-    saveLoading.value = true
-    const inputdata = await submit()
-    if (actionType.value === 'edit') {
-
-        updateAction({
-            ID: inputdata.ID || '',
-            Name: inputdata.Name,
-            SecondCategoryID: props.SecondCategoryID,
-            OrderNum: formData.OrderNum,
-            Description: inputdata.Description,
-        }).then((res) => {
-            ElMessage.success('保存成功')
-            emit('updataActionlist', props.SecondCategoryID);
-        }).finally(() => {
-            saveLoading.value = false
-            dialogVisible.value = false
-        })
-
-    }
-    else if (actionType.value === 'add') {
-        let data = [
-            {
-                "ActionInfos": {
-                    "Name": inputdata.Name,
-                    "SecondCategoryID": props.SecondCategoryID,
-                    "Description": inputdata.Description,
-                    "OrderNum": formData.OrderNum,
-                },
-                "ActionImgInfos": [
-                    {
-                        "URL": "http://cdprcqczv.eh/rbxnvx"
-                    }
-                ],
-                "ActionVideoInfos": [
-                    {
-                        "URL": "http://cdprcqczv.eh/rbxnvx"
-                    }
-                ],
-            },
-        ]
-        addAction(data).then((res) => {
-            console.log(res)
-            saveLoading.value = false
-            dialogVisible.value = false
-            ElMessage.success('保存成功')
-            emit('updataActionlist', props.SecondCategoryID);
-
-
-
-        })
-    }
-}
-
-
-
-
+});
 const schema = reactive<FormSchema[]>([
     {
         field: 'Name',
@@ -166,16 +65,13 @@ const schema = reactive<FormSchema[]>([
         label: '名称',
         colProps: {
             span: 24
-
         },
         componentProps: {
             rules: [
                 { required: true, message: '请输入名称' },
                 { type: 'string', message: '请输入正确的名称' }
             ]
-        }
-
-
+        },
     },
     {
         field: 'Description',
@@ -193,14 +89,16 @@ const schema = reactive<FormSchema[]>([
         field: 'Imgs',
         component: 'Upload',
         value: 'Imgs',
-        label: `默认`,
+        label: "图片(最多9张)",
         componentProps: {
-            limit: 3,
-            action: 'https://run.mocky.io/v3/9d059bf9-4660-45f2-925d-ce80ad6c4d15',
+            action: 'https://zhanjiang-fitness.oss-cn-guangzhou.aliyuncs.com',
             fileList: [
             ],
+            limit: 9,
             listType: 'picture-card',
             multiple: true,
+            data: signature,
+            uploadIcon: 'el-icon-upload',
             onPreview: (uploadFile) => {
                 console.log(uploadFile)
             },
@@ -213,16 +111,33 @@ const schema = reactive<FormSchema[]>([
                     () => false
                 )
             },
-            onExceed: (files, uploadFiles) => {
-                ElMessage.warning(
-                    `The limit is 3, you selected ${files.length} files this time, add up to ${files.length + uploadFiles.length
-                    } totally`
-                )
+            onSuccess: (res: any) => {
+                submit()
+                // formData.Imgs = res.data.map((i: any) => i.url)
             },
-        }
-
+            beforeUpload: (file: any) => {
+                return new Promise((resolve, reject) => {
+                    getOss().then((res) => {
+                        // 填充签名信息
+                        const { data } = res;
+                        signature.value = {
+                            Policy: data.PolicyBase64,
+                            OSSAccessKeyId: data.AccessKeyId,
+                            Signature: data.Signature,
+                            "x-oss-security-token": data.SecurityToken,
+                            key: getCurrentFormattedDate() + "/" + Date.now() + file.name.substring(file.name.lastIndexOf(".")),
+                        };
+                        resolve(true)
+                    }).catch((err) => {
+                        console.log(err);
+                        reject(false);
+                    });
+                });
+            },
+            slots: {
+            }
+        },
     },
-
 
     {
         field: 'Videos',
@@ -250,13 +165,100 @@ const schema = reactive<FormSchema[]>([
             },
             onChange: (file: any) => {
                 console.log(file)
-            }
+            },
         }
 
     },
-
 ])
 
+const action = (type: string, item: any, index: number) => {
+    if (type === 'add') {
+        dialogTitle.value = '新增动作';
+        actionType.value = type;
+        dialogVisible.value = true;
+
+        formData.Name = '';
+        formData.Description = '';
+        formData.Videos = [];
+        formData.Imgs = [];
+        formData.ID = '';
+    } else if (type === 'edit') {
+        dialogTitle.value = '编辑动作';
+        actionType.value = type;
+        dialogVisible.value = true;
+
+        formData.Name = item.title;
+        formData.ID = item.id;
+        formData.Description = item.intro;
+        formData.Videos = item.picurl.filter(i => i.URL.includes('video')).map(i => i.URL);
+        formData.Imgs = item.picurl.filter(i => i.URL.includes('image')).map(i => i.URL);
+        formData.OrderNum = item.orderid;
+        formData.index = index;
+    }
+};
+const submit = async () => {
+    const elForm = await getElFormExpose();
+    const valid = await elForm?.validate().catch((err) => {
+        console.log(err);
+    });
+
+    if (valid) {
+        const formData = await getFormData();
+        return formData;
+    }
+}
+const dialogclose = () => {
+    dialogVisible.value = false;
+}
+const save = async () => {
+    saveLoading.value = true;
+    const inputdata = await submit();
+
+    if (actionType.value === 'edit') {
+        updateAction({
+            ID: inputdata.ID || '',
+            Name: inputdata.Name,
+            SecondCategoryID: props.SecondCategoryID,
+            OrderNum: formData.OrderNum,
+            Description: inputdata.Description,
+        }).then((res) => {
+            ElMessage.success('保存成功');
+            emit('updataActionlist', props.SecondCategoryID);
+        }).finally(() => {
+            saveLoading.value = false;
+            dialogVisible.value = false;
+        });
+    } else if (actionType.value === 'add') {
+        let data = [
+            {
+                "ActionInfos": {
+                    "Name": inputdata.Name,
+                    "SecondCategoryID": props.SecondCategoryID,
+                    "Description": inputdata.Description,
+                    "OrderNum": formData.OrderNum,
+                },
+                "ActionImgInfos": [
+                    {
+                        "URL": "http://cdprcqczv.eh/rbxnvx"
+                    }
+                ],
+                "ActionVideoInfos": [
+                    {
+                        "URL": "http://cdprcqczv.eh/rbxnvx"
+                    }
+                ],
+            },
+        ];
+
+        addAction(data).then((res) => {
+            console.log(res);
+            saveLoading.value = false;
+            dialogVisible.value = false;
+            ElMessage.success('保存成功');
+            emit('updataActionlist', props.SecondCategoryID);
+        });
+    }
+};
 const deteleAction = (item: any) => {
 
     ElMessageBox.confirm('确认删除该动作吗？').then(() => {
@@ -269,7 +271,14 @@ const deteleAction = (item: any) => {
         })
     })
 }
+const getCurrentFormattedDate = () => {
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = ("0" + (now.getMonth() + 1)).slice(-2); // 补零并截取
+    const day = ("0" + now.getDate()).slice(-2); // 补零并截取
 
+    return `${year}${month}${day}`;
+}
 
 </script>
 
@@ -312,9 +321,11 @@ const deteleAction = (item: any) => {
         </div>
 
 
-        <Dialog height="700" v-model="dialogVisible" @close="dialogclose" :title="dialogTitle">
+        <Dialog :v-if="signature.OSSAccessKeyId !== ''" height="700" v-model="dialogVisible" @close="dialogclose"
+            :title="dialogTitle">
             <div class="flex w-full h-100% justify-center items-start content-start">
                 <Form @register="formRegister" :model="formData" :schema="schema" />
+
 
             </div>
             <template #footer>
