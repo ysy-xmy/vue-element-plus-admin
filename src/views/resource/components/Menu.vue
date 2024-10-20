@@ -5,7 +5,6 @@ import { actionrouter } from '../types'
 import { Dialog } from '@/components/Dialog'
 import Menuedit from '@/views/resource/components/Menuedit.vue'
 import { getFirstmenulist, getSecByFirst, getActionsBySec } from '@/api/resource'
-
 import { orderlist } from '@/store/modules/permission'
 import { onMounted } from 'vue';
 const Visible = ref(false);
@@ -206,6 +205,7 @@ const handleUpdateValue = async (value: any) => {
             ];
             menuloading.value = false;
             actionlist.value = data;
+            console.log(data)
         }
     } catch (error) {
         console.error("Error fetching actions:", error);
@@ -267,11 +267,8 @@ onMounted(() => {
                     :actionlist="actionlist" v-if="selectaction" />
                 <div v-else class="demo-image flex wrap justify-space-between w-full  px-8 justify-center">
                     <el-empty description="暂无数据" />
-
                 </div>
-
             </el-col>
-
         </el-row>
         <Dialog height="700" v-model="Visible" @close="dialogclose" :title="dialogTitle">
 

@@ -109,3 +109,6 @@ export const getcourseInfo = (data: any) => {
 export const deletecourse = (data: any) => {
     return request.delete({ url: '/api/course/delete', data })
 }
+export const getationDetail = (actionId: string) => {
+    return request.get({ url: '/api/action/action/detail/' + actionId })
+}
