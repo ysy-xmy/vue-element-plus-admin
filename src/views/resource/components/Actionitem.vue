@@ -374,8 +374,7 @@ const updataActionlist = (SecondCategoryID: number) => {
         <template v-for="(item, index) in props.actionlist" :key="item.id" style="width: 22%"
             class=" flex justify-center items-center w-full flex-wrap p-3 ">
             <div v-if="item.id !== '-1'" class=" flex px-5 my-5 justify-center flex-col items-center">
-                <img v-if="item.picurl.length > 0" :src="item.picurl[0].URL"
-                    style="width: 100px;height: 100px;margin-top: 10px;">
+                <img v-if="item.picurl" :src="item.picurl[0].URL" style="width: 100px;height: 100px;margin-top: 10px;">
                 </img>
                 <el-image v-else style="width: 100px;height: 100px;margin-top: 10px;"
                     src="https://th.bing.com/th/id/OIP.O6ZIKh-BK0SK9X_aM6GJkgHaHa?rs=1&pid=ImgDetMain" fit="fill" />
