@@ -280,7 +280,13 @@ const dialogclose = () => {
 }
 const dialogOpen = () => {
     dialogVisible.value = true
-    
+    formData.value.Name = ''
+    formData.value.Description = ''
+    formData.value.Imgs = []
+    formData.value.Videos = []
+    imgList.value=[]
+    videoList.value=[]
+    uploadKeys.value = []
     setTimeout(() => {
   if(props.actionType === 'edit')
         loadDada()//获取加载数据
@@ -391,7 +397,6 @@ const loadDada = ()=>{
             console.log(videoList.value)
             console.log(formData.value.Videos)
             setValues(formData.value)
-
             dialoading.value = false
     })
     }
