@@ -280,7 +280,9 @@ const dialogclose = () => {
 }
 const dialogOpen = () => {
     dialogVisible.value = true
+    
     setTimeout(() => {
+  if(props.actionType === 'edit')
         loadDada()//获取加载数据
     },200);
     
@@ -298,8 +300,6 @@ const save = async () => {
     saveLoading.value = true;
     const inputdata = await submit();
     if (props.actionType === 'edit') {
-        console.log(formData.value.Videos)
-        console.log(inputdata.videoUrl)
         if (inputdata.videoUrl!==undefined) {
             formData.value.Videos = [inputdata.videoUrl];
         }
@@ -330,32 +330,33 @@ const save = async () => {
             dialogVisible.value = false;
         });
     } else if (props.actionType === 'add') {
-        let data = [
-            {
-                "ActionInfos": {
-                    "Name": inputdata.Name,
-                    "SecondCategoryID": props.SecondCategoryID,
-                    "Description": inputdata.Description,
-                    "OrderNum": formData.value.OrderNum,
-                },
-                "ActionImgInfos": inputdata.Imgs.map((item) => {
-                    return {
-                        URL: item
-                    }
-                }),
-                "ActionVideoInfos": inputdata.Videos.map((item) => {
-                    return {
-                        URL: item
-                    }
-                }),
+        if (inputdata.videoUrl!==undefined) {
+            formData.value.Videos = [inputdata.videoUrl];
+        }
+        let data = [{
+            ActionInfos: {
+                Name: inputdata.Name,
+                SecondCategoryID:props.SecondCategoryID,
+                OrderNum: formData.value.OrderNum,
+                Description: inputdata.Description,
             },
-        ];
+            ActionImgInfos: formData.value.Imgs.map((item) => {
+                return {
+                    URL: item
+                }
+            }),
+            ActionVideoInfos: formData.value.Videos.map((item) => {
+                return {
+                    URL: item
+                }
+            }),
+        }];
         addAction(data).then((res) => {
+            emit('closeDialog');
             console.log(res);
             saveLoading.value = false;
             dialogVisible.value = false;
             ElMessage.success('保存成功');
-            emit('updataActionlist', props.SecondCategoryID);
         });
     }
 };
