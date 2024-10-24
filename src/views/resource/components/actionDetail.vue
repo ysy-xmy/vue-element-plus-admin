@@ -1,10 +1,9 @@
 <template>
-    
-    <Dialog  height="700" v-model="dialogVisible" @close="dialogclose" :title="dialogTitle">
+    <Dialog width="60%" height="700" v-model="dialogVisible" @close="dialogclose" :title="dialogTitle">
         <el-container style='display: flex;flex-direction: column' v-loading="dialoading" class="flex w-full h-100%  flex-col">
             <Form @register="formRegister" :model="formData" :schema="schema" />
+            <Mavon v-model="decHtml"/>
             <div style="display: flex;justify-content: center;align-items: center;height: 100%;" class="w-full">
-
                 <video v-if="formData.Videos.length > 0" 
                 controls 
                 width="600" 
@@ -14,8 +13,8 @@
                 您的浏览器不支持视频标签。
             </video>
             </div>
-           
         </el-container>
+
         <template #footer>
             <BaseButton @click="dialogVisible = false">关闭</BaseButton>
             <BaseButton type="primary" :loading="saveLoading" @click="save">
@@ -34,21 +33,22 @@ import { Dialog } from '@/components/Dialog';
 import { Form, FormSchema } from '@/components/Form';
 import { useForm } from '@/hooks/web/useForm';
 import { getOss } from '@/api/utils/index';
-import { ElMessage, ElMessageBox } from 'element-plus';
+import { ElMessage, ElMessageBox, valueEquals } from 'element-plus';
 import {getationDetail} from '@/api/resource/index';
 import {  updateAction, addAction } from '@/api/resource';
+import Mavon from './mavon.vue'
 const emit = defineEmits(['updataActionlist','closeDialog']);
 const { formRegister, formMethods } = useForm();
 const {
-  setProps,
-  delSchema,
-  addSchema,
-  setValues,
-  setSchema,
-  getComponentExpose,
-  getFormItemExpose,
-  getElFormExpose,
-  getFormData
+    setProps,
+    delSchema,
+    addSchema,
+    setValues,
+    setSchema,
+    getComponentExpose,
+    getFormItemExpose,
+    getElFormExpose,
+    getFormData
 } = formMethods
 const dialogVisible = ref(false)//控制弹窗显示隐藏
 const dialogTitle = ref('动作详情')//弹窗标题
@@ -72,6 +72,7 @@ const formData = ref({
     index: 0,
     videoUrl: '',
 });
+const decHtml = ref('')
 type img ={
     name: string,
     url: string
@@ -116,19 +117,6 @@ const schema = reactive<FormSchema[]>([
             ]
         },
     },
-    {
-        field: 'Description',
-        component: 'Input',
-        label: '描述',
-        colProps: {
-            span: 24
-        },
-        componentProps: {
-            type: 'textarea',
-            autosize: { minRows: 2 } // 可以设置最小行数和最大行数
-        }
-    },
-
     {
         field: 'Imgs',
         component: 'Upload',
@@ -315,7 +303,7 @@ const save = async () => {
                 ID: formData.value.ID,
                 Name: inputdata.Name,
                 OrderNum: formData.value.OrderNum,
-                Description: inputdata.Description,
+                Description: decHtml.value,
             },
             ActionImgInfos: formData.value.Imgs.map((item) => {
                 return {
@@ -344,7 +332,7 @@ const save = async () => {
                 Name: inputdata.Name,
                 SecondCategoryID:props.SecondCategoryID,
                 OrderNum: formData.value.OrderNum,
-                Description: inputdata.Description,
+                Description:  decHtml.value,
             },
             ActionImgInfos: formData.value.Imgs.map((item) => {
                 return {
@@ -375,7 +363,6 @@ const loadDada = ()=>{
         getationDetail(props.actionId).then((res) => {
             formData.value.ID = res.data.ActionInfos.ID
             formData.value.Name = res.data.ActionInfos.Name
-            formData.value.Description = res.data.ActionInfos.Description
             formData.value.Imgs = res.data.ActionImgInfos.map(item=>{
                 return item.URL
             })
@@ -394,6 +381,8 @@ const loadDada = ()=>{
                     url: item,
                 }
             })
+            decHtml.value = res.data.ActionInfos.Description
+            console.log(decHtml.value)
             console.log(videoList.value)
             console.log(formData.value.Videos)
             setValues(formData.value)
