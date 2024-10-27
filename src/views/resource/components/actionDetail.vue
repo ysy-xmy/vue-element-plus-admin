@@ -2,7 +2,6 @@
     <Dialog width="60%" height="700" v-model="dialogVisible" @close="dialogclose" :title="dialogTitle">
         <el-container style='display: flex;flex-direction: column' v-loading="dialoading" class="flex w-full h-100%  flex-col">
             <Form @register="formRegister" :model="formData" :schema="schema" />
-            <Mavon v-model="decHtml"/>
             <div style="display: flex;justify-content: center;align-items: center;height: 100%;" class="w-full">
                 <video v-if="formData.Videos.length > 0" 
                 controls 
@@ -13,6 +12,8 @@
                 您的浏览器不支持视频标签。
             </video>
             </div>
+            <Mavon v-model="decHtml"/>
+ 
         </el-container>
 
         <template #footer>

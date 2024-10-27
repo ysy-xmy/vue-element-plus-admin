@@ -21,7 +21,4 @@ onMounted(async () => {
     console.log(editor)
 })
 
-// setTimeout(() => {
-//     defaultHtml.value = '<p>hello <strong>world</strong></p>'
-// }, 3000)
 </script>
