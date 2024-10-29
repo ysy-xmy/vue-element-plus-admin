@@ -3,17 +3,19 @@
         <el-container style='display: flex;flex-direction: column' v-loading="dialoading" class="flex w-full h-100%  flex-col">
             <Form @register="formRegister" :model="formData" :schema="schema" />
             <div style="display: flex;justify-content: center;align-items: center;height: 100%;" class="w-full">
-                <video v-if="formData.Videos.length > 0" 
-                controls 
-                width="600" 
-                height="400"
-                :src="formData.Videos[0]" 
-                >
-                您的浏览器不支持视频标签。
-            </video>
+             <video v-if="formData.Videos.length > 0" 
+       controls 
+       width="600" 
+       height="400">
+    <source v-for="video in formData.Videos" 
+            :key="video" 
+            :src="video" 
+            type="video/mp4">
+    您的浏览器不支持视频标签。
+</video>
+
             </div>
             <Mavon v-model="decHtml"/>
- 
         </el-container>
 
         <template #footer>
