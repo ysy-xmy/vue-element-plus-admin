@@ -10,7 +10,7 @@
     <source v-for="video in formData.Videos" 
             :key="video" 
             :src="video" 
-            type="video/mp4">
+            type="video/mp4; codecs=avc1.42E01E, mp4a.40.2">
     您的浏览器不支持视频标签。
 </video>
 
