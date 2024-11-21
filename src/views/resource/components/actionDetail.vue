@@ -251,9 +251,8 @@ const schema = reactive<FormSchema[]>([
                 formData.value.Videos = []
                 const fileUrl = `https://zhanjiang-fitness.oss-cn-guangzhou.aliyuncs.com/${uploadKeys.value.shift()}`;
                 formData.value.Videos = [fileUrl]; // 替换之前的视频 URL
+                setValues(formData.value)
             },
-
-
         }
     }
 ])
