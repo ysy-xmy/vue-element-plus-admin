@@ -56,7 +56,6 @@ export const constantRouterMap: AppRouteRecordRaw[] = [
   }
 ]
 
-
 export const asyncRouterMap: AppRouteRecordRaw[] = [
   {
     path: '/dashboard',
@@ -66,8 +65,7 @@ export const asyncRouterMap: AppRouteRecordRaw[] = [
 
     meta: {
       title: '仪表盘',
-      icon: 'vi-ant-design:dashboard-filled',
-
+      icon: 'vi-ant-design:dashboard-filled'
     },
     children: [
       {
@@ -78,15 +76,10 @@ export const asyncRouterMap: AppRouteRecordRaw[] = [
           title: '仪表盘',
           noCache: true,
           affix: true,
-          icon: 'vi-ant-design:dashboard-filled',
-
+          icon: 'vi-ant-design:dashboard-filled'
         }
-      },
-
-
+      }
     ]
-
-
   },
   {
     path: '/permission',
@@ -218,7 +211,6 @@ export const asyncRouterMap: AppRouteRecordRaw[] = [
     meta: {
       title: '日志模块',
       icon: 'carbon:skill-level-advanced'
-
     },
     children: [
       {
@@ -226,7 +218,7 @@ export const asyncRouterMap: AppRouteRecordRaw[] = [
         name: '基础日志',
         component: () => import('@/views/Level/baselog.vue'),
         meta: {
-          title: '基础日志',
+          title: '基础日志'
         }
       },
       {
@@ -234,7 +226,7 @@ export const asyncRouterMap: AppRouteRecordRaw[] = [
         name: '打卡日志',
         component: () => import('@/views/Level/plan.vue'),
         meta: {
-          title: '打卡日志',
+          title: '打卡日志'
         }
       },
       {
@@ -242,7 +234,7 @@ export const asyncRouterMap: AppRouteRecordRaw[] = [
         name: '订单日志',
         component: () => import('@/views/Level/payment.vue'),
         meta: {
-          title: '订单日志',
+          title: '订单日志'
         }
       },
       {
@@ -250,7 +242,7 @@ export const asyncRouterMap: AppRouteRecordRaw[] = [
         name: '异常日志',
         component: () => import('@/views/Level/error.vue'),
         meta: {
-          title: '异常日志',
+          title: '异常日志'
         }
       }
     ]
@@ -258,45 +250,34 @@ export const asyncRouterMap: AppRouteRecordRaw[] = [
   {
     path: '/system',
     component: Layout,
-    name: '基本信息',
+    name: '系统设置',
     meta: {
-      title: '基本信息',
+      title: '系统设置',
       icon: 'carbon:skill-level-advanced'
     },
     children: [
+      // {
+      //   path: 'base-config',
+      //   name: '基础设置',
+      //   component: () => import('@/views/system/systembase.vue'),
+      //   meta: {
+      //     title: '基础设置'
+      //   }
+      // },
       {
-        path: 'base-config',
-        name: '基础设置',
-        component: () => import('@/views/system/systembase.vue'),
-        meta: {
-          title: '基础设置'
-        }
-      },
-      {
-        path: 'info',
+        path: 'systemconfig',
         name: '系统设置',
         component: () => import('@/views/system/systemconfig.vue'),
         meta: {
-          title: '系统设置'
+          title: '系统设置',
+          noCache: true,
+          affix: true,
+          icon: 'carbon:skill-level-advanced'
         }
       }
     ]
   }
 ]
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 const router = createRouter({
   history: createWebHashHistory(),

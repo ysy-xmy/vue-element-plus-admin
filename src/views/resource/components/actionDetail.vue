@@ -11,10 +11,9 @@
       v-loading="dialoading"
       class="flex w-full h-100% flex-col"
     >
-      <Form @register="formRegister" :model="formData" :schema="schema" />
       <div
         style="display: flex; justify-content: center; align-items: center; height: 100%"
-        class="w-full"
+        class="w-full mb-5"
       >
         <video v-if="formData.Videos.length > 0" controls width="600" height="400">
           <source
@@ -26,7 +25,7 @@
           您的浏览器不支持视频标签。
         </video>
       </div>
-      <Mavon v-model="decHtml" />
+      <Form @register="formRegister" :model="formData" :schema="schema" />
     </el-container>
 
     <template #footer>
@@ -73,6 +72,9 @@ const formData = ref<{
   OrderNum: number
   index: number
   videoUrl: string
+  Step: string
+  ReadyWorkContent: string
+  Attention: string
 }>({
   Name: '',
   Description: '',
@@ -81,7 +83,10 @@ const formData = ref<{
   ID: 0,
   OrderNum: 0,
   index: 0,
-  videoUrl: ''
+  videoUrl: '',
+  Step: '',
+  ReadyWorkContent: '',
+  Attention: ''
 })
 const decHtml = ref('')
 type img = {
@@ -273,6 +278,45 @@ const schema = reactive<FormSchema[]>([
         setValues(formData.value)
       }
     }
+  },
+  {
+    field: 'Description',
+    component: 'Input',
+    label: '描述',
+    colProps: {
+      span: 24
+    },
+    componentProps: {
+      type: 'textarea',
+      rows: 4,
+      maxlength: 80,
+      'show-word-limit': true,
+      placeholder: '请输入描述（最多80字）'
+    }
+  },
+  {
+    field: 'ReadyWorkContent',
+    component: 'Editor',
+    label: '准备工作',
+    colProps: {
+      span: 24
+    }
+  },
+  {
+    field: 'Step',
+    component: 'Editor',
+    label: '步骤',
+    colProps: {
+      span: 24
+    }
+  },
+  {
+    field: 'Attention',
+    component: 'Editor',
+    label: '注意事项',
+    colProps: {
+      span: 24
+    }
   }
 ])
 // 获取当前时间：
@@ -324,18 +368,17 @@ const save = async () => {
         ID: formData.value.ID,
         Name: inputdata.Name,
         OrderNum: formData.value.OrderNum,
-        Description: decHtml.value
+        Description: decHtml.value,
+        Step: inputdata.Step,
+        ReadyWorkContent: inputdata.ReadyWorkContent,
+        Attention: inputdata.Attention
       },
-      ActionImgInfos: formData.value.Imgs.map((item) => {
-        return {
-          URL: item
-        }
-      }),
-      ActionVideoInfos: formData.value.Videos.map((item) => {
-        return {
-          URL: item
-        }
-      })
+      ActionImgInfos: formData.value.Imgs.map((item) => ({
+        URL: item
+      })),
+      ActionVideoInfos: formData.value.Videos.map((item) => ({
+        URL: item
+      }))
     })
       .then(() => {
         ElMessage.success('保存成功')
@@ -355,18 +398,17 @@ const save = async () => {
           Name: inputdata.Name,
           SecondCategoryID: props.secondCategoryId,
           OrderNum: formData.value.OrderNum,
-          Description: decHtml.value
+          Description: decHtml.value,
+          Step: inputdata.Step,
+          ReadyWorkContent: inputdata.ReadyWorkContent,
+          Attention: inputdata.Attention
         },
-        ActionImgInfos: formData.value.Imgs.map((item) => {
-          return {
-            URL: item
-          }
-        }),
-        ActionVideoInfos: formData.value.Videos.map((item) => {
-          return {
-            URL: item
-          }
-        })
+        ActionImgInfos: formData.value.Imgs.map((item) => ({
+          URL: item
+        })),
+        ActionVideoInfos: formData.value.Videos.map((item) => ({
+          URL: item
+        }))
       }
     ]
     addAction(data).then((res) => {
@@ -383,14 +425,21 @@ const loadDada = () => {
   dialoading.value = true
   if (props.actionType === 'edit') {
     getationDetail(String(props.actionId)).then((res) => {
-      formData.value.ID = res.data.ActionInfos.ID
-      formData.value.Name = res.data.ActionInfos.Name
-      formData.value.Imgs = res.data.ActionImgInfos.map((item) => {
-        return item.URL
-      })
-      formData.value.Videos = res.data.ActionVideoInfos.map((item) => {
-        return item.URL
-      })
+      const { ActionInfos, ActionImgInfos, ActionVideoInfos } = res.data
+
+      formData.value = {
+        ...formData.value,
+        ID: ActionInfos.ID,
+        Name: ActionInfos.Name,
+        OrderNum: ActionInfos.OrderNum,
+        Description: ActionInfos.Description || '',
+        Step: ActionInfos.Step || '',
+        ReadyWorkContent: ActionInfos.ReadyWorkContent || '',
+        Attention: ActionInfos.Attention || '',
+        Imgs: ActionImgInfos ? ActionImgInfos.map((item) => item.URL) : [],
+        Videos: ActionVideoInfos ? ActionVideoInfos.map((item) => item.URL) : []
+      }
+
       imgList.value = formData.value.Imgs.map((item) => {
         return {
           name: item.split('/').pop() || item,

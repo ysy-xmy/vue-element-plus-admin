@@ -1,20 +1,9 @@
 import request from '@/axios'
 
-
 export const saveconfig = (data) => {
-
-    let newdata: any = {
-        ID: data.ID,
-        SystemName: data.SystemName,
-        SystemLogo: data.SystemLogo,
-        SystemDescription: data.SystemDescription,
-        CoachSalary: data.CoachSalary,
-    }
-    data = newdata
-    return request.post({ url: '/api/conf/saveOrUpdate', data })
-
+  return request.post({ url: '/api/conf/saveOrUpdate', data })
 }
 
 export const getconfig = () => {
-    return request.get({ url: '/api/conf/get' })
+  return request.get({ url: '/api/conf/get' })
 }
