@@ -369,14 +369,17 @@ const updataActionlist = (SecondCategoryID: number) => {
 </script>
 
 <template>
-    <div v-loading="loading" style="flex-wrap: wrap;"
+    <div
+v-loading="loading" style="flex-wrap: wrap;"
         class="demo-image relative flex wrap justify-space-between w-full  px-8 justify-start items-center">
-        <template v-for="(item, index) in props.actionlist" :key="item.id" style="width: 22%"
+        <template
+v-for="(item, index) in props.actionlist" :key="item.id" style="width: 22%"
             class=" flex justify-center items-center w-full flex-wrap p-3 ">
             <div v-if="item.id !== '-1'" class=" flex px-5 my-5 justify-center flex-col items-center">
-                <img v-if="item.picurl" :src="item.picurl[0].URL" style="width: 100px;height: 100px;margin-top: 10px;">
+                <img v-if="item.picurl" :src="item.picurl[0].URL" style="width: 100px;height: 100px;margin-top: 10px;"/>
                 </img>
-                <el-image v-else style="width: 100px;height: 100px;margin-top: 10px;"
+                <el-image
+v-else style="width: 100px;height: 100px;margin-top: 10px;"
                     src="https://th.bing.com/th/id/OIP.O6ZIKh-BK0SK9X_aM6GJkgHaHa?rs=1&pid=ImgDetMain" fit="fill" />
                 <div class="mt-2 w-full flex flex-col justify-around items-center content-center">
 
@@ -394,7 +397,8 @@ const updataActionlist = (SecondCategoryID: number) => {
             </div>
         </template>
 
-        <div @click="action('add')" class="flex justify-center items-center flex-col content-center  "
+        <div
+@click="action('add')" class="flex justify-center items-center flex-col content-center  "
             style="width:170px;height: 170px;border-width: 1px;border-color: black;border-style: dashed;">
             <Icon size="100" icon="fluent:add-square-48-regular" />
             <span>添加动作</span>
@@ -413,8 +417,9 @@ const updataActionlist = (SecondCategoryID: number) => {
                 <BaseButton @click="dialogVisible = false">关闭</BaseButton>
             </template>
         </Dialog> -->
-        <ActionDetail ref="actionDetailRef" @closeDialog="updataActionlist(props.SecondCategoryID)"
-            :SecondCategoryID="props.SecondCategoryID" :actionId="actionId" :actionType="actionType" />
+        <ActionDetail
+ref="actionDetailRef" @close-dialog="updataActionlist(props.SecondCategoryID)"
+            :secondCategoryId="props.SecondCategoryID" :actionId="actionId" :actionType="actionType" />
     </div>
 
 </template>

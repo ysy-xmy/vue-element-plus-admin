@@ -88,7 +88,6 @@ const formData = ref<{
   ReadyWorkContent: '',
   Attention: ''
 })
-const decHtml = ref('')
 type img = {
   name: string
   url: string
@@ -368,7 +367,7 @@ const save = async () => {
         ID: formData.value.ID,
         Name: inputdata.Name,
         OrderNum: formData.value.OrderNum,
-        Description: decHtml.value,
+        Description: inputdata.Description,
         Step: inputdata.Step,
         ReadyWorkContent: inputdata.ReadyWorkContent,
         Attention: inputdata.Attention
@@ -398,7 +397,7 @@ const save = async () => {
           Name: inputdata.Name,
           SecondCategoryID: props.secondCategoryId,
           OrderNum: formData.value.OrderNum,
-          Description: decHtml.value,
+          Description: inputdata.Description,
           Step: inputdata.Step,
           ReadyWorkContent: inputdata.ReadyWorkContent,
           Attention: inputdata.Attention
@@ -439,7 +438,6 @@ const loadDada = () => {
         Imgs: ActionImgInfos ? ActionImgInfos.map((item) => item.URL) : [],
         Videos: ActionVideoInfos ? ActionVideoInfos.map((item) => item.URL) : []
       }
-
       imgList.value = formData.value.Imgs.map((item) => {
         return {
           name: item.split('/').pop() || item,
@@ -452,10 +450,6 @@ const loadDada = () => {
           url: item
         }
       })
-      decHtml.value = res.data.ActionInfos.Description
-      console.log(decHtml.value)
-      console.log(videoList.value)
-      console.log(formData.value.Videos)
       setValues(formData.value)
       dialoading.value = false
     })
