@@ -1,12 +1,17 @@
 <script setup lang="ts">
 import { ElRow, ElCol, ElCard, ElSkeleton } from 'element-plus'
 import { Echart } from '@/components/Echart'
-import { pieOptionsexpense, pieOptionsincome, barOptions, corporateLineOptions } from './echarts-data'
+import {
+  pieOptionsexpense,
+  pieOptionsincome,
+  barOptions,
+  corporateLineOptions
+} from './echarts-data'
 import { ref, reactive } from 'vue'
 import {
-    getUserAccessSourceApi,
-    getWeeklyUserActivityApi,
-    getMonthlySalesApi
+  getUserAccessSourceApi,
+  getWeeklyUserActivityApi,
+  getMonthlySalesApi
 } from '@/api/dashboard/analysis'
 import { set } from 'lodash-es'
 import { EChartsOption } from 'echarts'
@@ -22,78 +27,78 @@ const pieOptionsData = reactive<EChartsOption>(pieOptionsexpense) as EChartsOpti
 
 // 用户来源
 const getUserAccessSource = async () => {
-    const res = await getUserAccessSourceApi().catch(() => { })
-    if (res) {
-        set(
-            pieOptionsData,
-            'legend.data',
-            res.data.map((v) => t(v.name))
-        )
-        pieOptionsData!.series![0].data = res.data.map((v) => {
-            return {
-                name: t(v.name),
-                value: v.value
-            }
-        })
-    }
+  const res = await getUserAccessSourceApi().catch(() => {})
+  if (res) {
+    set(
+      pieOptionsData,
+      'legend.data',
+      res.data.map((v) => t(v.name))
+    )
+    pieOptionsData!.series![0].data = res.data.map((v) => {
+      return {
+        name: t(v.name),
+        value: v.value
+      }
+    })
+  }
 }
 
 const barOptionsData = reactive<EChartsOption>(barOptions) as EChartsOption
 
 const getWeeklyUserActivity = async () => {
-    const res = await getWeeklyUserActivityApi().catch(() => { })
-    if (res) {
-        set(
-            barOptionsData,
-            'xAxis.data',
-            res.data.map((v) => t(v.name))
-        )
-        set(barOptionsData, 'series', [
-            {
-                name: t('analysis.activeQuantity'),
-                data: res.data.map((v) => v.value),
-                type: 'bar'
-            }
-        ])
-    }
+  const res = await getWeeklyUserActivityApi().catch(() => {})
+  if (res) {
+    set(
+      barOptionsData,
+      'xAxis.data',
+      res.data.map((v) => t(v.name))
+    )
+    set(barOptionsData, 'series', [
+      {
+        name: t('analysis.activeQuantity'),
+        data: res.data.map((v) => v.value),
+        type: 'bar'
+      }
+    ])
+  }
 }
 
 const corporateLineOption = reactive<EChartsOption>(corporateLineOptions) as EChartsOption
 
 // 每月销售总额
 const getMonthlySales = async () => {
-    const res = await getMonthlySalesApi().catch(() => { })
-    if (res) {
-        set(
-            corporateLineOption,
-            'xAxis.data',
-            res.data.map((v) => t(v.name))
-        )
-        set(corporateLineOption, 'series', [
-            // {
-            //     name: t('analysis.estimate'),
-            //     smooth: true,
-            //     type: 'line',
-            //     data: res.data.map((v) => v.estimate),
-            //     animationDuration: 2800,
-            //     animationEasing: 'cubicInOut'
-            // },
-            {
-                name: '销量',
-                smooth: true,
-                type: 'line',
-                itemStyle: {},
-                data: res.data.map((v) => v.actual),
-                animationDuration: 2800,
-                animationEasing: 'quadraticOut'
-            }
-        ])
-    }
+  const res = await getMonthlySalesApi().catch(() => {})
+  if (res) {
+    set(
+      corporateLineOption,
+      'xAxis.data',
+      res.data.map((v) => t(v.name))
+    )
+    set(corporateLineOption, 'series', [
+      // {
+      //     name: t('analysis.estimate'),
+      //     smooth: true,
+      //     type: 'line',
+      //     data: res.data.map((v) => v.estimate),
+      //     animationDuration: 2800,
+      //     animationEasing: 'cubicInOut'
+      // },
+      {
+        name: '销量',
+        smooth: true,
+        type: 'line',
+        itemStyle: {},
+        data: res.data.map((v) => v.actual),
+        animationDuration: 2800,
+        animationEasing: 'quadraticOut'
+      }
+    ])
+  }
 }
 
 const getAllApi = async () => {
-    await Promise.all([getUserAccessSource(), getWeeklyUserActivity(), getMonthlySales()])
-    loading.value = false
+  await Promise.all([getUserAccessSource(), getWeeklyUserActivity(), getMonthlySales()])
+  loading.value = false
 }
 
 getAllApi()
@@ -102,37 +107,34 @@ getAllApi()
 </script>
 
 <template>
-    <ElRow :gutter="20" justify="space-between">
+  <ElRow :gutter="20" justify="space-between">
+    <ElCol :span="24">
+      <ElCard shadow="hover" class="mb-20px">
+        <ElSkeleton :loading="loading" animated :rows="4">
+          <Echart :options="corporateLineOptions" :height="350" />
+        </ElSkeleton>
+      </ElCard>
+    </ElCol>
 
-        <ElCol :span="24">
-            <ElCard shadow="hover" class="mb-20px">
-                <ElSkeleton :loading="loading" animated :rows="4">
-                    <Echart :options="corporateLineOptions" :height="350" />
-                </ElSkeleton>
-            </ElCard>
-        </ElCol>
-
-        <ElCol :xl="10" :lg="10" :md="24" :sm="24" :xs="24">
-            <ElCard shadow="hover" class="mb-20px">
-                <ElSkeleton :loading="loading" animated :rows="4">
-                    <Echart :options="pieOptionsincome" :height="350" />
-                </ElSkeleton>
-            </ElCard>
-        </ElCol>
-        <ElCol :xl="10" :lg="10" :md="24" :sm="24" :xs="24">
-            <ElCard shadow="hover" class="mb-20px">
-                <ElSkeleton :loading="loading" animated :rows="4">
-                    <Echart :options="pieOptionsexpense" :height="350" />
-                </ElSkeleton>
-            </ElCard>
-        </ElCol>
-        <ElCol :span="24">
-            <tableincome :loading="loading" :data="[]" :columns="[]" />
-
-        </ElCol>
-        <ElCol :span="24">
-            <tableexpense :loading="loading" :data="[]" :columns="[]" />
-
-        </ElCol>
-    </ElRow>
+    <ElCol :xl="10" :lg="10" :md="24" :sm="24" :xs="24">
+      <ElCard shadow="hover" class="mb-20px">
+        <ElSkeleton :loading="loading" animated :rows="4">
+          <Echart :options="pieOptionsincome" :height="350" />
+        </ElSkeleton>
+      </ElCard>
+    </ElCol>
+    <ElCol :xl="10" :lg="10" :md="24" :sm="24" :xs="24">
+      <ElCard shadow="hover" class="mb-20px">
+        <ElSkeleton :loading="loading" animated :rows="4">
+          <Echart :options="pieOptionsexpense" :height="350" />
+        </ElSkeleton>
+      </ElCard>
+    </ElCol>
+    <ElCol :span="24">
+      <tableincome :loading="loading" :data="[]" :columns="[]" />
+    </ElCol>
+    <ElCol :span="24">
+      <tableexpense :loading="loading" :data="[]" :columns="[]" />
+    </ElCol>
+  </ElRow>
 </template>

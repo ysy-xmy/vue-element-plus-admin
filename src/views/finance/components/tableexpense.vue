@@ -13,85 +13,112 @@ import { TableData } from '@/api/table/types'
 import { ref } from 'vue'
 // import { ElTag } from 'element-plus'
 // import { BaseButton } from '@/components/Button'
-import { getAccountingPageByType } from '@/api/finance'
+import { getAccountingPageByType, addAccounting } from '@/api/finance'
 import { useTable } from '@/hooks/web/useTable'
+import AddDialog from './addDialog.vue'
 
 const { tableRegister, tableState } = useTable({
-    fetchDataApi: async () => {
-        const res: any = await getTableList()
-        return {
-            list: res,
-            total: res.data.Total,
-        }
-    },
-
+  fetchDataApi: async () => {
+    const res: any = await getTableList()
+    return {
+      list: res,
+      total: res.data.Total
+    }
+  }
 })
 const { total, pageSize, currentPage } = tableState
 
 const { t } = useI18n()
 
 const columns: TableColumn[] = [
-    {
-        field: '排名',
-        label: '排名',
-        type: 'index'
-    },
-    {
-        field: 'ID',
-        label: 'id',
-    },
-    {
-        field: 'Username',
-        label: '使用者'
-    },
-    {
-        field: 'Description',
-        label: '描述',
+  {
+    field: '排名',
+    label: '排名',
+    type: 'index'
+  },
+  {
+    field: 'ID',
+    label: 'id'
+  },
+  {
+    field: 'Username',
+    label: '使用者'
+  },
+  {
+    field: 'Description',
+    label: '描述'
+  },
 
-    },
-
-    {
-        field: 'Amount',
-        label: '总额',
-        sortable: true
-    },
-    {
-        field: 'Remark',
-        label: '备注',
-    },
-
+  {
+    field: 'Amount',
+    label: '总额',
+    sortable: true
+  },
+  {
+    field: 'Remark',
+    label: '备注'
+  }
 ]
 const loading = ref(true)
 
 let tableDataList = ref<TableData[]>([])
 
 const getTableList = async () => {
-    loading.value = true
-    const res: any = await getAccountingPageByType(
-        {
-            Type: 'EXPENSE',
-            Page: currentPage.value,
-            Size: pageSize.value,
-        }
-    )
-    if (res) {
-        total.value = res.data.Total
-        loading.value = false
-        tableDataList.value = res.data.AccountingInfo
-    }
+  loading.value = true
+  const res: any = await getAccountingPageByType({
+    Type: 'EXPENSE',
+    Page: currentPage.value,
+    Size: pageSize.value
+  })
+  if (res) {
+    total.value = res.data.Total
+    loading.value = false
+    tableDataList.value = res.data.AccountingInfo
+  }
 }
 
 getTableList()
 
+const showDialog = ref(false)
 
+const handleSave = async (formData: any) => {
+  console.log('保存操作', formData)
+  formData.Amount = Number(formData.Amount)
+  const res: any = await addAccounting(formData)
+  if (res) {
+    getTableList()
+  }
+  showDialog.value = false
+}
+
+const handleCancel = () => {
+  console.log('取消操作')
+  showDialog.value = false
+}
+
+const handleShowDialog = () => {
+  console.log('Show dialog')
+  showDialog.value = true
+}
 </script>
 
 <template>
-    <ContentWrap title="支出表" :message="t('tableDemo.tableDes')">
-        <Table v-model:currentPage="currentPage" v-model:pageSize="pageSize" :columns="columns" :data="tableDataList"
-            :loading="loading" :defaultSort="{ prop: 'display_time', order: 'descending' }" @register="tableRegister"
-            :pagination="{
+  <ContentWrap title="支出表" :message="t('tableDemo.tableDes')">
+    <div style="margin-bottom: 20px">
+      <el-button type="primary" @click="handleShowDialog">添加</el-button>
+    </div>
+    <Table
+      v-model:currentPage="currentPage"
+      v-model:pageSize="pageSize"
+      :columns="columns"
+      :data="tableDataList"
+      :loading="loading"
+      :defaultSort="{ prop: 'display_time', order: 'descending' }"
+      @register="tableRegister"
+      :pagination="{
         total
-    }" />
-    </ContentWrap>
+      }"
+    />
+    <AddDialog title="录入支出" :visible="showDialog" @save="handleSave" @cancel="handleCancel" />
+  </ContentWrap>
 </template>
