@@ -1,11 +1,11 @@
 <script setup lang="tsx">
 import { ContentWrap } from '@/components/ContentWrap'
 import { useI18n } from '@/hooks/web/useI18n'
-import { Table, TableColumn } from '@/components/Table'
-import { ref, unref, nextTick, watch, reactive, h } from 'vue'
+import { Table } from '@/components/Table'
+import { ref, unref, nextTick, watch, reactive } from 'vue'
 import { ElTree, ElTag } from 'element-plus'
-import { getDepartmentApi, getUserByIdApi, saveUserApi, deleteUserByIdApi } from '@/api/department'
-import type { DepartmentItem, DepartmentUserItem } from '@/api/department/types'
+import { deleteUserByIdApi } from '@/api/department'
+import type { DepartmentUserItem } from '@/api/department/types'
 import { useTable } from '@/hooks/web/useTable'
 import type { UserParams } from '@/api/Permission/type'
 //@ts-ignore
@@ -21,15 +21,13 @@ import { getuserlistApi, addAdminApi, updataAdminApi } from '@/api/Permission'
 
 const { t } = useI18n()
 
-
-
 const { tableRegister, tableState, tableMethods } = useTable({
   fetchDataApi: async () => {
     const { pageSize, currentPage } = tableState
     const res: any = await fetchadminlist()
     return {
       list: res,
-      total: total.value,
+      total: total.value
     }
   },
   fetchDelApi: async () => {
@@ -38,7 +36,7 @@ const { tableRegister, tableState, tableMethods } = useTable({
   }
 })
 const { total, loading, pageSize, currentPage } = tableState
-const { getList, getElTableExpose, delList } = tableMethods
+const { getElTableExpose, delList } = tableMethods
 
 const crudSchemas = reactive<CrudSchema[]>([
   {
@@ -84,12 +82,11 @@ const crudSchemas = reactive<CrudSchema[]>([
         placeholder: '唯一标识openid',
         rules: [
           {
-            required: true,
-
+            required: true
           }
         ]
-      },
-    },
+      }
+    }
   },
 
   {
@@ -111,7 +108,7 @@ const crudSchemas = reactive<CrudSchema[]>([
     },
     search: {
       hidden: true
-    },
+    }
   },
 
   // {
@@ -159,7 +156,7 @@ const crudSchemas = reactive<CrudSchema[]>([
             <>
               <ElTag type={role === '学员' ? 'success' : role === '教练' ? 'warning' : 'danger'}>
                 {role}
-              </ElTag >
+              </ElTag>
             </>
           )
         }
@@ -171,10 +168,7 @@ const crudSchemas = reactive<CrudSchema[]>([
       componentProps: {
         collapseTags: true,
         maxCollapseTags: 1,
-        rules: [
-          { required: true, message: '请选择角色', trigger: 'change' }
-        ],
-
+        rules: [{ required: true, message: '请选择角色', trigger: 'change' }]
       },
       optionApi: async () => {
         const res = await getRoleListApi()
@@ -187,34 +181,6 @@ const crudSchemas = reactive<CrudSchema[]>([
       }
     }
   },
-  // {
-  //   field: 'roleid',
-  //   label: t('userDemo.role'),
-  //   formatter: (_: Recordable, __: TableColumn, cellValue: number) => {
-  //     return h(
-  //       ElTag,
-  //       {
-  //         type: cellValue === 1 ? 'success' : cellValue === 2 ? 'warning' : 'danger'
-  //       },
-  //       () =>
-  //         cellValue === 1
-  //           ? t('userDemo.superAdmin')
-  //           : cellValue === 2
-  //             ? t('userDemo.admin')
-  //             : t('userDemo.user')
-  //     )
-  //   }
-  // },
-  // {
-  //   field: 'email',
-  //   label: t('userDemo.email'),
-  //   form: {
-  //     component: 'Input'
-  //   },
-  //   search: {
-  //     hidden: true
-  //   }
-  // },
   {
     field: 'Password',
     label: '密码',
@@ -235,12 +201,8 @@ const crudSchemas = reactive<CrudSchema[]>([
           { required: true, message: '请输入密码', trigger: 'blur' },
           { min: 6, message: '密码长度不能少于6位', trigger: 'blur' }
         ]
-
-      },
-
-
+      }
     }
-
   },
 
   {
@@ -261,7 +223,6 @@ const crudSchemas = reactive<CrudSchema[]>([
       hidden: true
     },
     table: {
-
       slots: {
         default: (data: any) => {
           const status = data.row.Enable
@@ -292,8 +253,7 @@ const crudSchemas = reactive<CrudSchema[]>([
           {
             value: false,
             label: '禁用'
-          },
-
+          }
         ]
       }
     },
@@ -308,7 +268,7 @@ const crudSchemas = reactive<CrudSchema[]>([
             </>
           )
         }
-      },
+      }
     }
   },
   {
@@ -337,11 +297,7 @@ const crudSchemas = reactive<CrudSchema[]>([
                 <BaseButton type="success" onClick={() => action(row, 'detail')}>
                   查看
                 </BaseButton>
-
-
-
               </div>
-
             </>
           )
         }
@@ -351,14 +307,6 @@ const crudSchemas = reactive<CrudSchema[]>([
 ])
 
 const { allSchemas } = useCrudSchemas(crudSchemas)
-const select = ref(0)
-const searchParams = ref({})
-const setSearchParams = (params: any) => {
-  currentPage.value = 1
-  searchParams.value = params
-  getList()
-}
-
 const treeEl = ref<typeof ElTree>()
 
 const currentNodeKey = ref('')
@@ -367,9 +315,8 @@ const fetchadminlist = async () => {
   let params: UserParams = {
     Page: String(currentPage.value),
     Size: String(pageSize.value),
-    UserSelectType: 'ADMIN',
+    UserSelectType: 'ADMIN'
   }
-
 
   const res = await getuserlistApi(params)
 
@@ -378,19 +325,23 @@ const fetchadminlist = async () => {
 
   adminlist.value = res.data.AdminUserInfos.map((v) => {
     return {
-      "ID": v.ID,
-      "OpenID": v.OpenID,
-      "Username": v.Username,
-      "Phone": v.Phone,
-      "RoleName": (v.RoleName == 'super_admin') ? '超级管理员' : (v.RoleName == 'normal_admin') ? '管理员' : '学员',
-      "Enable": v.Enable,
-      "LastLoginTime": v.LastLoginTime,
-      "CreatedAt": convertDateTime(v.CreatedAt),
+      ID: v.ID,
+      OpenID: v.OpenID,
+      Username: v.Username,
+      Phone: v.Phone,
+      RoleName:
+        v.RoleName == 'super_admin'
+          ? '超级管理员'
+          : v.RoleName == 'normal_admin'
+            ? '管理员'
+            : '学员',
+      Enable: v.Enable,
+      LastLoginTime: v.LastLoginTime,
+      CreatedAt: convertDateTime(v.CreatedAt)
     }
   })
 
-  currentNodeKey.value =
-    (res.data[0] && res.data[0]?.children && res.data[0].children[0].id) || ''
+  currentNodeKey.value = (res.data[0] && res.data[0]?.children && res.data[0].children[0].id) || ''
   await nextTick()
   unref(treeEl)?.setCurrentKey(currentNodeKey.value)
 }
@@ -402,7 +353,6 @@ watch(
     unref(treeEl)!.filter(val)
   }
 )
-
 
 const dialogVisible = ref(false)
 const dialogTitle = ref('')
@@ -457,7 +407,7 @@ const save = async () => {
           Username: formData.Username,
           Password: formData.Password ? formData.Password : '',
           Roleid: formData.RoleName,
-          OpenID: formData.OpenID,
+          OpenID: formData.OpenID
         }
         const res = await updataAdminApi(data)
         if (res) {
@@ -471,8 +421,6 @@ const save = async () => {
         dialogVisible.value = false
       }
     }
-
-
   } else {
     if (formData) {
       saveLoading.value = true
@@ -481,7 +429,7 @@ const save = async () => {
           Username: formData.Username,
           Password: formData.Password,
           Roleid: formData.RoleName[0],
-          OpenID: formData.OpenID,
+          OpenID: formData.OpenID
         }
         const res = await addAdminApi(data)
         if (res) {
@@ -496,15 +444,11 @@ const save = async () => {
       }
     }
   }
-
 }
 </script>
 
 <template>
   <div class="flex w-100% h-100%">
-
-
-
     <ContentWrap class="flex-[3] ml-20px">
       <!-- <Search :schema="allSchemas.searchSchema" @reset="setSearchParams" @search="setSearchParams" /> -->
 
@@ -513,20 +457,39 @@ const save = async () => {
         <BaseButton :loading="delLoading" type="danger" @click="delData()">
           {{ t('exampleDemo.del') }}
         </BaseButton>
-
       </div>
-      <Table v-model:current-page="currentPage" v-model:page-size="pageSize" :columns="allSchemas.tableColumns"
-        :data="adminlist" :loading="loading" @register="tableRegister" :pagination="{ total }" />
+      <Table
+        v-model:current-page="currentPage"
+        v-model:page-size="pageSize"
+        :columns="allSchemas.tableColumns"
+        :data="adminlist"
+        :loading="loading"
+        @register="tableRegister"
+        :pagination="{ total }"
+      />
     </ContentWrap>
 
     <Dialog v-model="dialogVisible" :title="dialogTitle">
-      <Write v-if="actionType !== 'detail'" ref="writeRef" :form-schema="allSchemas.formSchema"
-        :current-row="currentRow" />
+      <Write
+        v-if="actionType !== 'detail'"
+        ref="writeRef"
+        :form-schema="allSchemas.formSchema"
+        :current-row="currentRow"
+      />
 
-      <Detail v-if="actionType === 'detail'" :detail-schema="allSchemas.detailSchema" :current-row="currentRow" />
+      <Detail
+        v-if="actionType === 'detail'"
+        :detail-schema="allSchemas.detailSchema"
+        :current-row="currentRow"
+      />
 
       <template #footer>
-        <BaseButton v-if="actionType !== 'detail'" type="primary" :loading="saveLoading" @click="save">
+        <BaseButton
+          v-if="actionType !== 'detail'"
+          type="primary"
+          :loading="saveLoading"
+          @click="save"
+        >
           {{ t('exampleDemo.save') }}
         </BaseButton>
         <BaseButton @click="dialogVisible = false">{{ t('dialogDemo.close') }}</BaseButton>
