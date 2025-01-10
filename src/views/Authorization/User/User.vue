@@ -332,7 +332,8 @@ const crudSchemas = reactive<CrudSchema[]>([
                       .then(async () => {
                         const res = await disableUserApi(ID)
                         if (res) {
-                          console.log(res)
+                          ElMessage.success('禁用成功')
+                          fetchUserlist()
                         }
                       })
                   } else {
@@ -347,7 +348,8 @@ const crudSchemas = reactive<CrudSchema[]>([
                       .then(async () => {
                         const res = await enableUserApi(ID)
                         if (res) {
-                          console.log(res)
+                          ElMessage.success('启用成功')
+                          fetchUserlist()
                         }
                       })
                   }

@@ -21,7 +21,7 @@ export const disableUserApi = (id: number) => {
 }
 
 export const enableUserApi = (id: number) => {
-  return request.delete({ url: `/api/user/enable`, params: { ID: id } })
+  return request.post({ url: `/api/user/enable`, params: { ID: id } })
 }
 
 export const updataAdminApi = (data: any) => {
