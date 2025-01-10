@@ -21,7 +21,7 @@ const pieOptionsData = reactive<EChartsOption>(pieOptions) as EChartsOption
 
 // 用户来源
 const getUserAccessSource = async () => {
-  const res = await getUserAccessSourceApi().catch(() => { })
+  const res = await getUserAccessSourceApi().catch(() => {})
   if (res) {
     set(
       pieOptionsData,
@@ -41,7 +41,7 @@ const barOptionsData = reactive<EChartsOption>(barOptions) as EChartsOption
 
 // 周活跃量
 const getWeeklyUserActivity = async () => {
-  const res = await getWeeklyUserActivityApi().catch(() => { })
+  const res = await getWeeklyUserActivityApi().catch(() => {})
   if (res) {
     set(
       barOptionsData,
@@ -62,7 +62,7 @@ const lineOptionsData = reactive<EChartsOption>(lineOptions) as EChartsOption
 
 // 每月销售总额
 const getMonthlySales = async () => {
-  const res = await getMonthlySalesApi().catch(() => { })
+  const res = await getMonthlySalesApi().catch(() => {})
   if (res) {
     set(
       lineOptionsData,
@@ -105,7 +105,6 @@ import tableRecord from './components/tableRecord.vue'
 <template>
   <PanelGroup />
   <ElRow :gutter="20" justify="space-between">
-
     <ElCol :span="24">
       <ElCard shadow="hover" class="mb-20px">
         <ElSkeleton :loading="loading" animated :rows="4">

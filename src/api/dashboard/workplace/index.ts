@@ -20,3 +20,15 @@ export const getTeamApi = (): Promise<IResponse<Team[]>> => {
 export const getRadarApi = (): Promise<IResponse<RadarData[]>> => {
   return request.get({ url: '/mock/workplace/radar' })
 }
+
+export const getdashboardInfo = (): Promise<
+  IResponse<{
+    CoachCount: number
+    LastMonthIncome: number
+    MonthOrderCount: number
+    StudentCount: number
+    [property: string]: any
+  }>
+> => {
+  return request.get({ url: '/api/gym/dashboardInfo' })
+}

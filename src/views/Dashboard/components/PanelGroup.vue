@@ -1,39 +1,3 @@
-<script setup lang="ts">
-import { ElRow, ElCol, ElCard, ElSkeleton } from 'element-plus'
-import { CountTo } from '@/components/CountTo'
-import { useDesign } from '@/hooks/web/useDesign'
-import { useI18n } from '@/hooks/web/useI18n'
-import { ref, reactive } from 'vue'
-import { getCountApi } from '@/api/dashboard/analysis'
-import type { AnalysisTotalTypes } from '@/api/dashboard/analysis/types'
-
-const { t } = useI18n()
-
-const { getPrefixCls } = useDesign()
-
-const prefixCls = getPrefixCls('panel')
-
-const loading = ref(true)
-
-let totalState = reactive<AnalysisTotalTypes>({
-  users: 0,
-  messages: 0,
-  moneys: 0,
-  shoppings: 0
-})
-
-const getCount = async () => {
-  const res = await getCountApi()
-    .catch(() => {})
-    .finally(() => {
-      loading.value = false
-    })
-  totalState = Object.assign(totalState, res?.data || {})
-}
-
-getCount()
-</script>
-
 <template>
   <ElRow :gutter="20" justify="space-between" :class="prefixCls">
     <ElCol :xl="6" :lg="6" :md="12" :sm="12" :xs="24">
@@ -49,28 +13,14 @@ getCount()
                 </div>
               </div>
               <div class="flex flex-col w-1/2 justify-between">
-                <div class="flex">
-                  <div
-                    :class="`${prefixCls}__item--text w-1/2 text-16px text-gray-500 text-center`"
-                    >{{ t('analysis.allUser') }}</div
-                  >
-
-                  <CountTo
-                    class="text-20px font-700 text-right"
-                    :start-val="0"
-                    :end-val="102400"
-                    :duration="2600"
-                  />
-                </div>
-                <div class="flex">
-                  <div :class="`${prefixCls}__item--text w-1/2 text-16px text-gray-500 text-center`"
-                    >{{ t('analysis.activeStu') }}
+                <div class="flex flex-col h-full justify-between items-end">
+                  <div :class="`${prefixCls}__item--text w-1/2 text-16px text-gray-500 text-right`"
+                    >学员数量
                   </div>
-
                   <CountTo
                     class="text-20px font-700 text-right"
                     :start-val="0"
-                    :end-val="20010"
+                    :end-val="totalState.StudentCount"
                     :duration="2600"
                   />
                 </div>
@@ -100,7 +50,7 @@ getCount()
                 <CountTo
                   class="text-20px font-700 text-right"
                   :start-val="0"
-                  :end-val="81212"
+                  :end-val="totalState.CoachCount"
                   :duration="2600"
                 />
               </div>
@@ -129,7 +79,7 @@ getCount()
                 <CountTo
                   class="text-20px font-700 text-right"
                   :start-val="0"
-                  :end-val="9280"
+                  :end-val="totalState.LastMonthIncome"
                   :duration="2600"
                 />
               </div>
@@ -158,7 +108,7 @@ getCount()
                 <CountTo
                   class="text-20px font-700 text-right"
                   :start-val="0"
-                  :end-val="136"
+                  :end-val="totalState.MonthOrderCount"
                   :duration="2600"
                 />
               </div>
@@ -169,7 +119,39 @@ getCount()
     </ElCol>
   </ElRow>
 </template>
+<script setup lang="ts">
+import { ElRow, ElCol, ElCard, ElSkeleton } from 'element-plus'
+import { CountTo } from '@/components/CountTo'
+import { useDesign } from '@/hooks/web/useDesign'
+import { useI18n } from '@/hooks/web/useI18n'
+import { ref, reactive } from 'vue'
+import { getdashboardInfo } from '@/api/dashboard/workplace'
 
+const { t } = useI18n()
+
+const { getPrefixCls } = useDesign()
+
+const prefixCls = getPrefixCls('panel')
+
+const loading = ref(true)
+
+const totalState = reactive({
+  StudentCount: 0,
+  CoachCount: 0,
+  LastMonthIncome: 0,
+  MonthOrderCount: 0
+})
+const getCount = async () => {
+  const res = await getdashboardInfo()
+    .catch(() => {})
+    .finally(() => {
+      loading.value = false
+    })
+  Object.assign(totalState, res?.data || {})
+}
+
+getCount()
+</script>
 <style lang="less" scoped>
 @prefix-cls: ~'@{adminNamespace}-panel';
 
