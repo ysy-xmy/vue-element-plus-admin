@@ -59,7 +59,7 @@ import { Table } from '@/components/Table'
 import { ref, watch, unref, nextTick, reactive } from 'vue'
 import { ElMessage, ElTree } from 'element-plus'
 import { deleteUserByIdApi } from '@/api/department'
-import { getuserlistApi, disableUserApi, updatauserapi } from '@/api/Permission'
+import { getuserlistApi, disableUserApi, enableUserApi, updatauserapi } from '@/api/Permission'
 import type { DepartmentUserItem } from '@/api/department/types'
 import { useTable } from '@/hooks/web/useTable'
 import Write from './components/Write.vue'
@@ -345,7 +345,7 @@ const crudSchemas = reactive<CrudSchema[]>([
                         data.row.Enable = false
                       })
                       .then(async () => {
-                        const res = await disableUserApi(ID)
+                        const res = await enableUserApi(ID)
                         if (res) {
                           console.log(res)
                         }
