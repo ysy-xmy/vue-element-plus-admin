@@ -18,6 +18,7 @@ import { EChartsOption } from 'echarts'
 import { useI18n } from '@/hooks/web/useI18n'
 import tableincome from './components/tableincome.vue'
 import tableexpense from './components/tableexpense.vue'
+import MonthlySalesChart from '../Dashboard/components/MonthlySalesChart.vue'
 
 const { t } = useI18n()
 
@@ -97,7 +98,7 @@ const getMonthlySales = async () => {
 }
 
 const getAllApi = async () => {
-  await Promise.all([getUserAccessSource(), getWeeklyUserActivity(), getMonthlySales()])
+  await Promise.all([getUserAccessSource(), getWeeklyUserActivity()])
   loading.value = false
 }
 
@@ -109,11 +110,7 @@ getAllApi()
 <template>
   <ElRow :gutter="20" justify="space-between">
     <ElCol :span="24">
-      <ElCard shadow="hover" class="mb-20px">
-        <ElSkeleton :loading="loading" animated :rows="4">
-          <Echart :options="corporateLineOptions" :height="350" />
-        </ElSkeleton>
-      </ElCard>
+      <MonthlySalesChart />
     </ElCol>
 
     <ElCol :xl="10" :lg="10" :md="24" :sm="24" :xs="24">
