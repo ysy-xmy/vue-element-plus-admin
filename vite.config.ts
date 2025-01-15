@@ -149,7 +149,7 @@ export default ({ command, mode }: ConfigEnv): UserConfig => {
       proxy: {
         // 选项写法
         '/api': {
-          target: 'https://api.2018ctjs.cn',
+          target: 'https://sit.2018ctjs.cn',
           changeOrigin: true,
           rewrite: (path) => path.replace(/^\/api/, '')
         }

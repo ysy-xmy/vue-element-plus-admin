@@ -197,7 +197,9 @@ const moveUp = async (index: number) => {
   if (index > 0) {
     menuloading.value = true
     try {
-      // 检查当前项和上一项是否存在且有有效的orderid
+      // 保存当前所有菜单的展开状态
+      const activeStates = menus.value.map((menu) => menu.isActive)
+
       const currentItem = menus.value[index]
       const prevItem = menus.value[index - 1]
 
@@ -209,7 +211,6 @@ const moveUp = async (index: number) => {
       const currentOrder = currentItem.orderid
       const prevOrder = prevItem.orderid
 
-      // 交换相邻两项的序号
       await Promise.all([
         updateFirst({
           Name: currentItem.title,
@@ -226,6 +227,10 @@ const moveUp = async (index: number) => {
       ElMessage.success('移动成功')
       await getAll().then((res) => {
         menus.value = orderlist(transformToTargetFormat(res.data))
+        // 恢复展开状态
+        menus.value.forEach((menu, i) => {
+          menu.isActive = activeStates[i]
+        })
       })
     } catch (error) {
       ElMessage.error('移动失败，请重试')
@@ -241,7 +246,9 @@ const moveDown = async (index: number) => {
   if (index < lastIndex) {
     menuloading.value = true
     try {
-      // 检查当前项和下一项是否存在且有有效的orderid
+      // 保存当前所有菜单的展开状态
+      const activeStates = menus.value.map((menu) => menu.isActive)
+
       const currentItem = menus.value[index]
       const nextItem = menus.value[index + 1]
 
@@ -253,7 +260,6 @@ const moveDown = async (index: number) => {
       const currentOrder = currentItem.orderid
       const nextOrder = nextItem.orderid
 
-      // 交换相邻两项的序号
       await Promise.all([
         updateFirst({
           Name: currentItem.title,
@@ -270,6 +276,10 @@ const moveDown = async (index: number) => {
       ElMessage.success('移动成功')
       await getAll().then((res) => {
         menus.value = orderlist(transformToTargetFormat(res.data))
+        // 恢复展开状态
+        menus.value.forEach((menu, i) => {
+          menu.isActive = activeStates[i]
+        })
       })
     } catch (error) {
       ElMessage.error('移动失败，请重试')
@@ -401,18 +411,73 @@ const addSubMenu = (menuIndex: number, firstmenuid: string) => {
     })
   }
 }
+
+const viewMode = ref('table')
+
+// 处理树节点拖拽
+const handleDragEnd = async (draggingNode, dropNode, dropType) => {
+  menuloading.value = true
+  try {
+    // 根据拖拽类型更新顺序
+    if (dropType === 'inner') {
+      // 处理成为子节点的情况
+      await updateSec({
+        ID: draggingNode.data.id,
+        FirstCategoryID: dropNode.data.id,
+        Name: draggingNode.data.title,
+        OrderNum: draggingNode.data.orderid
+      })
+    } else {
+      // 处理同级排序
+      await resetAllOrderNums()
+    }
+
+    // 重新加载数据
+    await getAll().then((res) => {
+      menus.value = orderlist(transformToTargetFormat(res.data))
+    })
+  } catch (error) {
+    ElMessage.error('更新失败')
+  } finally {
+    menuloading.value = false
+  }
+}
+
+// 处理编辑节点
+const handleEdit = (node, data) => {
+  if (data.children) {
+    renameMenu(node.parent.childNodes.indexOf(node), data.id)
+  } else {
+    const parentIndex = menus.value.findIndex((m) => m.id === node.parent.data.id)
+    renameSubMenu(parentIndex, node.parent.childNodes.indexOf(node), node.parent.data.id)
+  }
+}
+
+// 处理删除节点
+const handleDelete = (node, data) => {
+  if (data.children) {
+    deleteMenu(node.parent.childNodes.indexOf(node))
+  } else {
+    const parentIndex = menus.value.findIndex((m) => m.id === node.parent.data.id)
+    deleteSubMenu(parentIndex, node.parent.childNodes.indexOf(node))
+  }
+}
 </script>
 
 <style scoped>
 .menu-component {
-  padding: 24px;
+  padding: 32px;
   background-color: #f5f7fa;
   min-height: 100vh;
+  width: 100%;
+  box-sizing: border-box;
+  overflow-x: hidden;
 }
 
 .header-section {
-  margin-bottom: 24px;
+  margin-bottom: 32px;
   text-align: right;
+  width: 100%;
 }
 
 .add-menu-btn {
@@ -421,16 +486,19 @@ const addSubMenu = (menuIndex: number, firstmenuid: string) => {
 }
 
 .menu-card {
-  margin-bottom: 16px;
+  margin-bottom: 24px;
   border-radius: 8px;
   box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
+  width: 100%;
+  box-sizing: border-box;
+  overflow: hidden;
 }
 
 .menu-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 8px 0;
+  padding: 16px 24px;
 }
 
 .menu-title {
@@ -438,35 +506,43 @@ const addSubMenu = (menuIndex: number, firstmenuid: string) => {
   align-items: center;
   font-size: 16px;
   font-weight: 500;
+  padding: 0 12px;
 }
 
 .menu-actions {
   display: flex;
-  gap: 8px;
+  gap: 12px;
   align-items: center;
+  padding: 0 12px;
 }
 
 .submenu-section {
   margin-top: 16px;
-  padding: 16px;
+  padding: 24px;
   background-color: #fafafa;
   border-radius: 4px;
+  width: 100%;
+  box-sizing: border-box;
+  overflow-x: auto;
 }
 
 .priority-cell {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 12px;
+  padding: 8px 0;
 }
 
 .confirm-actions {
   display: flex;
-  gap: 4px;
+  gap: 8px;
+  padding: 0 8px;
 }
 
 .add-submenu-btn {
-  margin-top: 16px;
+  margin-top: 24px;
   width: 100%;
+  padding: 12px 0;
 }
 
 /* 动画效果 */
@@ -480,5 +556,54 @@ const addSubMenu = (menuIndex: number, firstmenuid: string) => {
   opacity: 0;
   transform: scaleY(0);
   transform-origin: top;
+}
+
+/* 确保表格撑满容器 */
+:deep(.el-table) {
+  width: 100% !important;
+  box-sizing: border-box;
+}
+
+:deep(.el-table__body-wrapper) {
+  overflow-x: auto;
+}
+
+/* 确保表格内容不会溢出 */
+:deep(.el-table__body) {
+  width: 100%;
+}
+
+.view-controls {
+  margin-bottom: 16px;
+}
+
+.tree-view {
+  background: white;
+  padding: 24px;
+  border-radius: 8px;
+  box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
+}
+
+.tree-node {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 4px 0;
+}
+
+.node-actions {
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+
+.tree-node:hover .node-actions {
+  opacity: 1;
+}
+
+.header-section {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 </style>

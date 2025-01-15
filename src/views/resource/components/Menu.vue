@@ -270,7 +270,7 @@ onMounted(() => {
         </div>
       </el-col>
     </el-row>
-    <Dialog height="800" v-model="Visible" @close="dialogclose" :title="dialogTitle">
+    <Dialog width="60%" v-model="Visible" @close="dialogclose" :title="dialogTitle">
       <div
         v-if="actionType === 'edit'"
         class="flex w-full h-100% justify-center items-start content-start"
