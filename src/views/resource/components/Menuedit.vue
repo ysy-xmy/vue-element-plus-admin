@@ -1,98 +1,124 @@
 <template>
-    <div v-loading="menuloading" class="menu-component flex justify-center flex-wrap flex-col">
-        <ul class="menu-list">
-            <li v-for="(menu, index) in menus" :key="index" class="menu-item">
-                <div class="menu-title  flex flex-wrap   ">
-
-                    <el-button style="font-size: large; " size="large" type="primary" @click="toggleSubMenu(index)"
-                        text>
-                        <Icon :size="20" icon="ep:aim" />
-                        <div class="mr-2"> </div>
-
-                        {{ menu.title }}
-                        <div class=""> </div>
-
-                    </el-button>
-                    <div class="flex-1  ">
-                        <el-button style="width: 20px;" @click.stop="renameMenu(index, menu.id)" type="primary">
-                            <Icon :size="20" icon="ep:edit" />
-                        </el-button>
-
-                    </div>
-                    <el-button v-if="index > 0" @click.stop="moveUp(index)" type="primary">上移</el-button>
-
-                    <el-button class="" v-if="index < menus.length - 1" @click.stop="moveDown(index)"
-                        type="primary">下移</el-button>
-
-
-                    <BaseButton @click="deleteMenu(index)" type="danger">
-                        删除
-                    </BaseButton>
-
-
-                </div>
-                <transition name="fade">
-                    <ul v-show="menu.isActive" class="submenu-list">
-                        <li v-for="(subMenu, subIndex) in menu.children" :key="subIndex"
-                            class="flex w-full submenu-item">
-                            <el-button type="primary" text size="large" style="color: black;"> {{ subMenu.title
-                                }}</el-button>
-
-                            <div class="flex-1 flex justify-start items-center">
-                                <el-button style="width: 20px" @click.stop="renameSubMenu(index, subIndex, menu.id)"
-                                    type="primary">
-                                    <Icon :size="20" icon="ep:edit" />
-                                </el-button>
-                            </div>
-
-
-                            <!-- <el-button v-if="subIndex > 0" @click.stop="moveSubUp(index, subIndex)"
-                                type="primary">上移</el-button>
-                            <el-button v-if="subIndex < menu.children.length - 1"
-                                @click.stop="moveSubDown(index, subIndex)" type="primary">下移</el-button> -->
-                            <div class="flex items-center">
-                                <span>优先级：</span>
-                                <el-input-number class="mr-5" v-model="subMenu.orderid" :min="1" :max="100"
-                                    @change="inedit(index, subIndex)" @focus="inedit(index, subIndex)" />
-
-                                <div v-if="subMenu.editorder" class="flex items-center mr-5">
-                                    <Icon class="opacity-70 mr-3" :size="25" icon="dashicons:yes"
-                                        @click.stop="confirmOrder(index, subIndex)" />
-
-                                    <Icon class="opacity-70" :size="20" icon="codicon:chrome-close"
-                                        @click.stop="cancelOrder(index, subIndex)" />
-                                </div>
-
-
-
-                                <BaseButton @click="deleteSubMenu(index, subIndex)" type="danger">
-                                    删除
-                                </BaseButton>
-
-                            </div>
-
-
-
-
-
-                        </li>
-                        <el-button class="add-menu-btn " @click="addSubMenu(index, menu.id)" type="primary" plain
-                            size="large">新建二级目录</el-button>
-
-                    </ul>
-                </transition>
-            </li>
-        </ul>
-        <el-button style="font-size: 18px; width: 50%" class="add-menu-btn" type="primary" size="large" plain
-            @click="addfirstMenu">新建一级目录</el-button>
+  <div v-loading="menuloading" class="menu-component">
+    <!-- 新的头部布局 -->
+    <div class="header-section">
+      <el-button type="primary" class="add-menu-btn" @click="addfirstMenu">
+        <Icon :size="20" icon="ep:plus" class="mr-2" />
+        新建一级目录
+      </el-button>
     </div>
 
+    <!-- 优化的菜单列表 -->
+    <el-card v-for="(menu, index) in menus" :key="index" class="menu-card">
+      <div class="menu-header">
+        <div class="menu-title">
+          <Icon :size="24" icon="ep:folder" class="mr-2" />
+          <span>{{ menu.title }}</span>
+        </div>
+
+        <div class="menu-actions">
+          <el-tooltip content="编辑名称">
+            <el-button @click="renameMenu(index, menu.id)" type="primary" text>
+              <Icon :size="20" icon="ep:edit" />
+            </el-button>
+          </el-tooltip>
+
+          <el-button-group>
+            <el-tooltip content="上移">
+              <el-button v-if="index > 0" @click="moveUp(index)" type="primary" text>
+                <Icon :size="20" icon="ep:arrow-up" />
+              </el-button>
+            </el-tooltip>
+
+            <el-tooltip content="下移">
+              <el-button
+                v-if="index < menus.length - 1"
+                @click="moveDown(index)"
+                type="primary"
+                text
+              >
+                <Icon :size="20" icon="ep:arrow-down" />
+              </el-button>
+            </el-tooltip>
+          </el-button-group>
+
+          <el-tooltip content="删除">
+            <el-button @click="deleteMenu(index)" type="danger" text>
+              <Icon :size="20" icon="ep:delete" />
+            </el-button>
+          </el-tooltip>
+
+          <el-tooltip content="展开/收起">
+            <el-button @click="toggleSubMenu(index)" type="primary" text>
+              <Icon :size="20" :icon="menu.isActive ? 'ep:arrow-up' : 'ep:arrow-down'" />
+            </el-button>
+          </el-tooltip>
+        </div>
+      </div>
+
+      <!-- 子菜单部分 -->
+      <transition name="el-zoom-in-top">
+        <div v-show="menu.isActive" class="submenu-section">
+          <el-table :data="menu.children" stripe>
+            <el-table-column label="名称" prop="title" />
+            <el-table-column label="优先级" width="200">
+              <template #default="{ row, $index }">
+                <div class="priority-cell">
+                  <el-input-number
+                    v-model="row.orderid"
+                    :min="1"
+                    :max="100"
+                    @change="inedit(index, $index)"
+                    @focus="inedit(index, $index)"
+                  />
+                  <div v-if="row.editorder" class="confirm-actions">
+                    <el-button type="success" text @click="confirmOrder(index, $index)">
+                      <Icon :size="20" icon="ep:check" />
+                    </el-button>
+                    <el-button type="danger" text @click="cancelOrder(index, $index)">
+                      <Icon :size="20" icon="ep:close" />
+                    </el-button>
+                  </div>
+                </div>
+              </template>
+            </el-table-column>
+            <el-table-column label="操作" width="150">
+              <template #default="{ $index }">
+                <el-button-group>
+                  <el-tooltip content="编辑">
+                    <el-button type="primary" text @click="renameSubMenu(index, $index, menu.id)">
+                      <Icon :size="20" icon="ep:edit" />
+                    </el-button>
+                  </el-tooltip>
+                  <el-tooltip content="删除">
+                    <el-button type="danger" text @click="deleteSubMenu(index, $index)">
+                      <Icon :size="20" icon="ep:delete" />
+                    </el-button>
+                  </el-tooltip>
+                </el-button-group>
+              </template>
+            </el-table-column>
+          </el-table>
+
+          <el-button
+            class="add-submenu-btn"
+            @click="addSubMenu(index, menu.id)"
+            type="primary"
+            text
+          >
+            <Icon :size="20" icon="ep:plus" class="mr-2" />
+            新建二级目录
+          </el-button>
+        </div>
+      </transition>
+    </el-card>
+  </div>
 </template>
 
 <script setup lang="ts">
-import { ref, defineProps, PropType } from 'vue';
+import { ref, defineProps, PropType } from 'vue'
 import { actionrouter } from '../types'
-import { ElMessageBox } from 'element-plus';
+import { ElMessageBox, ElMessage } from 'element-plus'
 import { orderlist } from '@/store/modules/permission'
 import { addFirst, addSec, updateFirst, updateSec, getAll, delFirst, delSec } from '@/api/resource'
 import { transformToTargetFormat } from './transale'
@@ -100,35 +126,25 @@ const menuloading = ref(false)
 
 const editorderid = ref<number | undefined>()
 const confirmOrder = (orderid: number, subIndex: number) => {
-    menus.value[orderid].children[subIndex].orderid = editorderid.value
-    menus.value[orderid].children[subIndex].editorder = false
+  menus.value[orderid].children[subIndex].orderid = editorderid.value
+  menus.value[orderid].children[subIndex].editorder = false
 
-    updateSec(
-        {
-            Name: menus.value[orderid].children[subIndex].title,
-            ID: menus.value[orderid].children[subIndex].id,
-            OrderNum: editorderid.value,
-            FirstCategoryID: menus.value[orderid].id,
-        }
-
-
-    )
-    menus.value = orderlist(menus.value)
-
-
-
-
+  updateSec({
+    Name: menus.value[orderid].children[subIndex].title,
+    ID: menus.value[orderid].children[subIndex].id,
+    OrderNum: editorderid.value,
+    FirstCategoryID: menus.value[orderid].id
+  })
+  menus.value = orderlist(menus.value)
 }
 const cancelOrder = (orderid: number, subIndex: number) => {
-    menus.value[orderid].children[subIndex].editorder = false
-    menus.value = orderlist(menus.value)
-
-
+  menus.value[orderid].children[subIndex].editorder = false
+  menus.value = orderlist(menus.value)
 }
 const inedit = (menuIndex: number, subIndex: number) => {
-    console.log('在编辑')
-    editorderid.value = menus.value[menuIndex].children[subIndex].orderid
-    menus.value[menuIndex].children[subIndex].editorder = true
+  console.log('在编辑')
+  editorderid.value = menus.value[menuIndex].children[subIndex].orderid
+  menus.value[menuIndex].children[subIndex].editorder = true
 }
 // const props = defineProps({
 //     actionrouterList: {
@@ -143,305 +159,326 @@ const inedit = (menuIndex: number, subIndex: number) => {
 // });
 menuloading.value = true
 var menus = ref<any[]>([])
-getAll().then(res => {
-    menuloading.value = false
-    console.log(res)
-    menus.value = orderlist(transformToTargetFormat(res.data))
+getAll().then((res) => {
+  menuloading.value = false
+  console.log(res)
+  menus.value = orderlist(transformToTargetFormat(res.data))
 })
 
-
-
-
-
 function removeItemById(items, idToRemove) {
-    return items.map(item => ({
-        ...item,
-        children: item.children.filter(child => child.id !== idToRemove)
-    }));
+  return items.map((item) => ({
+    ...item,
+    children: item.children.filter((child) => child.id !== idToRemove)
+  }))
 }
 
+const resetAllOrderNums = async () => {
+  menuloading.value = true
+  // 获取所有一级目录并按当前顺序重新设置序号
+  const updatePromises = menus.value.map((menu, index) => {
+    return updateFirst({
+      Name: menu.title,
+      ID: menu.id,
+      OrderNum: (index + 1) * 10
+    })
+  })
 
-const moveUp = (index: number) => {
-    if (index > 0) {
+  try {
+    await Promise.all(updatePromises)
+    await getAll().then((res) => {
+      menus.value = orderlist(transformToTargetFormat(res.data))
+    })
+  } finally {
+    menuloading.value = false
+  }
+}
 
+const moveUp = async (index: number) => {
+  if (index > 0) {
+    menuloading.value = true
+    try {
+      // 检查当前项和上一项是否存在且有有效的orderid
+      const currentItem = menus.value[index]
+      const prevItem = menus.value[index - 1]
 
-        menuloading.value = true
-        // 更新一级菜单项的OrderNum
-        let downorder = menus.value[index].orderid;
-        let uporder = menus.value[index - 1].orderid;
+      if (!currentItem?.orderid || !prevItem?.orderid) {
+        ElMessage.error('移动失败：序号无效')
+        return
+      }
+
+      const currentOrder = currentItem.orderid
+      const prevOrder = prevItem.orderid
+
+      // 交换相邻两项的序号
+      await Promise.all([
         updateFirst({
-            Name: menus.value[index].title,
-            ID: menus.value[index].id,
-            OrderNum: uporder,
-        }).then(() => {
-            updateFirst({
-                Name: menus.value[index - 1].title,
-                ID: menus.value[index - 1].id,
-                OrderNum: downorder,
-            }).then(() => {
-                const currentMenu = menus.value[index];
-                menus.value.splice(index, 1);
-                menus.value.splice(index - 1, 0, currentMenu);
-                menuloading.value = false
-
-            });
-        });
-
-
-    }
-
-};
-
-const moveDown = (index: number) => {
-    const lastIndex = menus.value.length - 1;
-    if (index < lastIndex) {
-        menuloading.value = true
-
-        // 更新一级菜单项的OrderNum
-        let downorder = menus.value[index].orderid;
-        let uporder = menus.value[index + 1].orderid;
+          Name: currentItem.title,
+          ID: currentItem.id,
+          OrderNum: prevOrder
+        }),
         updateFirst({
-            Name: menus.value[index].title,
-            ID: menus.value[index].id,
-            OrderNum: uporder,
-        }).then(() => {
-            updateFirst({
-                Name: menus.value[index + 1].title,
-                ID: menus.value[index + 1].id,
-                OrderNum: downorder,
-            }).then(() => {
-                const currentMenu = menus.value[index];
-                menus.value.splice(index, 1);
-                menus.value.splice(index + 1, 0, currentMenu);
-                menuloading.value = false
-
-            })
-
-
+          Name: prevItem.title,
+          ID: prevItem.id,
+          OrderNum: currentOrder
         })
+      ])
 
-    };
+      ElMessage.success('移动成功')
+      await getAll().then((res) => {
+        menus.value = orderlist(transformToTargetFormat(res.data))
+      })
+    } catch (error) {
+      ElMessage.error('移动失败，请重试')
+      console.error('Move up error:', error)
+    } finally {
+      menuloading.value = false
+    }
+  }
+}
+
+const moveDown = async (index: number) => {
+  const lastIndex = menus.value.length - 1
+  if (index < lastIndex) {
+    menuloading.value = true
+    try {
+      // 检查当前项和下一项是否存在且有有效的orderid
+      const currentItem = menus.value[index]
+      const nextItem = menus.value[index + 1]
+
+      if (!currentItem?.orderid || !nextItem?.orderid) {
+        ElMessage.error('移动失败：序号无效')
+        return
+      }
+
+      const currentOrder = currentItem.orderid
+      const nextOrder = nextItem.orderid
+
+      // 交换相邻两项的序号
+      await Promise.all([
+        updateFirst({
+          Name: currentItem.title,
+          ID: currentItem.id,
+          OrderNum: nextOrder
+        }),
+        updateFirst({
+          Name: nextItem.title,
+          ID: nextItem.id,
+          OrderNum: currentOrder
+        })
+      ])
+
+      ElMessage.success('移动成功')
+      await getAll().then((res) => {
+        menus.value = orderlist(transformToTargetFormat(res.data))
+      })
+    } catch (error) {
+      ElMessage.error('移动失败，请重试')
+      console.error('Move down error:', error)
+    } finally {
+      menuloading.value = false
+    }
+  }
 }
 
 const toggleSubMenu = (index: number) => {
-    menus.value[index].isActive = !menus.value[index].isActive;
-};
+  menus.value[index].isActive = !menus.value[index].isActive
+}
 
-const deleteMenu = (menuIndex: number,) => {
-    ElMessageBox.confirm(`确认删除该目录及其下所有动作资源？`, '提示', {
-        confirmButtonText: '确认',
-        cancelButtonText: '取消',
-        type: 'warning',
-    }).then(async () => {
-
-        delFirst(
-            [menus.value[menuIndex].id]).then(res => {
-                menus.value.splice(menuIndex, 1);
-
-                console.log(res)
-            })
-    })
-        .catch(() => {
-            // catch error
+const deleteMenu = (menuIndex: number) => {
+  ElMessageBox.confirm(`确认删除该目录及其下所有动作资源？`, '提示', {
+    confirmButtonText: '确认',
+    cancelButtonText: '取消',
+    type: 'warning'
+  })
+    .then(async () => {
+      delFirst([menus.value[menuIndex].id]).then(() => {
+        ElMessage.success('删除成功')
+        // 删除成功后重新获取所有菜单数据
+        getAll().then((res) => {
+          menus.value = orderlist(transformToTargetFormat(res.data))
         })
-};
-
-
+      })
+    })
+    .catch(() => {
+      // catch error
+    })
+}
 
 const deleteSubMenu = (menuIndex: number, subMenuIndex: number) => {
-    ElMessageBox.confirm(`确认删除该目录及其下所有动作资源？`, '提示', {
-        confirmButtonText: '确认',
-        cancelButtonText: '取消',
-        type: 'warning'
-    }).then(async () => {
-        delSec(
-            [menus.value[menuIndex].children[subMenuIndex].id]).then(() => {
-                menus.value[menuIndex].children.splice(subMenuIndex, 1);
-
-            })
-
-
-    }).catch(() => {
-        // catch error
+  ElMessageBox.confirm(`确认删除该目录及其下所有动作资源？`, '提示', {
+    confirmButtonText: '确认',
+    cancelButtonText: '取消',
+    type: 'warning'
+  })
+    .then(async () => {
+      delSec([menus.value[menuIndex].children[subMenuIndex].id]).then(() => {
+        ElMessage.success('删除成功')
+        // 删除成功后重新获取所有菜单数据
+        getAll().then((res) => {
+          menus.value = orderlist(transformToTargetFormat(res.data))
+        })
+      })
     })
-};
+    .catch(() => {
+      // catch error
+    })
+}
 const renameMenu = (index: number, firstmenuid: string) => {
-    const newName = prompt('请输入新的菜单名称', menus.value[index].title);
-    var orderid = menus.value[index].orderid
-    if (newName && newName.trim() !== '') {
-        menus.value[index].title = newName;
-    }
-    updateFirst(
-        {
-            Name: newName,
-            ID: firstmenuid,
-            OrderNum: orderid,
-        }
-
-
-    ).then(res => {
-        console.log(res)
-    })
-
-};
+  const newName = prompt('请输入新的菜单名称', menus.value[index].title)
+  var orderid = menus.value[index].orderid
+  if (newName && newName.trim() !== '') {
+    menus.value[index].title = newName
+  }
+  updateFirst({
+    Name: newName,
+    ID: firstmenuid,
+    OrderNum: orderid
+  }).then((res) => {
+    console.log(res)
+  })
+}
 
 const addfirstMenu = () => {
-    const newName = prompt('请输入新的菜单名称');
-    var orderid
-    if (menus.value[menus.value.length - 1]) {
-        orderid = menus.value[menus.value.length - 1].orderid + 1
-    } else {
-        orderid = 1
-    }
+  const newName = prompt('请输入新的菜单名称')
+  if (newName && newName.trim() !== '') {
+    // 计算新的 orderid：找到当前最大的 orderid，然后加 10
+    const maxOrderId = menus.value.reduce((max, menu) => {
+      return Math.max(max, menu.orderid || 0)
+    }, 0)
 
-    if (newName && newName.trim() !== '') {
-        menus.value.push({
-            title: newName,
-            isActive: false,
-            children: []
-        });
-        addFirst([
-            {
-                Name: newName,
-                OrderNum: orderid,
-            }
-        ]
+    const newOrderId = maxOrderId + 10
 
-        ).then(res => {
-            console.log(res)
-
-        })
-
-
-
-    }
-};
+    addFirst([
+      {
+        Name: newName,
+        OrderNum: newOrderId
+      }
+    ]).then(() => {
+      ElMessage.success('添加成功')
+      getAll().then((res) => {
+        menus.value = orderlist(transformToTargetFormat(res.data))
+      })
+    })
+  }
+}
 
 const renameSubMenu = (menuIndex: number, subMenuIndex: number, firstmenuid: string) => {
-    if (menus.value[menuIndex].children?.length) {
-        const newName = prompt('请输入新的子菜单名称', menus.value[menuIndex].children[subMenuIndex].title);
-        if (newName && newName.trim() !== '') {
-            menus.value[menuIndex].children[subMenuIndex].title = newName;
-        }
-
+  if (menus.value[menuIndex].children?.length) {
+    const newName = prompt(
+      '请输入新的子菜单名称',
+      menus.value[menuIndex].children[subMenuIndex].title
+    )
+    if (newName && newName.trim() !== '') {
+      menus.value[menuIndex].children[subMenuIndex].title = newName
     }
-    updateSec(
-        {
-            Name: menus.value[menuIndex].children[subMenuIndex].title,
-            ID: menus.value[menuIndex].children[subMenuIndex].id,
-            OrderNum: menus.value[menuIndex].children[subMenuIndex].orderid,
-            FirstCategoryID: firstmenuid,
-        }
-
-
-    ).then(res => {
-        console.log(res)
-    })
-
-
-
-};
+  }
+  updateSec({
+    Name: menus.value[menuIndex].children[subMenuIndex].title,
+    ID: menus.value[menuIndex].children[subMenuIndex].id,
+    OrderNum: menus.value[menuIndex].children[subMenuIndex].orderid,
+    FirstCategoryID: firstmenuid
+  }).then((res) => {
+    console.log(res)
+  })
+}
 
 const addSubMenu = (menuIndex: number, firstmenuid: string) => {
-    const newName = prompt('请输入新的子菜单名称');
-    let orderid = 34567
-    console.log(orderid, 'orderid')
-    if (newName && newName.trim() !== '') {
-        console.log(menus.value[menuIndex].children)
-        menus.value[menuIndex].children.push(
-            {
-                title: newName,
-                children: []
-            }
-        );
-
-        addSec([
-            {
-                Name: newName,
-                OrderNum: orderid,
-                FirstCategoryID: firstmenuid,
-            }
-        ]
-
-        ).then(res => {
-            console.log(res)
-
-        })
-
-    }
-};
+  const newName = prompt('请输入新的子菜单名称')
+  let orderid = 34567
+  if (newName && newName.trim() !== '') {
+    addSec([
+      {
+        Name: newName,
+        OrderNum: orderid,
+        FirstCategoryID: firstmenuid
+      }
+    ]).then(() => {
+      ElMessage.success('添加成功')
+      // 重新获取所有菜单数据以确保有正确的ID
+      getAll().then((res) => {
+        menus.value = orderlist(transformToTargetFormat(res.data))
+      })
+    })
+  }
+}
 </script>
 
-<style>
+<style scoped>
 .menu-component {
-    width: 100%;
-    padding: 0 32px;
-    /* Increased padding for more space */
+  padding: 24px;
+  background-color: #f5f7fa;
+  min-height: 100vh;
 }
 
-.menu-list {
-    list-style: none;
-    padding: 0;
-}
-
-.menu-item {
-    margin: 10px 0;
-    cursor: pointer;
-}
-
-.menu-title {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-}
-
-.rename-btn {
-    margin-left: 8px;
-    /* Spacing between buttons */
-    cursor: pointer;
-}
-
-.submenu-list {
-    padding-left: 50px;
-    /* Indentation for submenu */
-    transition: opacity 0.3s;
-    /* Smooth transition for submenu */
-}
-
-.submenu-item {
-    margin-top: 13px;
-    cursor: pointer;
-    font-size: 18px;
-    text-align: center;
-    flex: 1;
-    color: black !important;
-
-}
-
-.add-submenu-btn {
-    margin-top: 8px;
-    cursor: pointer;
+.header-section {
+  margin-bottom: 24px;
+  text-align: right;
 }
 
 .add-menu-btn {
-    display: block;
-    /* Make button take full width */
-    width: 100%;
-    margin-top: 20px;
-    /* Space above the button */
+  font-size: 16px;
+  padding: 12px 24px;
 }
 
-/* Transition styles */
-.fade-enter-active,
-.fade-leave-active {
-    transition: opacity 0.3s;
+.menu-card {
+  margin-bottom: 16px;
+  border-radius: 8px;
+  box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
 }
 
-.fade-enter,
-.fade-leave-to
+.menu-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 0;
+}
 
-/* .fade-leave-active in <2.1.8 */
-    {
-    opacity: 0;
+.menu-title {
+  display: flex;
+  align-items: center;
+  font-size: 16px;
+  font-weight: 500;
+}
+
+.menu-actions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.submenu-section {
+  margin-top: 16px;
+  padding: 16px;
+  background-color: #fafafa;
+  border-radius: 4px;
+}
+
+.priority-cell {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.confirm-actions {
+  display: flex;
+  gap: 4px;
+}
+
+.add-submenu-btn {
+  margin-top: 16px;
+  width: 100%;
+}
+
+/* 动画效果 */
+.el-zoom-in-top-enter-active,
+.el-zoom-in-top-leave-active {
+  transition: all 0.3s cubic-bezier(0.55, 0, 0.1, 1);
+}
+
+.el-zoom-in-top-enter-from,
+.el-zoom-in-top-leave-to {
+  opacity: 0;
+  transform: scaleY(0);
+  transform-origin: top;
 }
 </style>

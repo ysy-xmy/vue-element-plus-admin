@@ -28,8 +28,6 @@ const themeChange = () => {
   appStore.setHeaderTheme(color)
   console.log(appStore.getTitle)
 }
-
-
 </script>
 
 <template>
