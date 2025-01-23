@@ -21,6 +21,7 @@ const actionlist = ref([])
 const init = () => {
   actionrouterList.value = []
   menuloading.value = true
+  selectaction.value = false
   getFirstmenulist()
     .then((res) => {
       for (let item of res.data) {
@@ -142,6 +143,7 @@ const handleSelect = (key: string, keyPath: string[]) => {
 const dialogclose = () => {
   actionrouterList.value = []
   menuloading.value = true
+  selectaction.value = false
   getFirstmenulist()
     .then((res) => {
       for (let item of res.data) {
@@ -204,79 +206,140 @@ onMounted(() => {
 })
 </script>
 <template>
-  <div class="flex w-100% h-100%">
-    <el-row v-loading="menuloading" class="tac w-full">
-      <el-col :span="8">
-        <h5 class="mb-2">动作库</h5>
-        <el-menu @select="handleSelect" default-active="2" class="el-menu-vertical-demo">
+  <div class="resource-container">
+    <el-row v-loading="menuloading" class="h-full">
+      <!-- 左侧菜单 -->
+      <el-col :span="6" class="menu-sidebar">
+        <div class="menu-header">
+          <h4>动作库目录</h4>
+          <el-button type="primary" link @click="action({ title: '新动作' }, 'edit')">
+            <Icon icon="ep:plus" />
+            编辑目录
+          </el-button>
+        </div>
+
+        <el-menu @select="handleSelect" class="menu-tree" :default-active="currentAction">
           <template v-for="item in actionrouterList" :key="item.title">
             <el-sub-menu v-if="item.children.length > 0" :index="item.title">
               <template #title>
-                <Icon icon="ep:aim" />
+                <Icon icon="ep:folder" class="menu-icon" />
                 <span>{{ item.title }}</span>
               </template>
               <template v-for="child in item.children" :key="child.title">
                 <el-menu-item
                   @click="getActions(child)"
-                  v-if="child.children.length > 0"
-                  :index="child.title"
-                >
-                  <template #title>
-                    <Icon icon="ep:aim" />
-                    {{ child.title }}
-                  </template>
-                </el-menu-item>
-                <el-menu-item
                   :disabled="!child.isActive"
-                  @click="getActions(child)"
-                  v-else
                   :index="child.title"
                 >
-                  <Icon icon="ep:aim" />
+                  <Icon icon="ep:document" class="menu-icon" />
                   {{ child.title }}
                 </el-menu-item>
               </template>
             </el-sub-menu>
+
             <el-menu-item
-              :disabled="!item.isActive"
               v-else
+              :disabled="!item.isActive"
               @click="getSelection(item)"
               :index="item.title"
             >
-              <Icon icon="ep:aim" />
+              <Icon icon="ep:folder" class="menu-icon" />
               <span>{{ item.title }}</span>
             </el-menu-item>
           </template>
-          <el-menu-item index="4">
-            <BaseButton
-              style="width: 100%"
-              type="primary"
-              size="large"
-              @click="action({ title: '新动作' }, 'edit')"
-              >编辑目录
-            </BaseButton>
-          </el-menu-item>
         </el-menu>
       </el-col>
-      <el-col :span="16">
+
+      <!-- 右侧内容区 -->
+      <el-col :span="18" class="content-area">
         <Actionitem
+          v-if="selectaction"
           @updata-actionlist="handleUpdateValue"
           :SecondCategoryID="SecondCategoryID"
           :actionlist="actionlist"
-          v-if="selectaction"
         />
-        <div v-else class="demo-image flex wrap justify-space-between w-full px-8 justify-center">
-          <el-empty description="暂无数据" />
-        </div>
+        <el-empty v-else description="请选择左侧目录查看内容" :image-size="200" />
       </el-col>
     </el-row>
-    <Dialog width="60%" v-model="Visible" @close="dialogclose" :title="dialogTitle">
-      <div
-        v-if="actionType === 'edit'"
-        class="flex w-full h-100% justify-center items-start content-start"
-      >
+
+    <!-- 编辑弹窗 -->
+    <Dialog width="50%" v-model="Visible" @close="dialogclose" :title="dialogTitle">
+      <div v-if="actionType === 'edit'" class="edit-container">
         <Menuedit :currentRow="currentRow" :actionrouterList="actionrouterList" />
       </div>
     </Dialog>
   </div>
 </template>
+
+<style scoped>
+.resource-container {
+  height: 70vh;
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.05);
+  overflow: auto; /* 防止内部滚动溢出 */
+}
+
+.menu-sidebar {
+  border-right: 1px solid #e6e6e6;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.menu-header {
+  padding: 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #e6e6e6;
+  flex-shrink: 0; /* 防止头部被压缩 */
+}
+
+.menu-header h4 {
+  margin: 0;
+  font-weight: 500;
+  color: #303133;
+}
+
+.menu-tree {
+  height: calc(100% - 60px);
+  border-right: none;
+  overflow-y: auto; /* 添加垂直滚动条 */
+  overflow-x: hidden; /* 隐藏水平滚动条 */
+}
+
+.menu-icon {
+  margin-right: 8px;
+  font-size: 16px;
+}
+
+.content-area {
+  padding: 20px;
+  height: 100%;
+  background-color: #f5f7fa;
+  overflow-y: auto; /* 添加垂直滚动条 */
+  overflow-x: hidden; /* 隐藏水平滚动条 */
+}
+
+/* 自定义滚动条样式 */
+.menu-tree::-webkit-scrollbar,
+.content-area::-webkit-scrollbar {
+  width: 6px;
+}
+
+.menu-tree::-webkit-scrollbar-thumb,
+.content-area::-webkit-scrollbar-thumb {
+  background-color: #dcdfe6;
+  border-radius: 3px;
+}
+
+.menu-tree::-webkit-scrollbar-track,
+.content-area::-webkit-scrollbar-track {
+  background-color: transparent;
+}
+
+.edit-container {
+  padding: 20px;
+}
+</style>

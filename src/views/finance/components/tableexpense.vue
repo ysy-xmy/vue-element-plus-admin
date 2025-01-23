@@ -84,6 +84,7 @@ const showDialog = ref(false)
 const handleSave = async (formData: any) => {
   console.log('保存操作', formData)
   formData.Amount = Number(formData.Amount)
+  formData.UserID = 0
   const res: any = await addAccounting(formData)
   if (res) {
     getTableList()

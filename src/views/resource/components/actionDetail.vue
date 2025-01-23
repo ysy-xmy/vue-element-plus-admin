@@ -94,7 +94,7 @@
                   </h4>
                   <div class="bg-white rounded-lg p-4 shadow-sm">
                     <Form
-                      @register="formRegister"
+                      @register="mainFormRegister"
                       :model="formData"
                       :schema="mediaSchema"
                       class="form-container"
@@ -110,7 +110,7 @@
                   </h4>
                   <div class="bg-white rounded-lg p-4 shadow-sm">
                     <Form
-                      @register="formRegister"
+                      @register="mainFormRegister"
                       :model="formData"
                       :schema="imageSchema"
                       class="form-container"
@@ -140,6 +140,16 @@
                       class="!max-w-xl"
                     />
                   </el-form-item>
+                  <el-form-item label="排序" prop="OrderNum" class="mb-6">
+                    <el-input-number
+                      v-model="formData.OrderNum"
+                      :min="0"
+                      :precision="0"
+                      :step="1"
+                      placeholder="请输入排序号"
+                      class="!max-w-xs"
+                    />
+                  </el-form-item>
                   <el-form-item label="描述" prop="Description" class="mb-6">
                     <el-input
                       v-model="formData.Description"
@@ -161,37 +171,9 @@
                   准备工作
                 </h3>
                 <Form
-                  @register="formRegister"
+                  @register="mainFormRegister"
                   :model="formData"
-                  :schema="readyWorkSchema"
-                  class="form-container"
-                />
-              </div>
-
-              <!-- 步骤说明 -->
-              <div class="border-t pt-6">
-                <h3 class="text-lg font-medium mb-6 flex items-center text-gray-800">
-                  <el-icon class="mr-2 text-purple-500"><List /></el-icon>
-                  步骤说明
-                </h3>
-                <Form
-                  @register="formRegister"
-                  :model="formData"
-                  :schema="stepSchema"
-                  class="form-container"
-                />
-              </div>
-
-              <!-- 注意事项 -->
-              <div class="border-t pt-6">
-                <h3 class="text-lg font-medium mb-6 flex items-center text-gray-800">
-                  <el-icon class="mr-2 text-red-500"><Warning /></el-icon>
-                  注意事项
-                </h3>
-                <Form
-                  @register="formRegister"
-                  :model="formData"
-                  :schema="attentionSchema"
+                  :schema="formSchema"
                   class="form-container"
                 />
               </div>
@@ -234,10 +216,8 @@ import { getOss } from '@/api/utils/index'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { getationDetail } from '@/api/resource/index'
 import { updateAction, addAction } from '@/api/resource'
-import Mavon from './mavon.vue'
-const emit = defineEmits(['updataActionlist', 'closeDialog'])
-const { formRegister, formMethods } = useForm()
-const { setValues, getElFormExpose, getFormData } = formMethods
+const emit = defineEmits(['update', 'closeDialog'])
+const { formRegister: mainFormRegister, formMethods: mainFormMethods } = useForm()
 const dialogVisible = ref(false) //控制弹窗显示隐藏
 const dialogTitle = ref('动作详情') //弹窗标题
 const dialoading = ref(false) //弹窗loading
@@ -449,38 +429,45 @@ const imageSchema = reactive<FormSchema[]>([
   }
 ])
 
-const readyWorkSchema = reactive<FormSchema[]>([
+// 合并所有表单 schema
+const formSchema = reactive<FormSchema[]>([
   {
     field: 'ReadyWorkContent',
     component: 'Editor',
     label: '准备工作内容',
     colProps: { span: 24 },
     componentProps: {
-      height: '200px'
+      height: '200px',
+      value: computed(() => formData.value.ReadyWorkContent),
+      onChange: (val: string) => {
+        formData.value.ReadyWorkContent = val
+      }
     }
-  }
-])
-
-const stepSchema = reactive<FormSchema[]>([
+  },
   {
     field: 'Step',
     component: 'Editor',
     label: '步骤内容',
     colProps: { span: 24 },
     componentProps: {
-      height: '200px'
+      height: '200px',
+      value: computed(() => formData.value.Step),
+      onChange: (val: string) => {
+        formData.value.Step = val
+      }
     }
-  }
-])
-
-const attentionSchema = reactive<FormSchema[]>([
+  },
   {
     field: 'Attention',
     component: 'Editor',
     label: '注意事项内容',
     colProps: { span: 24 },
     componentProps: {
-      height: '200px'
+      height: '200px',
+      value: computed(() => formData.value.Attention),
+      onChange: (val: string) => {
+        formData.value.Attention = val
+      }
     }
   }
 ])
@@ -527,100 +514,93 @@ const dialogOpen = () => {
 const save = async () => {
   saveLoading.value = true
   try {
-    // 直接使用 formData.value 的值，不再等待 submit
-    if (props.actionType === 'edit') {
-      await updateAction({
-        ActionInfos: {
-          ID: formData.value.ID,
-          Name: formData.value.Name,
-          OrderNum: formData.value.OrderNum,
-          Description: formData.value.Description,
-          Step: formData.value.Step,
-          ReadyWorkContent: formData.value.ReadyWorkContent,
-          Attention: formData.value.Attention
-        },
-        ActionImgInfos: formData.value.Imgs.map((item) => ({
-          URL: item
-        })),
-        ActionVideoInfos: formData.value.Videos.map((item) => ({
-          URL: item
-        }))
-      })
-
-      ElMessage.success('保存成功')
-      emit('closeDialog')
-      dialogVisible.value = false
-    } else if (props.actionType === 'add') {
-      const data = [
-        {
-          ActionInfos: {
-            Name: formData.value.Name,
-            SecondCategoryID: props.secondCategoryId,
-            OrderNum: formData.value.OrderNum,
-            Description: formData.value.Description,
-            Step: formData.value.Step,
-            ReadyWorkContent: formData.value.ReadyWorkContent,
-            Attention: formData.value.Attention
-          },
-          ActionImgInfos: formData.value.Imgs.map((item) => ({
-            URL: item
-          })),
-          ActionVideoInfos: formData.value.Videos.map((item) => ({
-            URL: item
-          }))
-        }
-      ]
-
-      await addAction(data)
-      ElMessage.success('保存成功')
-      emit('closeDialog')
-      dialogVisible.value = false
+    if (!formData.value.Name) {
+      ElMessage.warning('请输入动作名称')
+      return
     }
+
+    // 获取表单数据
+    const formValues = await mainFormMethods.getFormData()
+
+    // 构建保存数据对象
+    const actionData = {
+      ActionInfos: {
+        Name: formData.value.Name,
+        OrderNum: formData.value.OrderNum,
+        Description: formData.value.Description,
+        ReadyWorkContent: formValues?.ReadyWorkContent || formData.value.ReadyWorkContent,
+        Step: formValues?.Step || formData.value.Step,
+        Attention: formValues?.Attention || formData.value.Attention
+      },
+      ActionImgInfos: formData.value.Imgs.map((item) => ({
+        URL: item
+      })),
+      ActionVideoInfos: formData.value.Videos.map((item) => ({
+        URL: item
+      }))
+    }
+
+    if (props.actionType === 'edit') {
+      actionData.ActionInfos.ID = formData.value.ID
+      await updateAction(actionData)
+    } else {
+      actionData.ActionInfos.SecondCategoryID = props.secondCategoryId
+      await addAction([actionData])
+    }
+
+    ElMessage.success('保存成功')
+    emit('update')
+    dialogclose()
   } catch (error) {
     console.error('保存失败:', error)
-    ElMessage.error('保存失败')
+    ElMessage.error('保存失败，请重试')
   } finally {
     saveLoading.value = false
   }
 }
 
-const loadDada = () => {
+const loadDada = async () => {
+  if (props.actionType !== 'edit') return
+
   dialoading.value = true
-  if (props.actionType === 'edit') {
-    getationDetail(String(props.actionId))
-      .then((res) => {
-        const { ActionInfos, ActionImgInfos, ActionVideoInfos } = res.data
+  try {
+    const res = await getationDetail(String(props.actionId))
+    const { ActionInfos, ActionImgInfos, ActionVideoInfos } = res.data
 
-        formData.value = {
-          ...formData.value,
-          ID: ActionInfos.ID,
-          Name: ActionInfos.Name,
-          OrderNum: ActionInfos.OrderNum,
-          Description: ActionInfos.Description || '',
-          Step: ActionInfos.Step || '',
-          ReadyWorkContent: ActionInfos.ReadyWorkContent || '',
-          Attention: ActionInfos.Attention || '',
-          Imgs: ActionImgInfos ? ActionImgInfos.map((item) => item.URL) : [],
-          Videos: ActionVideoInfos ? ActionVideoInfos.map((item) => item.URL) : []
-        }
+    const newFormData = {
+      ...formData.value,
+      ID: ActionInfos.ID,
+      Name: ActionInfos.Name,
+      OrderNum: ActionInfos.OrderNum,
+      Description: ActionInfos.Description || '',
+      Step: ActionInfos.Step || '',
+      ReadyWorkContent: ActionInfos.ReadyWorkContent || '',
+      Attention: ActionInfos.Attention || '',
+      Imgs: ActionImgInfos?.map((item) => item.URL) || [],
+      Videos: ActionVideoInfos?.map((item) => item.URL) || []
+    }
 
-        // 更新上传组件的文件列表
-        imgList.value = formData.value.Imgs.map((item) => ({
-          name: item.split('/').pop() || item,
-          url: item
-        }))
+    formData.value = newFormData
 
-        videoList.value = formData.value.Videos.map((item) => ({
-          name: item.split('/').pop() || item,
-          url: item
-        }))
+    // 更新文件列表
+    imgList.value = formData.value.Imgs.map((item) => ({
+      name: item.split('/').pop() || item,
+      url: item
+    }))
 
-        // 设置表单值
-        setValues(formData.value)
-      })
-      .finally(() => {
-        dialoading.value = false
-      })
+    videoList.value = formData.value.Videos.map((item) => ({
+      name: item.split('/').pop() || item,
+      url: item
+    }))
+
+    // 等待 DOM 更新后设置表单值
+    await nextTick()
+    mainFormMethods.setValues(newFormData)
+  } catch (error) {
+    console.error('加载数据失败:', error)
+    ElMessage.error('加载数据失败，请重试')
+  } finally {
+    dialoading.value = false
   }
 }
 //暴露出去给外面调用方法
