@@ -16,6 +16,7 @@ import { ref } from 'vue'
 import { getAccountingPageByType, addAccounting } from '@/api/finance'
 import { useTable } from '@/hooks/web/useTable'
 import AddDialog from './addDialog.vue'
+import { useUserStore } from '@/store/modules/user'
 
 const { tableRegister, tableState } = useTable({
   fetchDataApi: async () => {
@@ -61,6 +62,8 @@ const columns: TableColumn[] = [
 ]
 const loading = ref(true)
 
+const userStore = useUserStore()
+
 let tableDataList = ref<TableData[]>([])
 
 const getTableList = async () => {
@@ -82,9 +85,8 @@ getTableList()
 const showDialog = ref(false)
 
 const handleSave = async (formData: any) => {
-  console.log('保存操作', formData)
   formData.Amount = Number(formData.Amount)
-  formData.UserID = 0
+  formData.UserID = userStore.getUserInfo?.ID
   const res: any = await addAccounting(formData)
   if (res) {
     getTableList()
