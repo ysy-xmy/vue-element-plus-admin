@@ -167,6 +167,26 @@ export const asyncRouterMap: AppRouteRecordRaw[] = [
     ]
   },
   {
+    path: '/course-list',
+    component: Layout,
+    name: '授课情况',
+    meta: {
+      title: '授课情况',
+      icon: 'carbon:user-role'
+    },
+    children: [
+      {
+        path: 'course-list',
+        name: '授课情况',
+        component: () => import('@/views/course/course-list.vue'),
+        meta: {
+          title: '授课情况',
+          icon: 'carbon:user-role'
+        }
+      }
+    ]
+  },
+  {
     path: '/resource',
     component: Layout,
     name: '资源管理',
