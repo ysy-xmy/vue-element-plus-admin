@@ -144,7 +144,10 @@ const columns = [
   {
     field: 'EndTime',
     label: '有效期至',
-    formatter: (row: CourseItem) => row.EndTime || '长期有效'
+    formatter: (row: CourseItem) => convertDateTime(row.EndTime) || '长期有效',
+    table: {
+      width: 200
+    }
   }
 ]
 
