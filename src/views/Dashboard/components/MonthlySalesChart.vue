@@ -57,7 +57,6 @@ const getMonthlySales = async () => {
         name: '支出',
         smooth: true,
         type: 'line',
-        itemStyle: {},
         data: months.map((m) => monthlyData[m]?.expense || 0),
         animationDuration: 2800,
         animationEasing: 'quadraticOut'
@@ -83,7 +82,6 @@ const getMonthlySales = async () => {
         name: '支出',
         smooth: true,
         type: 'line',
-        itemStyle: {},
         data: new Array(12).fill(0),
         animationDuration: 2800,
         animationEasing: 'quadraticOut'

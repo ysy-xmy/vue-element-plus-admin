@@ -20,3 +20,18 @@ export type MonthlySales = {
   estimate: number
   actual: number
 }
+
+export interface YearPercentData {
+  Year: number
+  Type: string
+  Remake: string
+  Amount: number
+  Percent: number
+  TotalAmount: number
+}
+
+export interface IResponse<T> {
+  code: number
+  data: T
+  msg: string
+}

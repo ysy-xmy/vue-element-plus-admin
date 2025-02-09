@@ -3,7 +3,8 @@ import type {
   AnalysisTotalTypes,
   UserAccessSource,
   WeeklyUserActivity,
-  MonthlySales
+  MonthlySales,
+  YearPercentData
 } from './types'
 
 export const getCountApi = (): Promise<IResponse<AnalysisTotalTypes[]>> => {
@@ -20,4 +21,12 @@ export const getWeeklyUserActivityApi = (): Promise<IResponse<WeeklyUserActivity
 
 export const getMonthlySalesApi = (year: number): Promise<IResponse<MonthlySales[]>> => {
   return request.get({ url: '/api/accounting/getYearData', params: { year: year } })
+}
+
+export const getYearPercentApi = (params: {
+  year?: number
+  type: 'INCOME' | 'EXPENSE'
+  month?: number
+}): Promise<IResponse<Array<{ name: string; value: number }>>> => {
+  return request.get({ url: '/api/accounting/getYearPercent', params })
 }

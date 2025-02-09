@@ -1,106 +1,68 @@
 <script setup lang="ts">
-import { ElRow, ElCol, ElCard, ElSkeleton } from 'element-plus'
+import { ElRow, ElCol, ElCard, ElSkeleton, ElSelect, ElOption } from 'element-plus'
 import { Echart } from '@/components/Echart'
-import {
-  pieOptionsexpense,
-  pieOptionsincome,
-  barOptions,
-  corporateLineOptions
-} from './echarts-data'
-import { ref, reactive } from 'vue'
-import {
-  getUserAccessSourceApi,
-  getWeeklyUserActivityApi,
-  getMonthlySalesApi
-} from '@/api/dashboard/analysis'
+import { pieOptionsexpense, pieOptionsincome, corporateLineOptions } from './echarts-data'
+import { ref, reactive, watch } from 'vue'
+import { getYearPercentApi } from '@/api/dashboard/analysis'
 import { set } from 'lodash-es'
 import { EChartsOption } from 'echarts'
-import { useI18n } from '@/hooks/web/useI18n'
 import tableincome from './components/tableincome.vue'
 import tableexpense from './components/tableexpense.vue'
 import MonthlySalesChart from '../Dashboard/components/MonthlySalesChart.vue'
-
-const { t } = useI18n()
+import { FINANCE_TYPE_DICT } from './utils/dict'
 
 const loading = ref(true)
+const selectedMonth = ref<number | undefined>()
 
-const pieOptionsData = reactive<EChartsOption>(pieOptionsexpense) as EChartsOption
+const pieIncomeOptions = reactive<EChartsOption>(pieOptionsincome) as EChartsOption
+const pieExpenseOptions = reactive<EChartsOption>(pieOptionsexpense) as EChartsOption
 
-// 用户来源
-const getUserAccessSource = async () => {
-  const res = await getUserAccessSourceApi().catch(() => {})
-  if (res) {
-    set(
-      pieOptionsData,
-      'legend.data',
-      res.data.map((v) => t(v.name))
-    )
-    pieOptionsData!.series![0].data = res.data.map((v) => {
-      return {
-        name: t(v.name),
-        value: v.value
-      }
-    })
+const getYearPercent = async (type: 'INCOME' | 'EXPENSE', year?: number, month?: number) => {
+  const params = {
+    year,
+    type,
+    month: month || undefined
   }
-}
 
-const barOptionsData = reactive<EChartsOption>(barOptions) as EChartsOption
-
-const getWeeklyUserActivity = async () => {
-  const res = await getWeeklyUserActivityApi().catch(() => {})
+  const res = await getYearPercentApi(params).catch(() => {})
   if (res) {
+    const targetOptions = type === 'INCOME' ? pieIncomeOptions : pieExpenseOptions
+
+    // 添加年份到标题
+    const titleSuffix = year ? ` ${year}年` : ''
+    targetOptions.title = {
+      ...targetOptions.title,
+      text: `${titleSuffix}${type === 'INCOME' ? '收入' : '支出'}分布图`
+    }
+
     set(
-      barOptionsData,
-      'xAxis.data',
-      res.data.map((v) => t(v.name))
+      targetOptions,
+      'legend.data',
+      res.data.map((v) => FINANCE_TYPE_DICT[v.Remake] || v.Remake)
     )
-    set(barOptionsData, 'series', [
-      {
-        name: t('analysis.activeQuantity'),
-        data: res.data.map((v) => v.value),
-        type: 'bar'
-      }
-    ])
+
+    targetOptions.series![0].data = res.data.map((v) => ({
+      name: FINANCE_TYPE_DICT[v.Remake] || `${v.Remake} (${v.Percent}%)`,
+      value: v.Percent
+    }))
   }
 }
 
 const corporateLineOption = reactive<EChartsOption>(corporateLineOptions) as EChartsOption
 
-// 每月销售总额
-const getMonthlySales = async () => {
-  const res = await getMonthlySalesApi().catch(() => {})
-  if (res) {
-    set(
-      corporateLineOption,
-      'xAxis.data',
-      res.data.map((v) => t(v.name))
-    )
-    set(corporateLineOption, 'series', [
-      // {
-      //     name: t('analysis.estimate'),
-      //     smooth: true,
-      //     type: 'line',
-      //     data: res.data.map((v) => v.estimate),
-      //     animationDuration: 2800,
-      //     animationEasing: 'cubicInOut'
-      // },
-      {
-        name: '销量',
-        smooth: true,
-        type: 'line',
-        itemStyle: {},
-        data: res.data.map((v) => v.actual),
-        animationDuration: 2800,
-        animationEasing: 'quadraticOut'
-      }
-    ])
-  }
-}
-
 const getAllApi = async () => {
-  await Promise.all([getUserAccessSource(), getWeeklyUserActivity()])
+  await Promise.all([
+    getYearPercent('INCOME', 2024, selectedMonth.value),
+    getYearPercent('EXPENSE', 2024, selectedMonth.value)
+  ])
   loading.value = false
 }
+
+// 添加月份变化监听
+watch(selectedMonth, () => {
+  loading.value = true
+  getAllApi()
+})
 
 getAllApi()
 // import DefaultTable from '../Components/Table/DefaultTable.vue'
@@ -113,20 +75,35 @@ getAllApi()
       <MonthlySalesChart />
     </ElCol>
 
-    <ElCol :xl="10" :lg="10" :md="24" :sm="24" :xs="24">
+    <ElCol :span="24">
       <ElCard shadow="hover" class="mb-20px">
-        <ElSkeleton :loading="loading" animated :rows="4">
-          <Echart :options="pieOptionsincome" :height="350" />
-        </ElSkeleton>
+        <div class="filter-header mb-20px">
+          <span class="mr-10px">选择月份:</span>
+          <ElSelect v-model="selectedMonth" placeholder="全部月份" style="width: 120px" clearable>
+            <ElOption v-for="month in 12" :key="month" :label="`${month}月`" :value="month" />
+          </ElSelect>
+        </div>
+
+        <ElRow :gutter="20">
+          <ElCol :xl="12" :lg="12" :md="24" :sm="24" :xs="24">
+            <ElSkeleton :loading="loading" animated :rows="4">
+              <template #default>
+                <Echart :options="pieIncomeOptions" :height="350" />
+              </template>
+            </ElSkeleton>
+          </ElCol>
+
+          <ElCol :xl="12" :lg="12" :md="24" :sm="24" :xs="24">
+            <ElSkeleton :loading="loading" animated :rows="4">
+              <template #default>
+                <Echart :options="pieExpenseOptions" :height="350" />
+              </template>
+            </ElSkeleton>
+          </ElCol>
+        </ElRow>
       </ElCard>
     </ElCol>
-    <ElCol :xl="10" :lg="10" :md="24" :sm="24" :xs="24">
-      <ElCard shadow="hover" class="mb-20px">
-        <ElSkeleton :loading="loading" animated :rows="4">
-          <Echart :options="pieOptionsexpense" :height="350" />
-        </ElSkeleton>
-      </ElCard>
-    </ElCol>
+
     <ElCol :span="24">
       <tableincome :loading="loading" :data="[]" :columns="[]" />
     </ElCol>
@@ -135,3 +112,12 @@ getAllApi()
     </ElCol>
   </ElRow>
 </template>
+
+<style scoped>
+.filter-header {
+  display: flex;
+  align-items: center;
+  padding-bottom: 20px;
+  border-bottom: 1px solid #ebeef5;
+}
+</style>

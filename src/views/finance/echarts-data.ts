@@ -3,9 +3,6 @@ import { useI18n } from '@/hooks/web/useI18n'
 
 const { t } = useI18n()
 
-
-
-
 export const lineOptions: EChartsOption = {
   title: {
     text: '课程销量图',
@@ -212,42 +209,6 @@ export const corporateLineOptions: EChartsOption = {
   ]
 }
 
-export const pieOptions: EChartsOption = {
-  title: {
-    text: '收入分布图',
-    left: 'center'
-  },
-  tooltip: {
-    trigger: 'item',
-    formatter: '{a} <br/>{b} : {c} ({d}%)'
-  },
-  legend: {
-    orient: 'vertical',
-    left: 'left',
-    data: [
-      '课程收入',
-      '会员收入',
-      '广告收入',
-      '学员打赏',
-      '其他收入'
-    ]
-  },
-  series: [
-    {
-      name: t('analysis.userAccessSource'),
-      type: 'pie',
-      radius: '55%',
-      center: ['50%', '60%'],
-      data: [
-        { value: 335, name: '课程收入' },
-        { value: 310, name: '会员收入' },
-        { value: 234, name: '广告收入' },
-        { value: 135, name: '学员打赏' },
-        { value: 1548, name: '其他收入' }
-      ]
-    }
-  ]
-}
 export const pieOptionsincome: EChartsOption = {
   title: {
     text: '收入分布图',
@@ -260,27 +221,15 @@ export const pieOptionsincome: EChartsOption = {
   legend: {
     orient: 'vertical',
     left: 'left',
-    data: [
-      '课程收入',
-      '会员收入',
-      '广告收入',
-      '学员打赏',
-      '其他收入'
-    ]
+    data: ['课程收入', '其他收入']
   },
   series: [
     {
-      name: t('analysis.userAccessSource'),
+      name: '收入分布图',
       type: 'pie',
       radius: '55%',
       center: ['50%', '60%'],
-      data: [
-        { value: 335, name: '课程收入' },
-        { value: 310, name: '会员收入' },
-        { value: 234, name: '广告收入' },
-        { value: 135, name: '学员打赏' },
-        { value: 1548, name: '其他收入' }
-      ]
+      data: ['课程收入', '其他收入']
     }
   ]
 }
@@ -296,13 +245,7 @@ export const pieOptionsexpense: EChartsOption = {
   legend: {
     orient: 'vertical',
     left: 'left',
-    data: [
-      '器材支出',
-      '场地支出',
-      '广告支出',
-      '教练费用',
-      '其他支出'
-    ]
+    data: ['器材支出', '场地支出', '广告支出', '教练费用', '其他支出']
   },
   series: [
     {
