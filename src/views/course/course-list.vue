@@ -100,7 +100,7 @@ const columns = [
           return (
             <>
               <ElTag type={status ? 'success' : 'danger'} size="small">
-                {data.CoachPunchInAuth ? '已授权' : '未授权'}
+                {status ? '已授权' : '未授权'}
               </ElTag>
             </>
           )
