@@ -61,7 +61,7 @@
         <div v-show="menu.isActive" class="submenu-section">
           <el-table :data="menu.children" stripe>
             <el-table-column label="名称" prop="title" />
-            <el-table-column label="优先级" width="200">
+            <el-table-column label="优先级" width="280">
               <template #default="{ row, $index }">
                 <div class="priority-cell">
                   <el-input-number
@@ -535,8 +535,6 @@ const handleDelete = (node, data) => {
 
 .confirm-actions {
   display: flex;
-  gap: 8px;
-  padding: 0 8px;
 }
 
 .add-submenu-btn {

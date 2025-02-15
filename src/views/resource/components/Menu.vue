@@ -263,7 +263,7 @@ onMounted(() => {
     </el-row>
 
     <!-- 编辑弹窗 -->
-    <Dialog width="50%" v-model="Visible" @close="dialogclose" :title="dialogTitle">
+    <Dialog width="60%" v-model="Visible" @close="dialogclose" :title="dialogTitle">
       <div v-if="actionType === 'edit'" class="edit-container">
         <Menuedit :currentRow="currentRow" :actionrouterList="actionrouterList" />
       </div>
