@@ -9,3 +9,23 @@ export const FINANCE_TYPE_DICT: Record<string, string> = {
   month: '月',
   all_months: '全部月份'
 }
+
+// 根据备注类型设置不同的标签颜色
+export const getTagType = (remark: string): string => {
+  const remarkUpper = remark.toUpperCase()
+  if (remarkUpper.includes('EXPENSE')) {
+    if (remarkUpper.includes('COACH_COMMISSION')) {
+      return 'danger'
+    } else if (remarkUpper.includes('COACH_SALARIES')) {
+      return 'warning'
+    } else if (remarkUpper.includes('VENUE')) {
+      return 'info'
+    } else {
+      return 'danger' // 其他支出
+    }
+  } else if (remarkUpper.includes('INCOME')) {
+    return 'success' // 所有收入
+  } else {
+    return 'primary' // 默认颜色
+  }
+}

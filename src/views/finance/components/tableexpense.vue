@@ -10,14 +10,15 @@ import { Table, TableColumn } from '@/components/Table'
 import { getTableListApi } from '@/api/table'
 //@ts-ignore
 import { TableData } from '@/api/table/types'
-import { ref } from 'vue'
-// import { ElTag } from 'element-plus'
+import { ref, h } from 'vue'
+import { ElTag } from 'element-plus'
 // import { BaseButton } from '@/components/Button'
 import { getAccountingPageByType, addAccounting } from '@/api/finance'
 import { useTable } from '@/hooks/web/useTable'
 import AddDialog from './addDialog.vue'
 import { useUserStore } from '@/store/modules/user'
-import { FINANCE_TYPE_DICT } from '../utils/dict'
+import { FINANCE_TYPE_DICT, getTagType } from '../utils/dict'
+import { convertDateTime } from '../utils/convertDateTime'
 
 // 创建备注映射，同时支持大写和小写键
 const remarkMap: Record<string, string> = {}
@@ -25,16 +26,6 @@ Object.entries(FINANCE_TYPE_DICT).forEach(([key, value]) => {
   remarkMap[key] = value
   remarkMap[key.toUpperCase()] = value
 })
-
-const remarkOptions = [
-  { value: 'COACH_COMMISSION_EXPENSE', label: '教练佣金支出' },
-  { value: 'COACH_SALARIES_EXPENSE', label: '教练工资支出' },
-  { value: 'VENUE_EXPENSE', label: '场地支出' },
-  { value: 'HYDROPOWER_EXPENSE', label: '水电支出' },
-  { value: 'OTHER_EXPENSE', label: '其他支出' },
-  { value: 'COURSE_INCOME', label: '课程收入' },
-  { value: 'OTHER_INCOME', label: '其他收入' }
-]
 
 const { tableRegister, tableState } = useTable({
   fetchDataApi: async () => {
@@ -67,7 +58,11 @@ const columns: TableColumn[] = [
     field: 'Description',
     label: '描述'
   },
-
+  {
+    field: 'Date',
+    label: '时间',
+    formatter: (row: any) => convertDateTime(row.Date)
+  },
   {
     field: 'Amount',
     label: '总额',
@@ -76,7 +71,10 @@ const columns: TableColumn[] = [
   {
     field: 'Remark',
     label: '备注',
-    formatter: (row: any) => remarkMap[row.Remark] || row.Remark
+    formatter: (row: any) => {
+      const remarkText = remarkMap[row.Remark] || row.Remark
+      return h(ElTag, { type: getTagType(row.Remark) }, () => remarkText)
+    }
   }
 ]
 const loading = ref(true)

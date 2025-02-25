@@ -10,12 +10,13 @@ import { Table, TableColumn } from '@/components/Table'
 import { getTableListApi } from '@/api/table'
 //@ts-ignore
 import { TableData } from '@/api/table/types'
-import { ref } from 'vue'
-// import { ElTag } from 'element-plus'
+import { ref, h } from 'vue'
+import { ElTag } from 'element-plus'
 // import { BaseButton } from '@/components/Button'
 import { getAccountingPageByType } from '@/api/finance'
 import { useTable } from '@/hooks/web/useTable'
-import { FINANCE_TYPE_DICT } from '../utils/dict'
+import { FINANCE_TYPE_DICT, getTagType } from '../utils/dict'
+import { convertDateTime } from '../utils/convertDateTime'
 
 const { tableRegister, tableState } = useTable({
   fetchDataApi: async () => {
@@ -55,7 +56,11 @@ const columns: TableColumn[] = [
     field: 'Description',
     label: '描述'
   },
-
+  {
+    field: 'Date',
+    label: '时间',
+    formatter: (row: any) => convertDateTime(row.Date)
+  },
   {
     field: 'Amount',
     label: '总额',
@@ -64,7 +69,10 @@ const columns: TableColumn[] = [
   {
     field: 'Remark',
     label: '备注',
-    formatter: (row: any) => remarkMap[row.Remark] || row.Remark
+    formatter: (row: any) => {
+      const remarkText = remarkMap[row.Remark] || row.Remark
+      return h(ElTag, { type: getTagType(row.Remark) }, () => remarkText)
+    }
   }
 ]
 const loading = ref(true)
