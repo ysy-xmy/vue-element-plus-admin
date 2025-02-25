@@ -219,17 +219,17 @@ onMounted(() => {
         </div>
 
         <el-menu @select="handleSelect" class="menu-tree" :default-active="currentAction">
-          <template v-for="item in actionrouterList" :key="item.title">
-            <el-sub-menu v-if="item.children.length > 0" :index="item.title">
+          <template v-for="item in actionrouterList" :key="item.id">
+            <el-sub-menu v-if="item.children.length > 0" :index="String(item.id)">
               <template #title>
                 <Icon icon="ep:folder" class="menu-icon" />
                 <span>{{ item.title }}</span>
               </template>
-              <template v-for="child in item.children" :key="child.title">
+              <template v-for="child in item.children" :key="child.id">
                 <el-menu-item
                   @click="getActions(child)"
                   :disabled="!child.isActive"
-                  :index="child.title"
+                  :index="String(child.id)"
                 >
                   <Icon icon="ep:document" class="menu-icon" />
                   {{ child.title }}
@@ -241,7 +241,7 @@ onMounted(() => {
               v-else
               :disabled="!item.isActive"
               @click="getSelection(item)"
-              :index="item.title"
+              :index="String(item.id)"
             >
               <Icon icon="ep:folder" class="menu-icon" />
               <span>{{ item.title }}</span>

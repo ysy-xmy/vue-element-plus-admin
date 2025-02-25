@@ -15,6 +15,7 @@ import { ref } from 'vue'
 // import { BaseButton } from '@/components/Button'
 import { getAccountingPageByType } from '@/api/finance'
 import { useTable } from '@/hooks/web/useTable'
+import { FINANCE_TYPE_DICT } from '../utils/dict'
 
 const { tableRegister, tableState } = useTable({
   fetchDataApi: async () => {
@@ -28,6 +29,13 @@ const { tableRegister, tableState } = useTable({
 const { total, pageSize, currentPage } = tableState
 
 const { t } = useI18n()
+
+// 创建备注映射，同时支持大写和小写键
+const remarkMap: Record<string, string> = {}
+Object.entries(FINANCE_TYPE_DICT).forEach(([key, value]) => {
+  remarkMap[key] = value
+  remarkMap[key.toUpperCase()] = value
+})
 
 const columns: TableColumn[] = [
   {
@@ -55,7 +63,8 @@ const columns: TableColumn[] = [
   },
   {
     field: 'Remark',
-    label: '备注'
+    label: '备注',
+    formatter: (row: any) => remarkMap[row.Remark] || row.Remark
   }
 ]
 const loading = ref(true)
