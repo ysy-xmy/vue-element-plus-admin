@@ -10,8 +10,8 @@ import { Table, TableColumn } from '@/components/Table'
 import { getTableListApi } from '@/api/table'
 //@ts-ignore
 import { TableData } from '@/api/table/types'
-import { ref, h } from 'vue'
-import { ElTag } from 'element-plus'
+import { ref, h, computed } from 'vue'
+import { ElTag, ElSelect, ElOption } from 'element-plus'
 // import { BaseButton } from '@/components/Button'
 import { getAccountingPageByType } from '@/api/finance'
 import { useTable } from '@/hooks/web/useTable'
@@ -77,20 +77,80 @@ const columns: TableColumn[] = [
 ]
 const loading = ref(true)
 
-let tableDataList = ref<TableData[]>([])
+// 月份筛选相关
+const currentMonth = ref('')
+const months = computed(() => {
+  const uniqueMonths = new Set<string>()
+  const currentYear = new Date().getFullYear()
+
+  // 添加当前年份的所有月份
+  for (let i = 1; i <= 12; i++) {
+    const monthStr = i < 10 ? `0${i}` : `${i}`
+    uniqueMonths.add(`${currentYear}-${monthStr}`)
+  }
+
+  // 从数据中提取月份
+  allTableData.value.forEach((item) => {
+    if (item.Date) {
+      const date = new Date(item.Date)
+      const year = date.getFullYear()
+      const month = date.getMonth() + 1
+      const monthStr = month < 10 ? `0${month}` : `${month}`
+      uniqueMonths.add(`${year}-${monthStr}`)
+    }
+  })
+
+  return Array.from(uniqueMonths).sort().reverse()
+})
+
+// 存储所有数据
+const allTableData = ref<TableData[]>([])
+// 筛选后的数据
+const tableDataList = ref<TableData[]>([])
+
+// 筛选数据
+const filterDataByMonth = () => {
+  if (!currentMonth.value) {
+    // 如果没有选择月份，显示所有数据
+    tableDataList.value = [...allTableData.value]
+  } else {
+    // 筛选指定月份的数据
+    tableDataList.value = allTableData.value.filter((item) => {
+      if (!item.Date) return false
+      const date = new Date(item.Date)
+      const year = date.getFullYear()
+      const month = date.getMonth() + 1
+      const monthStr = month < 10 ? `0${month}` : `${month}`
+      const itemMonth = `${year}-${monthStr}`
+      return itemMonth === currentMonth.value
+    })
+  }
+
+  // 更新总数
+  total.value = tableDataList.value.length
+}
 
 const getTableList = async () => {
   loading.value = true
-  const res: any = await getAccountingPageByType({
+  const params: any = {
     Type: 'INCOME',
     Page: currentPage.value,
     Size: pageSize.value
-  })
-  if (res) {
-    total.value = res.data.Total
-    loading.value = false
-    tableDataList.value = res.data.AccountingInfo
   }
+
+  const res: any = await getAccountingPageByType(params)
+  if (res) {
+    loading.value = false
+    allTableData.value = res.data.AccountingInfo
+    // 应用筛选
+    filterDataByMonth()
+  }
+}
+
+// 监听月份变化
+const handleMonthChange = () => {
+  currentPage.value = 1 // 重置到第一页
+  filterDataByMonth()
 }
 
 getTableList()
@@ -98,6 +158,18 @@ getTableList()
 
 <template>
   <ContentWrap title="收入表" :message="t('tableDemo.tableDes')">
+    <div class="filter-container" style="margin-bottom: 20px">
+      <el-select
+        v-model="currentMonth"
+        placeholder="选择月份"
+        clearable
+        style="width: 200px; margin-right: 10px"
+        @change="handleMonthChange"
+      >
+        <el-option v-for="month in months" :key="month" :label="month" :value="month" />
+      </el-select>
+    </div>
+
     <Table
       v-model:currentPage="currentPage"
       v-model:pageSize="pageSize"
