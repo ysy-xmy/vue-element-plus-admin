@@ -23,71 +23,71 @@ const yearOptions = computed(() => {
 
 // 获取月度销售数据
 const getMonthlySales = async () => {
-  const res = await getMonthlySalesApi(currentYear.value).catch(() => {})
-  if (res) {
-    // 按月份分组数据
-    const monthlyData = res.data.reduce(
-      (acc, curr) => {
-        if (!acc[curr.Month]) {
-          acc[curr.Month] = { income: 0, expense: 0 }
-        }
-        acc[curr.Month][curr.AccountingType] = curr.TotalAmount
-        return acc
-      },
-      {} as Record<number, { income: number; expense: number }>
-    )
+  loading.value = true
 
-    // 准备图表数据
-    const months = Array.from({ length: 12 }, (_, i) => i + 1)
-    set(
-      lineOptionsData,
-      'xAxis.data',
-      months.map((m) => `${m}月`)
-    )
-    set(lineOptionsData, 'series', [
-      {
-        name: '收入',
-        smooth: true,
-        type: 'line',
-        data: months.map((m) => monthlyData[m]?.income || 0),
-        animationDuration: 2800,
-        animationEasing: 'cubicInOut'
-      },
-      {
-        name: '支出',
-        smooth: true,
-        type: 'line',
-        data: months.map((m) => monthlyData[m]?.expense || 0),
-        animationDuration: 2800,
-        animationEasing: 'quadraticOut'
-      }
-    ])
-  } else {
-    // 设置空数据状态
-    set(
-      lineOptionsData,
-      'xAxis.data',
-      Array.from({ length: 12 }, (_, i) => `${i + 1}月`)
-    )
-    set(lineOptionsData, 'series', [
-      {
-        name: '收入',
-        smooth: true,
-        type: 'line',
-        data: new Array(12).fill(0),
-        animationDuration: 2800,
-        animationEasing: 'cubicInOut'
-      },
-      {
-        name: '支出',
-        smooth: true,
-        type: 'line',
-        data: new Array(12).fill(0),
-        animationDuration: 2800,
-        animationEasing: 'quadraticOut'
-      }
-    ])
+  // 分别获取收入和支出数据
+  const incomeRes = await getMonthlySalesApi(currentYear.value, 'INCOME').catch(() => {})
+  const expenseRes = await getMonthlySalesApi(currentYear.value, 'EXPENSE').catch(() => {})
+
+  // 准备图表数据
+  const months = Array.from({ length: 12 }, (_, i) => i + 1)
+  set(
+    lineOptionsData,
+    'xAxis.data',
+    months.map((m) => `${m}月`)
+  )
+
+  // 处理收入数据
+  let incomeData = new Array(12).fill(0)
+  if (incomeRes && incomeRes.data) {
+    incomeData = incomeRes.data.Data || new Array(12).fill(0)
   }
+
+  // 处理支出数据
+  let expenseData = new Array(12).fill(0)
+  if (expenseRes && expenseRes.data) {
+    expenseData = expenseRes.data.Data || new Array(12).fill(0)
+  }
+
+  // 设置图表系列数据
+  set(lineOptionsData, 'series', [
+    {
+      name: '收入',
+      smooth: true,
+      type: 'line',
+      data: incomeData,
+      animationDuration: 2800,
+      animationEasing: 'cubicInOut'
+    },
+    {
+      name: '支出',
+      smooth: true,
+      type: 'line',
+      data: expenseData,
+      animationDuration: 2800,
+      animationEasing: 'quadraticOut'
+    }
+  ])
+
+  // 设置tooltip显示盈利
+  set(lineOptionsData, 'tooltip', {
+    trigger: 'axis',
+    formatter: function (params) {
+      const monthIndex = params[0].dataIndex
+      const income = incomeData[monthIndex] || 0
+      const expense = expenseData[monthIndex] || 0
+      const profit = income - expense
+
+      let result = `${params[0].axisValue}<br/>`
+      params.forEach((item) => {
+        result += `${item.marker} ${item.seriesName}: ${item.value.toFixed(2)}<br/>`
+      })
+      result += `<span style="display:inline-block;margin-right:4px;border-radius:10px;width:10px;height:10px;background-color:#91cc75;"></span> 盈利: ${profit.toFixed(2)}`
+
+      return result
+    }
+  })
+
   loading.value = false
 }
 

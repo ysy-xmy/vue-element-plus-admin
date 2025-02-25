@@ -19,8 +19,11 @@ export const getWeeklyUserActivityApi = (): Promise<IResponse<WeeklyUserActivity
   return request.get({ url: '/mock/analysis/weeklyUserActivity' })
 }
 
-export const getMonthlySalesApi = (year: number): Promise<IResponse<MonthlySales[]>> => {
-  return request.get({ url: '/api/accounting/getYearData', params: { year: year } })
+export const getMonthlySalesApi = (
+  year: number,
+  type: string
+): Promise<IResponse<MonthlySales[]>> => {
+  return request.get({ url: '/api/accounting/getYearData', params: { year: year, type: type } })
 }
 
 export const getYearPercentApi = (params: {
