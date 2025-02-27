@@ -81,13 +81,6 @@ const loading = ref(true)
 const currentMonth = ref('')
 const months = computed(() => {
   const uniqueMonths = new Set<string>()
-  const currentYear = new Date().getFullYear()
-
-  // 添加当前年份的所有月份
-  for (let i = 1; i <= 12; i++) {
-    const monthStr = i < 10 ? `0${i}` : `${i}`
-    uniqueMonths.add(`${currentYear}-${monthStr}`)
-  }
 
   // 从数据中提取月份
   allTableData.value.forEach((item) => {
@@ -100,7 +93,12 @@ const months = computed(() => {
     }
   })
 
-  return Array.from(uniqueMonths).sort().reverse()
+  // 按月份从一月份开始排序
+  return Array.from(uniqueMonths).sort((a, b) => {
+    const [yearA, monthA] = a.split('-').map(Number)
+    const [yearB, monthB] = b.split('-').map(Number)
+    return yearA === yearB ? monthA - monthB : yearB - yearA
+  })
 })
 
 // 存储所有数据
@@ -108,23 +106,30 @@ const allTableData = ref<TableData[]>([])
 // 筛选后的数据
 const tableDataList = ref<TableData[]>([])
 
-// 筛选数据
-const filterDataByMonth = () => {
-  if (!currentMonth.value) {
-    // 如果没有选择月份，显示所有数据
-    tableDataList.value = [...allTableData.value]
-  } else {
-    // 筛选指定月份的数据
-    tableDataList.value = allTableData.value.filter((item) => {
-      if (!item.Date) return false
-      const date = new Date(item.Date)
-      const year = date.getFullYear()
-      const month = date.getMonth() + 1
-      const monthStr = month < 10 ? `0${month}` : `${month}`
-      const itemMonth = `${year}-${monthStr}`
-      return itemMonth === currentMonth.value
-    })
-  }
+// 新增购买者选项
+const buyerOptions = computed(() => {
+  const uniqueBuyers = new Set<string>()
+  allTableData.value.forEach((item) => {
+    if (item.Username) {
+      uniqueBuyers.add(item.Username)
+    }
+  })
+  return Array.from(uniqueBuyers).map((username) => ({ value: username, label: username }))
+})
+
+const selectedBuyer = ref('') // 新增购买者筛选状态
+
+const filterData = () => {
+  tableDataList.value = allTableData.value.filter((item) => {
+    const matchesMonth =
+      !currentMonth.value ||
+      (item.Date && new Date(item.Date).toISOString().slice(0, 7) === currentMonth.value)
+    const matchesRemark = !selectedRemark.value || item.Remark === selectedRemark.value
+    const matchesBuyer = !selectedBuyer.value || item.Username === selectedBuyer.value // 添加购买者筛选
+
+    // 确保所有条件都满足
+    return matchesMonth && matchesRemark && matchesBuyer
+  })
 
   // 更新总数
   total.value = tableDataList.value.length
@@ -143,14 +148,26 @@ const getTableList = async () => {
     loading.value = false
     allTableData.value = res.data.AccountingInfo
     // 应用筛选
-    filterDataByMonth()
+    filterData()
   }
 }
 
 // 监听月份变化
 const handleMonthChange = () => {
   currentPage.value = 1 // 重置到第一页
-  filterDataByMonth()
+  filterData()
+}
+
+const remarkOptions = Object.entries(FINANCE_TYPE_DICT)
+  .filter(([key]) => key.endsWith('_income')) // 只保留收入相关的类型
+  .map(([key, value]) => ({ value: key, label: value }))
+
+const selectedRemark = ref('')
+
+// 监听类型变化
+const handleRemarkChange = () => {
+  currentPage.value = 1 // 重置到第一页
+  filterData()
 }
 
 getTableList()
@@ -158,7 +175,7 @@ getTableList()
 
 <template>
   <ContentWrap title="收入表" :message="t('tableDemo.tableDes')">
-    <div class="filter-container" style="margin-bottom: 20px">
+    <div class="filter-container" style="margin-bottom: 20px; display: flex">
       <el-select
         v-model="currentMonth"
         placeholder="选择月份"
@@ -167,6 +184,36 @@ getTableList()
         @change="handleMonthChange"
       >
         <el-option v-for="month in months" :key="month" :label="month" :value="month" />
+      </el-select>
+
+      <el-select
+        v-model="selectedRemark"
+        placeholder="选择类型"
+        clearable
+        style="width: 200px; margin-right: 10px"
+        @change="handleRemarkChange"
+      >
+        <el-option
+          v-for="option in remarkOptions"
+          :key="option.value"
+          :label="option.label"
+          :value="option.value"
+        />
+      </el-select>
+
+      <el-select
+        v-model="selectedBuyer"
+        placeholder="选择购买者"
+        clearable
+        style="width: 200px"
+        @change="filterData"
+      >
+        <el-option
+          v-for="buyer in buyerOptions"
+          :key="buyer.value"
+          :label="buyer.label"
+          :value="buyer.value"
+        />
       </el-select>
     </div>
 
@@ -182,6 +229,7 @@ getTableList()
         total
       }"
     />
+    <AddDialog title="录入收入" :visible="showDialog" @save="handleSave" @cancel="handleCancel" />
   </ContentWrap>
 
   <!--  -->

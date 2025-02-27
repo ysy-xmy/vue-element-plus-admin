@@ -85,13 +85,6 @@ const userStore = useUserStore()
 const currentMonth = ref('')
 const months = computed(() => {
   const uniqueMonths = new Set<string>()
-  const currentYear = new Date().getFullYear()
-
-  // 添加当前年份的所有月份
-  for (let i = 1; i <= 12; i++) {
-    const monthStr = i < 10 ? `0${i}` : `${i}`
-    uniqueMonths.add(`${currentYear}-${monthStr}`)
-  }
 
   // 从数据中提取月份
   allTableData.value.forEach((item) => {
@@ -104,7 +97,12 @@ const months = computed(() => {
     }
   })
 
-  return Array.from(uniqueMonths).sort().reverse()
+  // 按月份从一月份开始排序
+  return Array.from(uniqueMonths).sort((a, b) => {
+    const [yearA, monthA] = a.split('-').map(Number)
+    const [yearB, monthB] = b.split('-').map(Number)
+    return yearA === yearB ? monthA - monthB : yearB - yearA
+  })
 })
 
 // 存储所有数据
@@ -112,26 +110,40 @@ const allTableData = ref<TableData[]>([])
 // 筛选后的数据
 const tableDataList = ref<TableData[]>([])
 
-// 筛选数据
-const filterDataByMonth = () => {
-  if (!currentMonth.value) {
-    // 如果没有选择月份，显示所有数据
-    tableDataList.value = [...allTableData.value]
-  } else {
-    // 筛选指定月份的数据
-    tableDataList.value = allTableData.value.filter((item) => {
-      if (!item.Date) return false
-      const date = new Date(item.Date)
-      const year = date.getFullYear()
-      const month = date.getMonth() + 1
-      const monthStr = month < 10 ? `0${month}` : `${month}`
-      const itemMonth = `${year}-${monthStr}`
-      return itemMonth === currentMonth.value
-    })
-  }
+const filterData = () => {
+  tableDataList.value = allTableData.value.filter((item) => {
+    const matchesMonth =
+      !currentMonth.value ||
+      (item.Date && new Date(item.Date).toISOString().slice(0, 7) === currentMonth.value)
+    const matchesRemark = !selectedRemark.value || item.Remark === selectedRemark.value
+    const matchesUsername = !selectedUsername.value || item.Username === selectedUsername.value
+
+    return matchesMonth && matchesRemark && matchesUsername
+  })
 
   // 更新总数
   total.value = tableDataList.value.length
+}
+
+// 监听筛选变化
+const handleFilterChange = () => {
+  currentPage.value = 1 // 重置到第一页
+  filterData()
+}
+
+// 监听月份变化
+const handleMonthChange = () => {
+  handleFilterChange()
+}
+
+// 监听类型变化
+const handleRemarkChange = () => {
+  handleFilterChange()
+}
+
+// 监听用户名变化
+const handleUsernameChange = () => {
+  handleFilterChange()
 }
 
 const getTableList = async () => {
@@ -147,14 +159,10 @@ const getTableList = async () => {
     loading.value = false
     allTableData.value = res.data.AccountingInfo
     // 应用筛选
-    filterDataByMonth()
+    filterData()
+    // 更新月份选项
+    months.value = months.value // 直接使用计算属性
   }
-}
-
-// 监听月份变化
-const handleMonthChange = () => {
-  currentPage.value = 1 // 重置到第一页
-  filterDataByMonth()
 }
 
 getTableList()
@@ -180,6 +188,24 @@ const handleShowDialog = () => {
   console.log('Show dialog')
   showDialog.value = true
 }
+
+const remarkOptions = Object.entries(FINANCE_TYPE_DICT)
+  .filter(([key]) => key.endsWith('_expense')) // 只保留支出相关的类型
+  .map(([key, value]) => ({ value: key, label: value }))
+
+const selectedRemark = ref('')
+
+const usernameOptions = computed(() => {
+  const uniqueUsernames = new Set<string>()
+  allTableData.value.forEach((item) => {
+    if (item.Username) {
+      uniqueUsernames.add(item.Username)
+    }
+  })
+  return Array.from(uniqueUsernames).map((username) => ({ value: username, label: username }))
+})
+
+const selectedUsername = ref('')
 </script>
 
 <template>
@@ -188,15 +214,47 @@ const handleShowDialog = () => {
       class="filter-container"
       style="margin-bottom: 20px; display: flex; justify-content: space-between"
     >
-      <el-select
-        v-model="currentMonth"
-        placeholder="选择月份"
-        clearable
-        style="width: 200px"
-        @change="handleMonthChange"
-      >
-        <el-option v-for="month in months" :key="month" :label="month" :value="month" />
-      </el-select>
+      <div>
+        <el-select
+          v-model="currentMonth"
+          placeholder="选择月份"
+          clearable
+          style="width: 200px; margin-right: 10px"
+          @change="handleMonthChange"
+        >
+          <el-option v-for="month in months" :key="month" :label="month" :value="month" />
+        </el-select>
+
+        <el-select
+          v-model="selectedRemark"
+          placeholder="选择类型"
+          clearable
+          style="width: 200px; margin-right: 10px"
+          @change="handleRemarkChange"
+        >
+          <el-option
+            v-for="option in remarkOptions"
+            :key="option.value"
+            :label="option.label"
+            :value="option.value"
+          />
+        </el-select>
+
+        <el-select
+          v-model="selectedUsername"
+          placeholder="选择用户名"
+          clearable
+          style="width: 200px; margin-right: 10px"
+          @change="handleUsernameChange"
+        >
+          <el-option
+            v-for="option in usernameOptions"
+            :key="option.value"
+            :label="option.label"
+            :value="option.value"
+          />
+        </el-select>
+      </div>
 
       <el-button type="primary" @click="handleShowDialog">添加</el-button>
     </div>
