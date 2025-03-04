@@ -71,7 +71,7 @@ const updateLocalList = () => {
   localActionList.value = [...props.actionlist].sort((a, b) => {
     const orderA = Number(a.orderid)
     const orderB = Number(b.orderid)
-    return orderA - orderB
+    return orderB - orderA
   })
 }
 
