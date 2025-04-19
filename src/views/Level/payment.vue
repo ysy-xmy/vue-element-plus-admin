@@ -74,16 +74,15 @@ const crudSchemas = reactive<CrudSchema[]>([
 
     search: {
       hidden: true
-    },
+    }
   },
   {
     field: 'UserID',
     label: '操作者id',
 
-
     search: {
       hidden: true
-    },
+    }
   },
   {
     field: 'Path',
@@ -91,9 +90,8 @@ const crudSchemas = reactive<CrudSchema[]>([
 
     search: {
       hidden: true
-    },
+    }
   },
-
 
   {
     field: 'Method',
@@ -101,7 +99,7 @@ const crudSchemas = reactive<CrudSchema[]>([
 
     search: {
       hidden: true
-    },
+    }
   },
   {
     field: 'Params',
@@ -109,9 +107,8 @@ const crudSchemas = reactive<CrudSchema[]>([
 
     search: {
       hidden: true
-    },
+    }
   },
-
 
   {
     field: 'Resp',
@@ -119,7 +116,7 @@ const crudSchemas = reactive<CrudSchema[]>([
 
     search: {
       hidden: true
-    },
+    }
   },
   // {
   //     field: 'Username',
@@ -145,7 +142,6 @@ const crudSchemas = reactive<CrudSchema[]>([
       hidden: true
     },
     sortable: true
-
   },
   {
     field: 'action',
@@ -173,11 +169,7 @@ const crudSchemas = reactive<CrudSchema[]>([
                 <BaseButton type="success" onClick={() => action(row, 'detail')}>
                   查看
                 </BaseButton>
-
-
-
               </div>
-
             </>
           )
         }
@@ -186,9 +178,7 @@ const crudSchemas = reactive<CrudSchema[]>([
   }
 ])
 
-
 const { allSchemas } = useCrudSchemas(crudSchemas)
-
 
 const treeEl = ref<typeof ElTree>()
 
@@ -205,7 +195,7 @@ const fetchloglist = async () => {
   const res = await getlog(params).finally(() => {
     loading.value = false
   })
-  total.value = res.data.total
+  total.value = res.data.Total
 
   //对拿到的列表做一个简单的处理
   loglist.value = res.data.Logs.map((v) => {
@@ -216,23 +206,18 @@ const fetchloglist = async () => {
       Method: v.Method,
       Params: displayObjectAsStrings(v.Params),
       Resp: displayObjectAsStrings(v.Resp),
-      CreatedAt: convertDateTime(v.CreatedAt),
-
+      CreatedAt: convertDateTime(v.CreatedAt)
     }
   })
 
-
-
-  currentNodeKey.value =
-    (res.data[0] && res.data[0]?.children && res.data[0].children[0].id) || ''
+  currentNodeKey.value = (res.data[0] && res.data[0]?.children && res.data[0].children[0].id) || ''
   await nextTick()
   unref(treeEl)?.setCurrentKey(currentNodeKey.value)
 }
 function displayObjectAsStrings(obj: { [key: string]: any }) {
   if (obj === null || obj === undefined) {
     return ''
-  }
-  else {
+  } else {
     return obj.msg
   }
 }
@@ -245,18 +230,14 @@ watch(
   }
 )
 
-
 const dialogVisible = ref(false)
 const dialogTitle = ref('')
 
 const currentRow = ref<DepartmentUserItem>()
 const actionType = ref('')
 
-
-
 const delLoading = ref(false)
 const ids = ref<string[]>([])
-
 
 const action = (row: DepartmentUserItem, type: string) => {
   dialogTitle.value = t(type === 'edit' ? 'exampleDemo.edit' : 'exampleDemo.detail')
@@ -271,7 +252,6 @@ const saveLoading = ref(false)
 
 const save = async () => {
   if (actionType.value === 'add') {
-
     const write = unref(writeRef)
     const formData = await write?.submit()
     if (formData) {
@@ -283,7 +263,7 @@ const save = async () => {
         Address: formData.Address,
         Website: formData.Website,
         Description: formData.Description,
-        Logo: formData.Logo,
+        Logo: formData.Logo
       }
       // try {
       //   const res = await addGym(data)
@@ -299,19 +279,14 @@ const save = async () => {
       //   dialogVisible.value = false
       // }
     }
-
   }
-
 }
 
 const delData = async (row) => {
-
   delLoading.value = true
 
   const elTableExpose = await getElTableExpose()
-  ids.value = row
-    ? [row.ID]
-    : elTableExpose?.getSelectionRows().map((v) => v.ID) || []
+  ids.value = row ? [row.ID] : elTableExpose?.getSelectionRows().map((v) => v.ID) || []
   delLoading.value = true
 
   try {
@@ -326,40 +301,53 @@ const delData = async (row) => {
     delLoading.value = false
     fetchloglist()
   }
-
-
-
-
 }
-
 </script>
 
 <template>
   <div class="flex w-full h-full">
-
     <ContentWrap class="flex-[3] ml-20px h-full">
-
       <div class="mb-10px">
         <!-- <BaseButton type="primary" @click="addgym">新增</BaseButton> -->
         <!-- <BaseButton :loading="delLoading" type="danger" @click="delData(null)">
           {{ t('exampleDemo.del') }}
         </BaseButton> -->
-
       </div>
-      <Table height="100%" v-model:current-page="currentPage" v-model:page-size="pageSize"
-        :columns="allSchemas.tableColumns" :data="loglist" :loading="loading" @register="tableRegister" :pagination="{
-        total
-      }" />
+      <Table
+        height="100%"
+        v-model:current-page="currentPage"
+        v-model:page-size="pageSize"
+        :columns="allSchemas.tableColumns"
+        :data="loglist"
+        :loading="loading"
+        @register="tableRegister"
+        :pagination="{
+          total
+        }"
+      />
     </ContentWrap>
 
     <Dialog v-model="dialogVisible" :title="dialogTitle">
-      <Write v-if="actionType !== 'detail'" ref="writeRef" :form-schema="allSchemas.formSchema"
-        :current-row="currentRow" />
+      <Write
+        v-if="actionType !== 'detail'"
+        ref="writeRef"
+        :form-schema="allSchemas.formSchema"
+        :current-row="currentRow"
+      />
 
-      <Detail v-if="actionType === 'detail'" :detail-schema="allSchemas.detailSchema" :current-row="currentRow" />
+      <Detail
+        v-if="actionType === 'detail'"
+        :detail-schema="allSchemas.detailSchema"
+        :current-row="currentRow"
+      />
 
       <template #footer>
-        <BaseButton v-if="actionType !== 'detail'" type="primary" :loading="saveLoading" @click="save">
+        <BaseButton
+          v-if="actionType !== 'detail'"
+          type="primary"
+          :loading="saveLoading"
+          @click="save"
+        >
           {{ t('exampleDemo.save') }}
         </BaseButton>
         <BaseButton @click="dialogVisible = false">{{ t('dialogDemo.close') }}</BaseButton>

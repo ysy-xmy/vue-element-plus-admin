@@ -27,18 +27,15 @@ const { tableRegister, tableState, tableMethods } = useTable({
 
     return {
       list: res,
-      total: total.value,
+      total: total.value
     }
   },
-  fetchDelApi: async () => {
-
-  }
+  fetchDelApi: async () => {}
 })
 const { total, loading, pageSize, currentPage } = tableState
 const { getList, getElTableExpose, delList } = tableMethods
 
 const crudSchemas = reactive<CrudSchema[]>([
-
   {
     field: 'index',
     label: '序号',
@@ -60,14 +57,14 @@ const crudSchemas = reactive<CrudSchema[]>([
     label: 'ID',
     search: {
       hidden: true
-    },
+    }
   },
   {
     field: 'UserID',
     label: '操作者id',
     search: {
       hidden: true
-    },
+    }
   },
   {
     field: 'Path',
@@ -75,9 +72,8 @@ const crudSchemas = reactive<CrudSchema[]>([
 
     search: {
       hidden: true
-    },
+    }
   },
-
 
   {
     field: 'Method',
@@ -85,7 +81,7 @@ const crudSchemas = reactive<CrudSchema[]>([
 
     search: {
       hidden: true
-    },
+    }
   },
   {
     field: 'Params',
@@ -93,9 +89,8 @@ const crudSchemas = reactive<CrudSchema[]>([
 
     search: {
       hidden: true
-    },
+    }
   },
-
 
   {
     field: 'Resp',
@@ -103,7 +98,7 @@ const crudSchemas = reactive<CrudSchema[]>([
 
     search: {
       hidden: true
-    },
+    }
   },
   {
     field: 'CreatedAt',
@@ -113,8 +108,7 @@ const crudSchemas = reactive<CrudSchema[]>([
     },
     search: {
       hidden: true
-    },
-
+    }
   },
   {
     field: 'action',
@@ -143,7 +137,6 @@ const crudSchemas = reactive<CrudSchema[]>([
                   查看
                 </BaseButton>
               </div>
-
             </>
           )
         }
@@ -159,13 +152,11 @@ const setSearchParams = (params: any) => {
 }
 const { allSchemas } = useCrudSchemas(crudSchemas)
 
-
 const treeEl = ref<typeof ElTree>()
 function displayObjectAsStrings(obj: { [key: string]: any }) {
   if (obj === null || obj === undefined) {
     return ''
-  }
-  else {
+  } else {
     return obj.msg
   }
 }
@@ -196,22 +187,15 @@ const fetchloglist = async () => {
       Method: v.Method,
       Params: displayObjectAsStrings(v.Params),
       Resp: displayObjectAsStrings(v.Resp),
-      CreatedAt: convertDateTime(v.CreatedAt),
+      CreatedAt: convertDateTime(v.CreatedAt)
     }
   })
   loading.value = false
 
-
-
-  currentNodeKey.value =
-    (res.data[0] && res.data[0]?.children && res.data[0].children[0].id) || ''
+  currentNodeKey.value = (res.data[0] && res.data[0]?.children && res.data[0].children[0].id) || ''
   await nextTick()
   unref(treeEl)?.setCurrentKey(currentNodeKey.value)
 }
-
-
-
-
 
 const dialogVisible = ref(false)
 const dialogTitle = ref('')
@@ -242,26 +226,22 @@ const action = (row: DepartmentUserItem, type: string) => {
 }
 
 const writeRef = ref<ComponentRef<typeof Write>>()
-
-
-
-
-
 </script>
 
 <template>
   <div class="flex w-full h-full">
-
     <ContentWrap class="flex-[3] ml-20px h-full">
-
-
-      <Table v-model:current-page="currentPage" v-model:page-size="pageSize" :columns="allSchemas.tableColumns"
-        :data="loglist" :loading="loading" @register="tableRegister" :pagination="{
-        total
-      }" />
-
-
-
+      <Table
+        v-model:current-page="currentPage"
+        v-model:page-size="pageSize"
+        :columns="allSchemas.tableColumns"
+        :data="loglist"
+        :loading="loading"
+        @register="tableRegister"
+        :pagination="{
+          total
+        }"
+      />
     </ContentWrap>
 
     <Dialog v-model="dialogVisible" :title="dialogTitle">
@@ -270,10 +250,8 @@ const writeRef = ref<ComponentRef<typeof Write>>()
       <Detail v-if="actionType === 'detail'" :detail-schema="allSchemas.detailSchema" />
 
       <template #footer>
-
         <BaseButton @click="dialogVisible = false">{{ t('dialogDemo.close') }}</BaseButton>
       </template>
-
     </Dialog>
   </div>
 </template>

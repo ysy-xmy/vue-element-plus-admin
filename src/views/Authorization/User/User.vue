@@ -360,7 +360,8 @@ const crudSchemas = reactive<CrudSchema[]>([
             </>
           )
         }
-      }
+      },
+      width: 150
     },
     form: {
       hidden: true,
