@@ -6,8 +6,7 @@ interface RoleParams {
 }
 
 export const loginApi = (data: UserType): Promise<IResponse<UserType>> => {
-
-  let newdata: any = {
+  const newdata: any = {
     OpenID: data.username,
     Password: data.password
   }

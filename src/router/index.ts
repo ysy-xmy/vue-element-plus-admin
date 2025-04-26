@@ -296,6 +296,36 @@ export const asyncRouterMap: AppRouteRecordRaw[] = [
         }
       }
     ]
+  },
+  {
+    path: '/notice',
+    component: Layout,
+    name: '通知模块',
+    meta: {
+      title: '通知模块',
+      icon: 'carbon:skill-level-advanced'
+    },
+    children: [
+      // {
+      //   path: 'base-config',
+      //   name: '基础设置',
+      //   component: () => import('@/views/system/systembase.vue'),
+      //   meta: {
+      //     title: '基础设置'
+      //   }
+      // },
+      {
+        path: 'notice',
+        name: '通知模块',
+        component: () => import('@/views/Notice/index.vue'),
+        meta: {
+          title: '通知模块',
+          noCache: true,
+          affix: true,
+          icon: 'carbon:skill-level-advanced'
+        }
+      }
+    ]
   }
 ]
 
