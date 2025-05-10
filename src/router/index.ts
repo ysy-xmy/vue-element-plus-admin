@@ -95,8 +95,7 @@ export const asyncRouterMap: AppRouteRecordRaw[] = [
         name: 'Admin',
         component: () => import('@/views/Permission/Admin.vue'),
         meta: {
-          title: '管理员',
-          icon: 'carbon:user-role'
+          title: '管理员'
         }
       },
       // {
@@ -122,8 +121,7 @@ export const asyncRouterMap: AppRouteRecordRaw[] = [
         name: 'user',
         component: () => import('@/views/Permission/User.vue'),
         meta: {
-          title: '用户管理',
-          icon: 'carbon:user-role'
+          title: '用户管理'
         }
       }
     ]
@@ -134,7 +132,7 @@ export const asyncRouterMap: AppRouteRecordRaw[] = [
     name: 'Finance',
     meta: {
       title: '财务管理',
-      icon: 'carbon:user-role'
+      icon: 'icon-park-solid:consume'
     },
     children: [
       {
@@ -142,8 +140,7 @@ export const asyncRouterMap: AppRouteRecordRaw[] = [
         name: 'Course',
         component: () => import('@/views/finance/course.vue'),
         meta: {
-          title: '课程销量',
-          icon: 'carbon:user-role'
+          title: '课程销量'
         }
       },
       {
@@ -151,8 +148,7 @@ export const asyncRouterMap: AppRouteRecordRaw[] = [
         name: 'coach-finance',
         component: () => import('@/views/finance/coach-finance.vue'),
         meta: {
-          title: '教练薪资',
-          icon: 'carbon:user-role'
+          title: '教练薪资'
         }
       },
       {
@@ -160,8 +156,7 @@ export const asyncRouterMap: AppRouteRecordRaw[] = [
         name: 'Corporate Finance',
         component: () => import('@/views/finance/corporate-finance.vue'),
         meta: {
-          title: '公司财务',
-          icon: 'carbon:user-role'
+          title: '公司财务'
         }
       }
     ]
@@ -172,7 +167,7 @@ export const asyncRouterMap: AppRouteRecordRaw[] = [
     name: '授课情况',
     meta: {
       title: '授课情况',
-      icon: 'carbon:user-role'
+      icon: 'icon-park-solid:doc-success'
     },
     children: [
       {
@@ -181,7 +176,7 @@ export const asyncRouterMap: AppRouteRecordRaw[] = [
         component: () => import('@/views/course/course-list.vue'),
         meta: {
           title: '授课情况',
-          icon: 'carbon:user-role'
+          icon: 'icon-park-solid:doc-success'
         }
       }
     ]
@@ -192,7 +187,7 @@ export const asyncRouterMap: AppRouteRecordRaw[] = [
     name: '资源管理',
     meta: {
       title: '资源管理',
-      icon: 'carbon:user-role'
+      icon: 'eos-icons:database-outlined'
     },
     children: [
       {
@@ -200,8 +195,7 @@ export const asyncRouterMap: AppRouteRecordRaw[] = [
         name: '动作库',
         component: () => import('@/views/resource/actionLibrary.vue'),
         meta: {
-          title: '动作库',
-          icon: 'carbon:user-role'
+          title: '动作库'
         }
       },
       {
@@ -209,8 +203,7 @@ export const asyncRouterMap: AppRouteRecordRaw[] = [
         name: '课程设置',
         component: () => import('@/views/resource/course.vue'),
         meta: {
-          title: '课程设置',
-          icon: 'carbon:user-role'
+          title: '课程设置'
         }
       },
       {
@@ -218,8 +211,7 @@ export const asyncRouterMap: AppRouteRecordRaw[] = [
         name: '健身房信息',
         component: () => import('@/views/resource/gymInfo.vue'),
         meta: {
-          title: '健身房信息',
-          icon: 'carbon:user-role'
+          title: '健身房信息'
         }
       }
     ]
@@ -230,7 +222,7 @@ export const asyncRouterMap: AppRouteRecordRaw[] = [
     name: '日志模块',
     meta: {
       title: '日志模块',
-      icon: 'carbon:skill-level-advanced'
+      icon: 'eos-icons:cluster-role'
     },
     children: [
       {
@@ -292,7 +284,7 @@ export const asyncRouterMap: AppRouteRecordRaw[] = [
           title: '系统设置',
           noCache: true,
           affix: true,
-          icon: 'carbon:skill-level-advanced'
+          icon: 'rivet-icons:gear-solid'
         }
       }
     ]
@@ -303,7 +295,7 @@ export const asyncRouterMap: AppRouteRecordRaw[] = [
     name: '通知模块',
     meta: {
       title: '通知模块',
-      icon: 'carbon:skill-level-advanced'
+      icon: 'eos-icons:inbound'
     },
     children: [
       // {
@@ -322,7 +314,7 @@ export const asyncRouterMap: AppRouteRecordRaw[] = [
           title: '通知模块',
           noCache: true,
           affix: true,
-          icon: 'carbon:skill-level-advanced'
+          icon: 'eos-icons:inbound'
         }
       }
     ]

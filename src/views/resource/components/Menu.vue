@@ -276,7 +276,6 @@ onMounted(() => {
   height: 70vh;
   background-color: #fff;
   border-radius: 8px;
-  box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.05);
   overflow: auto; /* 防止内部滚动溢出 */
 }
 
