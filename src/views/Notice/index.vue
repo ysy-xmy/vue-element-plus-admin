@@ -12,9 +12,19 @@
           @clear="onClearRecipients"
           clearable
         >
-          <el-option v-for="user in userList" :key="user.id" :value="user.id" :label="user.name">
+          <el-option
+            style="height: 80px; display: flex; justify-content: center; align-items: center"
+            v-for="user in userList"
+            :key="user.id"
+            :value="user.id"
+            :label="user.name"
+          >
             <div class="user-option">
-              <span class="user-name">{{ user.name }}</span>
+              <span class="user-avatar"
+                ><img class="user-pic" :src="user.avatar" />
+                <span class="user-name">{{ user.name }}</span>
+                <span class="user-id">(ID:{{ user.id }})</span>
+              </span>
               <div>
                 <span class="user-type" :class="user.type === 'coach' ? 'coach' : 'student'">
                   {{ user.type === 'coach' ? '教练' : '学员' }}
@@ -88,7 +98,9 @@ async function fetchUserList(type: 'student' | 'coach' | 'all') {
       id: user.ID,
       name: user.Username,
       type: user.RoleName?.toLowerCase(), // 兼容原有 student/coach
-      sex: user.Sex
+      sex: user.Sex,
+      avatar: user.Avatar,
+      OpenID: user.OpenID
     }))
   } catch (e) {
     ElMessage.error('获取用户列表失败')
@@ -156,6 +168,18 @@ function onClearRecipients() {
   padding: 2px 4px;
   width: 100%;
   justify-content: space-between;
+  height: 40px;
+}
+.user-avatar {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.user-pic {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  margin-right: 10px;
 }
 .icon-coach {
   color: #409eff;

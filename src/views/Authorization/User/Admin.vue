@@ -39,40 +39,27 @@ const { total, loading, pageSize, currentPage } = tableState
 const { getElTableExpose, delList } = tableMethods
 
 const crudSchemas = reactive<CrudSchema[]>([
+  // {
+  //   field: 'index',
+  //   label: t('userDemo.index'),
+  //   form: {
+  //     hidden: true
+  //   },
+  //   search: {
+  //     hidden: true
+  //   },
+  //   detail: {
+  //     hidden: true
+  //   },
+  //   table: {
+  //     type: 'index'
+  //   }
+  // },
   {
-    field: 'selection',
-    search: {
-      hidden: true
-    },
-    form: {
-      hidden: true
-    },
-    detail: {
-      hidden: true
-    },
-    table: {
-      type: 'selection'
-    }
-  },
-  {
-    field: 'index',
-    label: t('userDemo.index'),
-    form: {
-      hidden: true
-    },
-    search: {
-      hidden: true
-    },
-    detail: {
-      hidden: true
-    },
-    table: {
-      type: 'index'
-    }
-  },
-  {
-    field: 'OpenID',
-    label: 'OpenID',
+    field: 'ID',
+    label: 'id',
+    width: 80,
+    align: 'center',
     search: {
       hidden: true
     },
@@ -92,6 +79,7 @@ const crudSchemas = reactive<CrudSchema[]>([
   {
     field: 'Username',
     label: '用户名',
+    align: 'center',
     form: {
       component: 'Input',
       componentProps: {
@@ -145,6 +133,7 @@ const crudSchemas = reactive<CrudSchema[]>([
   {
     field: 'RoleName',
     label: '角色',
+    align: 'center',
     search: {
       hidden: true
     },
@@ -184,6 +173,7 @@ const crudSchemas = reactive<CrudSchema[]>([
   {
     field: 'Password',
     label: '密码',
+    align: 'center',
     table: {
       hidden: true
     },
@@ -207,6 +197,7 @@ const crudSchemas = reactive<CrudSchema[]>([
 
   {
     field: 'CreatedAt',
+    align: 'center',
     label: t('userDemo.createTime'),
     form: {
       hidden: true
@@ -219,6 +210,7 @@ const crudSchemas = reactive<CrudSchema[]>([
   {
     field: 'Enable',
     label: '状态',
+    align: 'center',
     search: {
       hidden: true
     },
@@ -273,6 +265,7 @@ const crudSchemas = reactive<CrudSchema[]>([
   },
   {
     field: 'action',
+    align: 'center',
     label: t('userDemo.action'),
     form: {
       hidden: true

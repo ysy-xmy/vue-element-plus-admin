@@ -100,40 +100,26 @@ const { tableRegister, tableState } = useTable({
 const { total, loading, pageSize, currentPage } = tableState
 
 const crudSchemas = reactive<CrudSchema[]>([
+  // {
+  //   field: 'selection',
+  //   search: {
+  //     hidden: true
+  //   },
+  //   form: {
+  //     hidden: true
+  //   },
+  //   detail: {
+  //     hidden: true
+  //   },
+  //   table: {
+  //     type: 'selection'
+  //   }
+  // },
   {
-    field: 'selection',
-    search: {
-      hidden: true
-    },
-    form: {
-      hidden: true
-    },
-    detail: {
-      hidden: true
-    },
-    table: {
-      type: 'selection'
-    }
-  },
-  {
-    field: 'index',
-    label: t('userDemo.index'),
-    form: {
-      hidden: true
-    },
-    search: {
-      hidden: true
-    },
-    detail: {
-      hidden: true
-    },
-    table: {
-      type: 'index'
-    }
-  },
-  {
-    field: 'OpenID',
-    label: 'OpenID',
+    field: 'ID',
+    label: 'ID',
+    width: 80,
+    align: 'center',
     form: {
       hidden: true
     },
@@ -144,6 +130,7 @@ const crudSchemas = reactive<CrudSchema[]>([
   {
     field: 'Avatar',
     label: '头像',
+    align: 'center',
     form: {
       hidden: true
     },
@@ -172,6 +159,8 @@ const crudSchemas = reactive<CrudSchema[]>([
   {
     field: 'Username',
     label: '用户名',
+    align: 'center',
+
     form: {
       hidden: true
     }
@@ -179,6 +168,7 @@ const crudSchemas = reactive<CrudSchema[]>([
   {
     field: 'Phone',
     label: '手机号',
+    align: 'center',
     form: {
       hidden: true
     },
@@ -191,6 +181,7 @@ const crudSchemas = reactive<CrudSchema[]>([
   {
     field: 'Age',
     label: '年龄',
+    align: 'center',
     form: {
       hidden: true
     },
@@ -215,6 +206,7 @@ const crudSchemas = reactive<CrudSchema[]>([
   {
     field: 'RoleName',
     label: '角色',
+    align: 'center',
     search: {
       hidden: true
     },
@@ -256,6 +248,7 @@ const crudSchemas = reactive<CrudSchema[]>([
   {
     field: 'Sex',
     label: '性别',
+    align: 'center',
     search: {
       hidden: true
     },
@@ -292,6 +285,7 @@ const crudSchemas = reactive<CrudSchema[]>([
   {
     field: 'CreatedAt',
     label: t('userDemo.createTime'),
+    align: 'center',
     form: {
       hidden: true
     },
@@ -305,6 +299,7 @@ const crudSchemas = reactive<CrudSchema[]>([
   {
     field: 'Enable',
     label: '状态',
+    align: 'center',
     search: {
       hidden: true
     },
@@ -519,3 +514,10 @@ const save = async () => {
   }
 }
 </script>
+<style>
+.el-table .cell {
+  margin: auto !important;
+  display: flex;
+  justify-content: center;
+}
+</style>
