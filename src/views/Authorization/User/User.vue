@@ -10,7 +10,7 @@
         </div>
       </div>
       <Table
-        height="100%"
+        height="600px"
         v-model:current-page="currentPage"
         v-model:page-size="pageSize"
         :columns="allSchemas.tableColumns"
@@ -66,8 +66,8 @@ import Write from './components/Write.vue'
 import Detail from './components/Detail.vue'
 import { Dialog } from '@/components/Dialog'
 import { roleApi } from '@/api/role'
-import { convertDateTime } from './components/utils/convertDateTime'
 import { ElTag, ElMessageBox } from 'element-plus'
+import dayjs from 'dayjs'
 
 import type { UserParams } from '@/api/Permission/type'
 // import { getRoleListApi } from '@/api/role'
@@ -100,21 +100,6 @@ const { tableRegister, tableState } = useTable({
 const { total, loading, pageSize, currentPage } = tableState
 
 const crudSchemas = reactive<CrudSchema[]>([
-  // {
-  //   field: 'selection',
-  //   search: {
-  //     hidden: true
-  //   },
-  //   form: {
-  //     hidden: true
-  //   },
-  //   detail: {
-  //     hidden: true
-  //   },
-  //   table: {
-  //     type: 'selection'
-  //   }
-  // },
   {
     field: 'ID',
     label: 'ID',
@@ -156,13 +141,131 @@ const crudSchemas = reactive<CrudSchema[]>([
       }
     }
   },
+
   {
     field: 'Username',
     label: '用户名',
     align: 'center',
-
     form: {
       hidden: true
+    }
+  },
+  {
+    field: 'CourseInfo',
+    label: '课程信息',
+    align: 'center',
+    search: {
+      hidden: true
+    },
+    form: {
+      hidden: true
+    },
+    detail: {
+      hidden: true
+    },
+    table: {
+      width: 500,
+      slots: {
+        default: (data: any) => {
+          const courseInfo = data.row.CourseInfo || []
+          // 过滤掉总节数为9223372036854776000的课程（默认课程）
+          const filteredCourses = courseInfo.filter(
+            (course: any) => course.LessonCount !== 9223372036854776000
+          )
+
+          if (filteredCourses.length === 0) {
+            return (
+              <>
+                <div class="flex justify-center">
+                  <ElTag type="info" size="small">
+                    暂无课程
+                  </ElTag>
+                </div>
+              </>
+            )
+          }
+
+          return (
+            <>
+              <div class="space-y-2 w-full">
+                {filteredCourses.map((course: any, index: number) => (
+                  <div
+                    key={index}
+                    class="relative bg-white border border-gray-200 rounded-lg p-3 shadow-sm hover:shadow-md transition-all duration-200 w-full"
+                  >
+                    {/* 课程名称 */}
+                    <div class="flex items-center justify-between mb-2">
+                      <h4 class="text-sm font-semibold text-gray-800 truncate flex-1 mr-2">
+                        {course.Name}
+                      </h4>
+                      <span class="text-xs text-blue-600 font-medium bg-blue-100 px-2 py-1 rounded">
+                        {course.Percentage}%
+                      </span>
+                    </div>
+
+                    {/* 教练信息 */}
+                    <div class="flex items-center mb-2">
+                      <svg
+                        class="w-3 h-3 text-gray-400 mr-1"
+                        fill="currentColor"
+                        viewBox="0 0 20 20"
+                      >
+                        <path
+                          fill-rule="evenodd"
+                          d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z"
+                          clip-rule="evenodd"
+                        />
+                      </svg>
+                      <span class="text-xs text-gray-600">{course.CoachName || '未分配教练'}</span>
+                    </div>
+
+                    {/* 进度条 */}
+                    <div class="mb-2">
+                      <div class="flex justify-between text-xs text-gray-500 mb-1">
+                        <span>学习进度</span>
+                        <span>
+                          剩余: {course.RemainingCount} / 总: {course.LessonCount}
+                        </span>
+                      </div>
+                      <div class="w-full bg-gray-200 rounded-full h-2 overflow-hidden">
+                        <div
+                          class="bg-gradient-to-r from-blue-500 to-indigo-500 h-2 rounded-full transition-all duration-500 ease-out relative"
+                          style={{ width: `${Math.min(course.Percentage, 100)}%` }}
+                        >
+                          <div class="absolute inset-0 bg-white opacity-20 rounded-full animate-pulse"></div>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* 课程类型标签 */}
+                    <div class="flex items-center justify-between">
+                      <ElTag
+                        size="small"
+                        type={course.CourseType === 'lesson' ? 'success' : 'warning'}
+                        class="text-xs"
+                      >
+                        {course.CourseType === 'lesson' ? '课程' : '其他'}
+                      </ElTag>
+                      {course.EndTime && (
+                        <span class="text-xs text-gray-500">
+                          截止: {dayjs(course.EndTime).format('YYYY-MM-DD')}
+                        </span>
+                      )}
+                    </div>
+
+                    {/* 学生备注 */}
+                    {course.StudentRemark && (
+                      <div class="mt-2 p-2 bg-yellow-50 border border-yellow-200 rounded text-xs text-yellow-700">
+                        <span class="font-medium">备注:</span> {course.StudentRemark}
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </>
+          )
+        }
+      }
     }
   },
   {
@@ -189,19 +292,6 @@ const crudSchemas = reactive<CrudSchema[]>([
       hidden: true
     }
   },
-  // {
-  //     field: 'Username',
-  //     label: t('userDemo.nickName'),
-  //     form: {
-  //         hidden: true
-  //     },
-  //     detail: {
-  //         hidden: true
-  //     },
-  //     search: {
-  //         hidden: true
-  //     },
-  // },
 
   {
     field: 'RoleName',
@@ -270,17 +360,6 @@ const crudSchemas = reactive<CrudSchema[]>([
       hidden: true
     }
   },
-
-  // {
-  //   field: 'email',
-  //   label: t('userDemo.email'),
-  //   form: {
-  //     component: 'Input'
-  //   },
-  //   search: {
-  //     hidden: true
-  //   }
-  // },
 
   {
     field: 'CreatedAt',
@@ -433,7 +512,7 @@ const fetchUserlist = async () => {
   let params: UserParams = {
     Page: String(currentPage.value),
     Size: String(pageSize.value),
-    UserSelectType: select.value
+    UserSelectType: select.value as 'STUDENT' | 'COACH' | 'ADMIN' | 'COACH&STUDENT'
   }
   Userlist.value = []
 
@@ -442,6 +521,7 @@ const fetchUserlist = async () => {
   })
   pageSize.value = res.data.Size
   total.value = res.data.Total
+
   //对拿到的列表做一个简单的处理
   Userlist.value = res.data.CoachStudentUserInfos.map((v) => {
     return {
@@ -455,7 +535,8 @@ const fetchUserlist = async () => {
       Enable: v.Enable,
       LastLoginTime: v.LastLoginTime,
       Sex: v.Sex,
-      CreatedAt: convertDateTime(v.CreatedAt)
+      CreatedAt: dayjs(v.CreatedAt).format('YYYY-MM-DD HH:mm:ss'),
+      CourseInfo: v.CourseInfo || [] // 添加课程信息
     }
   })
   currentNodeKey.value = (res.data[0] && res.data[0]?.children && res.data[0].children[0].id) || ''
@@ -496,15 +577,14 @@ const save = async () => {
   if (formData && currentRow.value) {
     saveLoading.value = true
     let data: object = {
-      ID: currentRow.value.ID,
-      OpenID: currentRow.value.OpenID,
-      Username: currentRow.value.Username,
+      ID: (currentRow.value as any).ID,
+      OpenID: (currentRow.value as any).OpenID,
+      Username: (currentRow.value as any).Username,
       Roleid: formData.RoleName == '学员' ? 4 : 3
     }
     const res = await updatauserapi(data)
     if (res.code == 200) {
       ElMessage.success('保存成功')
-
       fetchUserlist()
     } else {
       ElMessage.error('保存失败')
@@ -519,5 +599,39 @@ const save = async () => {
   margin: auto !important;
   display: flex;
   justify-content: center;
+}
+
+/* 调整表格滚动条样式 */
+.el-table__body-wrapper {
+  overflow-x: auto;
+  overflow-y: auto;
+}
+
+.el-table__body-wrapper::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.el-table__body-wrapper::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 4px;
+}
+
+.el-table__body-wrapper::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 4px;
+}
+
+.el-table__body-wrapper::-webkit-scrollbar-thumb:hover {
+  background: #a8a8a8;
+}
+
+/* 确保表格容器正确显示滚动条 */
+.el-table {
+  overflow: visible;
+}
+
+.el-table__body-wrapper {
+  max-height: calc(100vh - 200px);
 }
 </style>
