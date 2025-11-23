@@ -376,6 +376,40 @@ const crudSchemas = reactive<CrudSchema[]>([
     }
   },
   {
+    field: 'SourceType',
+    label: '来源类型',
+    align: 'center',
+    form: {
+      hidden: true
+    },
+    search: {
+      hidden: true
+    },
+    detail: {
+      hidden: true
+    },
+    table: {
+      width: 120
+    }
+  },
+  {
+    field: 'SourceAppID',
+    label: '来源应用ID',
+    align: 'center',
+    form: {
+      hidden: true
+    },
+    search: {
+      hidden: true
+    },
+    detail: {
+      hidden: true
+    },
+    table: {
+      width: 150
+    }
+  },
+  {
     field: 'Enable',
     label: '状态',
     align: 'center',
@@ -536,7 +570,9 @@ const fetchUserlist = async () => {
       LastLoginTime: v.LastLoginTime,
       Sex: v.Sex,
       CreatedAt: dayjs(v.CreatedAt).format('YYYY-MM-DD HH:mm:ss'),
-      CourseInfo: v.CourseInfo || [] // 添加课程信息
+      CourseInfo: v.CourseInfo || [], // 添加课程信息
+      SourceType: v.SourceType || '', // 添加来源类型
+      SourceAppID: v.SourceAppID || '' // 添加来源应用ID
     }
   })
   currentNodeKey.value = (res.data[0] && res.data[0]?.children && res.data[0].children[0].id) || ''
