@@ -236,10 +236,8 @@ const signIn = async () => {
       //
       loading.value = true
       const formData = await getFormData<UserType>()
-      console.log(formData)
       try {
         const res = await loginApi(formData)
-        console.log(res)
         if (res) {
           // 是否记住我
           if (unref(remember)) {

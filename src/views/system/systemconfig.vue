@@ -7,7 +7,7 @@
           <div class="w-4/5 h-full flex justify-start ml-40 mt-10 flex-wrap">
             <el-input
               v-model="systemConfig.SystemName"
-              style="max-width: 600px; height: 50px; font-size: 20px"
+              style=" height: 50px;max-width: 600px; font-size: 20px"
               placeholder="请输入"
             >
               <template #prepend>系统名称</template>
@@ -34,7 +34,7 @@
                 :autosize="{ minRows: 2, maxRows: 6 }"
                 type="textarea"
                 v-model="systemConfig.SystemDescription"
-                style="max-width: 450px; height: 50px; font-size: 20px"
+                style=" height: 50px;max-width: 450px; font-size: 20px"
                 placeholder="Please input"
               >
                 <template #prepend>系统描述</template>
@@ -44,7 +44,7 @@
               <el-input
                 type="number"
                 v-model="systemConfig.CoachSalary"
-                style="max-width: 600px; height: 50px; font-size: 20px"
+                style=" height: 50px;max-width: 600px; font-size: 20px"
                 placeholder="请输入教练工资"
               >
                 <template #prepend>教练工资</template>
@@ -54,7 +54,7 @@
               <el-input
                 type="number"
                 v-model="systemConfig.CourseCommissionPercent"
-                style="max-width: 600px; height: 50px; font-size: 20px"
+                style=" height: 50px;max-width: 600px; font-size: 20px"
                 placeholder="请输入课程佣金百分比"
               >
                 <template #prepend>课程佣金百分比</template>
@@ -64,7 +64,7 @@
               <el-input
                 type="number"
                 v-model="systemConfig.CourseDefaultLessonPrice"
-                style="max-width: 600px; height: 50px; font-size: 20px"
+                style=" height: 50px;max-width: 600px; font-size: 20px"
                 placeholder="请输入默认课程价格"
               >
                 <template #prepend>默认课程价格</template>
@@ -74,7 +74,7 @@
               <el-input
                 type="number"
                 v-model="systemConfig.CourseDefaultMonthPrice"
-                style="max-width: 600px; height: 50px; font-size: 20px"
+                style=" height: 50px;max-width: 600px; font-size: 20px"
                 placeholder="请输入默认月价格"
               >
                 <template #prepend>默认月价格</template>
@@ -83,7 +83,7 @@
             <div class="w-full my-30px items-center flex justify-start flex-nowrap">
               <el-input
                 v-model="systemConfig.CourseDefaultName"
-                style="max-width: 600px; height: 50px; font-size: 20px"
+                style=" height: 50px;max-width: 600px; font-size: 20px"
                 placeholder="请输入默认课程名称"
               >
                 <template #prepend>默认课程名称</template>
@@ -93,7 +93,7 @@
               <el-input
                 type="number"
                 v-model="systemConfig.CourseDefaultQuarterPrice"
-                style="max-width: 600px; height: 50px; font-size: 20px"
+                style=" height: 50px;max-width: 600px; font-size: 20px"
                 placeholder="请输入默认季度价格"
               >
                 <template #prepend>默认季度价格</template>
@@ -103,7 +103,7 @@
               <el-input
                 type="number"
                 v-model="systemConfig.CourseDefaultYearPrice"
-                style="max-width: 600px; height: 50px; font-size: 20px"
+                style=" height: 50px;max-width: 600px; font-size: 20px"
                 placeholder="请输入默认年价格"
               >
                 <template #prepend>默认年价格</template>
@@ -112,7 +112,7 @@
             <div class="w-full my-30px items-center flex justify-start flex-nowrap">
               <el-input
                 v-model="systemConfig.DefaultWXName"
-                style="max-width: 600px; height: 50px; font-size: 20px"
+                style=" height: 50px;max-width: 600px; font-size: 20px"
                 placeholder="请输入默认微信名称"
               >
                 <template #prepend>默认微信名称</template>
@@ -134,19 +134,32 @@
                 </el-icon>
               </el-upload>
             </div>
+            <div class="w-full my-30px items-center flex justify-start flex-nowrap">
+              <span style="" class="logotext mt-20px mr-10">视频显示</span>
+              <el-switch
+                v-model="showVideo"
+                active-value="1"
+                inactive-value="0"
+                @change="handleVideoSwitchChange"
+                style="margin-left: 10px"
+              />
+              <span style="margin-left: 10px; font-size: 16px; color: var(--el-text-color-regular)">
+                {{ showVideo === '1' ? '开启' : '关闭' }}
+              </span>
+            </div>
           </div>
         </div>
       </div>
       <div class="fixed-button-container flex justify-end">
-        <el-button @click="saveConfig" type="primary" size="big">保存</el-button>
+        <el-button @click="saveConfig" type="primary" size="large">保存</el-button>
       </div>
     </ContentWrap>
   </div>
 </template>
 <script setup lang="ts">
 import { ContentWrap } from '@/components/ContentWrap'
-import { ref, computed } from 'vue'
-import { saveconfig, getconfig } from '@/api/system'
+import { ref, computed, onMounted } from 'vue'
+import { saveconfig, getconfig, getConfigByIdentify, saveOrUpdateConfig } from '@/api/system'
 
 const systemConfig = ref({
   SystemName: '',
@@ -165,10 +178,67 @@ const systemConfig = ref({
 
 const originalConfig = ref({})
 
+// 视频显示开关
+const showVideo = ref('0')
+
 // 获取初始配置
 getconfig().then((res) => {
   systemConfig.value = res.data
   originalConfig.value = { ...res.data } // 保存初始配置
+})
+
+// 获取视频显示配置
+const getVideoConfig = async () => {
+  try {
+    const res = await getConfigByIdentify('ShowVideo')
+    // 确保 res 存在且返回成功，value 是字符串类型的 "0" 或 "1"
+    if (res && res.code === 200 && res.data?.value !== undefined) {
+      // 确保值是字符串类型
+      showVideo.value = String(res.data.value)
+    } else {
+      // 如果接口返回失败或没有数据，默认设置为 "0"（关闭）
+      showVideo.value = '0'
+    }
+  } catch (error) {
+    console.error('获取视频显示配置失败:', error)
+    // 出错时默认设置为 "0"（关闭）
+    showVideo.value = '0'
+  }
+}
+
+// 处理视频开关变化
+const handleVideoSwitchChange = async (value: string) => {
+  // 保存当前值，用于失败时恢复
+  const previousValue = showVideo.value
+  try {
+    // 确保 value 是字符串类型
+    const stringValue = String(value)
+    const res = await saveOrUpdateConfig([
+      {
+        Identify: 'ShowVideo',
+        Value: stringValue
+      }
+    ])
+    // 确保 res 存在且返回成功
+    if (res && res.code === 200) {
+      ElMessage.success('视频显示设置已保存')
+      showVideo.value = stringValue
+    } else {
+      ElMessage.error('保存失败，请重试')
+      // 恢复原值
+      showVideo.value = previousValue
+    }
+  } catch (error) {
+    ElMessage.error('保存时发生错误，请重试')
+    console.error(error)
+    // 恢复原值
+    showVideo.value = previousValue
+  }
+}
+
+// 组件挂载时获取视频配置
+onMounted(() => {
+  getVideoConfig()
 })
 
 // logo上传
@@ -236,24 +306,26 @@ const beforeWXImageUpload: UploadProps['beforeUpload'] = async (rawFile) => {
   }
 }
 
-const handleWXImageSuccess: UploadProps['onSuccess'] = (response, uploadFile) => {
+const handleWXImageSuccess: UploadProps['onSuccess'] = () => {
   const fileUrl = `https://zhanjiang-fitness.oss-cn-guangzhou.aliyuncs.com/${wxSignature.value.key}`
   systemConfig.value.DefaultWXImg = fileUrl // 将生成的 URL 存储到 systemConfig 中
-  wxImageUrl.value = fileUrl
 }
 
 const saveConfig = async () => {
   console.log('systemConfig.value:', systemConfig.value)
 
-  const changes = Object.keys(systemConfig.value).reduce((acc, key) => {
-    if (systemConfig.value[key] !== originalConfig.value[key]) {
-      acc.push({
-        Identify: key,
-        Value: systemConfig.value[key]
-      })
-    }
-    return acc
-  }, [])
+  const changes: Array<{ Identify: string; Value: any }> = Object.keys(systemConfig.value).reduce(
+    (acc, key) => {
+      if (systemConfig.value[key] !== originalConfig.value[key]) {
+        acc.push({
+          Identify: key,
+          Value: systemConfig.value[key]
+        })
+      }
+      return acc
+    },
+    [] as Array<{ Identify: string; Value: any }>
+  )
 
   if (changes.length === 0) {
     ElMessage.info('没有更改需要保存。')
@@ -277,12 +349,12 @@ const saveConfig = async () => {
 .logotext {
   width: 130px;
   height: 50px;
-  text-align: center;
-  line-height: 50px;
-  background-color: var(--el-fill-color-light);
-  color: var(--el-color-info);
-  font-size: 20px;
   max-width: 600px;
+  font-size: 20px;
+  line-height: 50px;
+  color: var(--el-color-info);
+  text-align: center;
+  background-color: var(--el-fill-color-light);
   box-shadow:
     1px 0 0 0 var(--el-input-border-color) inset,
     0 1px 0 0 var(--el-input-border-color) inset,
@@ -304,9 +376,9 @@ const saveConfig = async () => {
 }
 
 .fixed-button-container {
-  margin-left: auto;
-  padding-bottom: 40px;
-  padding-right: 40px;
   z-index: 1000;
+  padding-right: 40px;
+  padding-bottom: 40px;
+  margin-left: auto;
 }
 </style>

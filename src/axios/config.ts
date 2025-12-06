@@ -37,18 +37,13 @@ const defaultRequestInterceptors = (config: InternalAxiosRequestConfig) => {
 
 const defaultResponseInterceptors = (response: AxiosResponse) => {
   if (response?.config?.responseType === 'blob') {
-    console.log(33)
     // 如果是文件流，直接过
     return response
   } else if (response.data.code === SUCCESS_CODE) {
-    console.log(33)
     return response.data
   } else {
-    console.log(55)
-
-    ElMessage.error(response?.msg)
-    if (response?.code === 401) {
-      console.log(222)
+    ElMessage.error(response?.data?.msg)
+    if (response?.data?.code === 401) {
       const userStore = useUserStoreWithOut()
       userStore.logout()
     }

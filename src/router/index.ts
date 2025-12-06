@@ -24,7 +24,7 @@ export const constantRouterMap: AppRouteRecordRaw[] = [
     children: [
       {
         path: '/redirect/:path(.*)',
-        name: 'Redirect',
+        name: 'RedirectTo',
         component: () => import('@/views/Redirect/Redirect.vue'),
         meta: {}
       }
@@ -172,7 +172,7 @@ export const asyncRouterMap: AppRouteRecordRaw[] = [
     children: [
       {
         path: 'course-list',
-        name: '授课情况',
+        name: '授课情况列表',
         component: () => import('@/views/course/course-list.vue'),
         meta: {
           title: '授课情况',
@@ -278,7 +278,7 @@ export const asyncRouterMap: AppRouteRecordRaw[] = [
       // },
       {
         path: 'systemconfig',
-        name: '系统设置',
+        name: '系统设置页面',
         component: () => import('@/views/system/systemconfig.vue'),
         meta: {
           title: '系统设置',
@@ -308,7 +308,7 @@ export const asyncRouterMap: AppRouteRecordRaw[] = [
       // },
       {
         path: 'notice',
-        name: '通知模块',
+        name: '通知模块页面',
         component: () => import('@/views/Notice/index.vue'),
         meta: {
           title: '通知模块',
