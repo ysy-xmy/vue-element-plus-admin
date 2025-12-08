@@ -123,6 +123,14 @@ export const asyncRouterMap: AppRouteRecordRaw[] = [
         meta: {
           title: '用户管理'
         }
+      },
+      {
+        path: 'coach-application',
+        name: 'CoachApplication',
+        component: () => import('@/views/Permission/CoachApplication.vue'),
+        meta: {
+          title: '申请处理'
+        }
       }
     ]
   },
