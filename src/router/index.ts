@@ -166,6 +166,14 @@ export const asyncRouterMap: AppRouteRecordRaw[] = [
         meta: {
           title: '公司财务'
         }
+      },
+      {
+        path: 'withdraw',
+        name: 'Withdraw',
+        component: () => import('@/views/finance/withdraw.vue'),
+        meta: {
+          title: '提现申请'
+        }
       }
     ]
   },
