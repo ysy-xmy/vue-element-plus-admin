@@ -1,384 +1,202 @@
-<template>
-  <div class="system-config flex w-full h-full">
-    <ContentWrap class="flex-[3] ml-20px relative flex flex-col">
-      系统配置
-      <div class="w-full overflow-y-auto flex mx-10 justify-center flex-wrap">
-        <div class="w-4/5 h-full flex justify-start ml-40 mt-10 flex-wrap">
-          <div class="w-4/5 h-full flex justify-start ml-40 mt-10 flex-wrap">
-            <el-input
-              v-model="systemConfig.SystemName"
-              style="height: 50px; max-width: 600px; font-size: 20px"
-              placeholder="请输入"
-            >
-              <template #prepend>系统名称</template>
-            </el-input>
-            <!-- <div class="w-full my-30px flex justify-start flex-nowrap">
-              <span style="" class="logotext mt-20px mr-10">logo </span>
-              <el-upload
-                class="avatar-uploader"
-                :data="signature"
-                action="https://zhanjiang-fitness.oss-cn-guangzhou.aliyuncs.com"
-                :show-file-list="false"
-                :on-success="handleAvatarSuccess"
-                :before-upload="beforeAvatarUpload"
-              >
-                <img v-if="imageUrl" :src="imageUrl" class="avatar" />
-                <el-icon v-else class="avatar-uploader-icon">
-                  <Plus />
-                </el-icon>
-              </el-upload>
-            </div> -->
-            <div class="w-full my-30px items-center flex justify-start flex-nowrap">
-              <span style="" class="logotext mt-20px mr-5">系统描述 </span>
-              <el-input
-                :autosize="{ minRows: 2, maxRows: 6 }"
-                type="textarea"
-                v-model="systemConfig.SystemDescription"
-                style="height: 50px; max-width: 450px; font-size: 20px"
-                placeholder="Please input"
-              >
-                <template #prepend>系统描述</template>
-              </el-input>
-            </div>
-            <div class="w-full my-30px items-center flex justify-start flex-nowrap">
-              <el-input
-                type="number"
-                v-model="systemConfig.CoachSalary"
-                style="height: 50px; max-width: 600px; font-size: 20px"
-                placeholder="请输入教练工资"
-              >
-                <template #prepend>教练工资</template>
-              </el-input>
-            </div>
-            <div class="w-full my-30px items-center flex justify-start flex-nowrap">
-              <el-input
-                type="number"
-                v-model="systemConfig.CourseCommissionPercent"
-                style="height: 50px; max-width: 600px; font-size: 20px"
-                placeholder="请输入课程佣金百分比"
-              >
-                <template #prepend>课程佣金百分比</template>
-              </el-input>
-            </div>
-            <div class="w-full my-30px items-center flex justify-start flex-nowrap">
-              <el-input
-                type="number"
-                v-model="systemConfig.CourseDefaultLessonPrice"
-                style="height: 50px; max-width: 600px; font-size: 20px"
-                placeholder="请输入默认课程价格"
-              >
-                <template #prepend>默认课程价格</template>
-              </el-input>
-            </div>
-            <div class="w-full my-30px items-center flex justify-start flex-nowrap">
-              <el-input
-                type="number"
-                v-model="systemConfig.CourseDefaultMonthPrice"
-                style="height: 50px; max-width: 600px; font-size: 20px"
-                placeholder="请输入默认月价格"
-              >
-                <template #prepend>默认月价格</template>
-              </el-input>
-            </div>
-            <div class="w-full my-30px items-center flex justify-start flex-nowrap">
-              <el-input
-                v-model="systemConfig.CourseDefaultName"
-                style="height: 50px; max-width: 600px; font-size: 20px"
-                placeholder="请输入默认课程名称"
-              >
-                <template #prepend>默认课程名称</template>
-              </el-input>
-            </div>
-            <div class="w-full my-30px items-center flex justify-start flex-nowrap">
-              <el-input
-                type="number"
-                v-model="systemConfig.CourseDefaultQuarterPrice"
-                style="height: 50px; max-width: 600px; font-size: 20px"
-                placeholder="请输入默认季度价格"
-              >
-                <template #prepend>默认季度价格</template>
-              </el-input>
-            </div>
-            <div class="w-full my-30px items-center flex justify-start flex-nowrap">
-              <el-input
-                type="number"
-                v-model="systemConfig.CourseDefaultYearPrice"
-                style="height: 50px; max-width: 600px; font-size: 20px"
-                placeholder="请输入默认年价格"
-              >
-                <template #prepend>默认年价格</template>
-              </el-input>
-            </div>
-            <div class="w-full my-30px items-center flex justify-start flex-nowrap">
-              <el-input
-                v-model="systemConfig.DefaultWXName"
-                style="height: 50px; max-width: 600px; font-size: 20px"
-                placeholder="默认昵称前缀（注册时自动加六位数字）"
-              >
-                <template #prepend>默认昵称前缀</template>
-              </el-input>
-            </div>
-            <div class="w-full my-30px items-center flex justify-start flex-nowrap">
-              <span style="" class="logotext mt-20px mr-10">默认微信头像</span>
-              <el-upload
-                class="avatar-uploader"
-                :data="wxSignature"
-                action="https://zhanjiang-fitness.oss-cn-guangzhou.aliyuncs.com"
-                :show-file-list="false"
-                :on-success="handleWXImageSuccess"
-                :before-upload="beforeWXImageUpload"
-              >
-                <img v-if="wxImageUrl" :src="wxImageUrl" class="avatar" />
-                <el-icon v-else class="avatar-uploader-icon">
-                  <Plus />
-                </el-icon>
-              </el-upload>
-            </div>
-            <div class="w-full my-30px items-center flex justify-start flex-nowrap">
-              <span style="" class="logotext mt-20px mr-10">视频显示</span>
-              <el-switch
-                v-model="showVideo"
-                active-value="1"
-                inactive-value="0"
-                @change="handleVideoSwitchChange"
-                style="margin-left: 10px"
-              />
-              <span style="margin-left: 10px; font-size: 16px; color: var(--el-text-color-regular)">
-                {{ showVideo === '1' ? '开启' : '关闭' }}
-              </span>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="fixed-button-container flex justify-end">
-        <el-button @click="saveConfig" type="primary" size="large">保存</el-button>
-      </div>
-    </ContentWrap>
-  </div>
-</template>
 <script setup lang="ts">
-import { ContentWrap } from '@/components/ContentWrap'
-import { ref, computed, onMounted } from 'vue'
-import { saveconfig, getconfig, getConfigByIdentify, saveOrUpdateConfig } from '@/api/system'
-
-const systemConfig = ref({
-  SystemName: '',
-  SystemLogo: '',
-  SystemDescription: '',
-  CoachSalary: '',
-  CourseCommissionPercent: '',
-  CourseDefaultLessonPrice: '',
-  CourseDefaultMonthPrice: '',
-  CourseDefaultName: '',
-  CourseDefaultQuarterPrice: '',
-  CourseDefaultYearPrice: '',
-  DefaultWXImg: '',
-  DefaultWXName: ''
-})
-
-const originalConfig = ref({})
-
-// 视频显示开关
-const showVideo = ref('0')
-
-// 获取初始配置
-getconfig().then((res) => {
-  systemConfig.value = res.data
-  originalConfig.value = { ...res.data } // 保存初始配置
-})
-
-// 获取视频显示配置
-const getVideoConfig = async () => {
-  try {
-    const res = await getConfigByIdentify('ShowVideo')
-    // 确保 res 存在且返回成功，value 是字符串类型的 "0" 或 "1"
-    if (res && res.code === 200 && res.data?.value !== undefined) {
-      // 确保值是字符串类型
-      showVideo.value = String(res.data.value)
-    } else {
-      // 如果接口返回失败或没有数据，默认设置为 "0"（关闭）
-      showVideo.value = '0'
-    }
-  } catch (error) {
-    console.error('获取视频显示配置失败:', error)
-    // 出错时默认设置为 "0"（关闭）
-    showVideo.value = '0'
-  }
-}
-
-// 处理视频开关变化
-const handleVideoSwitchChange = async (value: string) => {
-  // 保存当前值，用于失败时恢复
-  const previousValue = showVideo.value
-  try {
-    // 确保 value 是字符串类型
-    const stringValue = String(value)
-    const res = await saveOrUpdateConfig([
-      {
-        Identify: 'ShowVideo',
-        Value: stringValue
-      }
-    ])
-    // 确保 res 存在且返回成功
-    if (res && res.code === 200) {
-      ElMessage.success('视频显示设置已保存')
-      showVideo.value = stringValue
-    } else {
-      ElMessage.error('保存失败，请重试')
-      // 恢复原值
-      showVideo.value = previousValue
-    }
-  } catch (error) {
-    ElMessage.error('保存时发生错误，请重试')
-    console.error(error)
-    // 恢复原值
-    showVideo.value = previousValue
-  }
-}
-
-// 组件挂载时获取视频配置
-onMounted(() => {
-  getVideoConfig()
-})
-
-// logo上传
+import { onMounted, reactive, ref } from 'vue'
+import { useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
-import type { UploadProps } from 'element-plus'
-import axios from '@/axios'
+import { getProductConfig, saveProductConfig } from '@/api/admin'
+import { errorText } from '@/views/Operations/shared'
+import '@/views/Operations/operations.css'
 
-// const imageUrl = ref('https://element-plus-admin.cn/assets/logo-CRQ9AZN7.png')
-const wxImageUrl = computed(() => systemConfig.value.DefaultWXImg)
-
-const wxSignature = ref({
-  Policy: '',
-  OSSAccessKeyId: '',
-  Signature: '',
-  'x-oss-security-token': '',
-  key: ''
+const router = useRouter()
+const loading = ref(false)
+const saving = ref(false)
+const loaded = ref(false)
+const error = ref('')
+const values = reactive<Record<string, string>>({})
+const original = ref<Record<string, string>>({})
+const flags = reactive({
+  commerce: false,
+  coachMarketplace: false,
+  coachWallet: false,
+  coachApply: false,
+  aiQuotaUi: false
 })
-
-function getCurrentFormattedDate() {
-  const now = new Date()
-  const year = now.getFullYear()
-  const month = ('0' + (now.getMonth() + 1)).slice(-2) // 补零并截取
-  const day = ('0' + now.getDate()).slice(-2) // 补零并截取
-
-  return `${year}${month}${day}`
-}
-
-const beforeWXImageUpload: UploadProps['beforeUpload'] = async (rawFile) => {
-  const isJPG = rawFile.type === 'image/jpeg'
-  const isPNG = rawFile.type === 'image/png'
-  const isLt2M = rawFile.size / 1024 / 1024 < 2
-
-  if (!isJPG && !isPNG) {
-    ElMessage.error('微信图片必须是 JPG 或 PNG 格式！')
-    return false
-  }
-  if (!isLt2M) {
-    ElMessage.error('微信图片大小不能超过 2MB！')
-    return false
-  }
-
+const flagRows: { key: keyof typeof flags; label: string; hint: string }[] = [
+  {
+    key: 'commerce',
+    label: '购课与订单入口',
+    hint: '开启后展示商业化入口，并允许创建新的支付订单。'
+  },
+  { key: 'coachMarketplace', label: '教练市场', hint: '展示选课及教练列表的购课引导。' },
+  { key: 'coachWallet', label: '教练收入与提现', hint: '展示教练钱包及提现入口。' },
+  {
+    key: 'coachApply',
+    label: '教练认证申请',
+    hint: '展示原教练申请入口；所有用户已具备教练工具能力。'
+  },
+  { key: 'aiQuotaUi', label: 'AI 额度展示', hint: '展示 AI 次数与会员相关界面。' }
+]
+const load = async () => {
+  loading.value = true
+  error.value = ''
+  loaded.value = false
   try {
-    const { data } = await axios.get({
-      url: '/api/user/oss'
-    })
-
-    wxSignature.value = {
-      Policy: data.PolicyBase64,
-      OSSAccessKeyId: data.AccessKeyId,
-      Signature: data.Signature,
-      'x-oss-security-token': data.SecurityToken,
-      key: getCurrentFormattedDate()
+    const data = await getProductConfig()
+    const parsed = JSON.parse(data.ProductFeatureFlags)
+    if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed))
+      throw new Error('功能开关配置格式错误，请检查原配置')
+    for (const row of flagRows) {
+      if (parsed[row.key] !== undefined && typeof parsed[row.key] !== 'boolean')
+        throw new Error('功能开关配置不是布尔值，请检查原配置')
+      flags[row.key] = parsed[row.key] ?? false
     }
-
-    if (!wxSignature.value.OSSAccessKeyId) {
-      ElMessage.error('签名的 AccessKeyId 没有获取到，请重试！')
-      return false
-    }
-
-    return true
-  } catch (error) {
-    ElMessage.error('获取签名信息失败，请重试！')
-    console.error(error)
-    return false
+    Object.assign(values, data, { ProductFeatureFlags: JSON.stringify(flags) })
+    original.value = { ...values }
+    loaded.value = true
+  } catch (e) {
+    error.value = errorText(e)
+  } finally {
+    loading.value = false
   }
 }
-
-const handleWXImageSuccess: UploadProps['onSuccess'] = () => {
-  const fileUrl = `https://zhanjiang-fitness.oss-cn-guangzhou.aliyuncs.com/${wxSignature.value.key}`
-  systemConfig.value.DefaultWXImg = fileUrl // 将生成的 URL 存储到 systemConfig 中
-}
-
-const saveConfig = async () => {
-  console.log('systemConfig.value:', systemConfig.value)
-
-  const changes: Array<{ Identify: string; Value: any }> = Object.keys(systemConfig.value).reduce(
-    (acc, key) => {
-      if (systemConfig.value[key] !== originalConfig.value[key]) {
-        acc.push({
-          Identify: key,
-          Value: systemConfig.value[key]
-        })
-      }
-      return acc
-    },
-    [] as Array<{ Identify: string; Value: any }>
+const save = async () => {
+  if (!loaded.value) return
+  for (const key of ['SystemName', 'DefaultWXName', 'CourseDefaultName']) {
+    if (!values[key]?.trim()) {
+      ElMessage.warning('请填写产品名称、默认昵称前缀和默认训练名称')
+      return
+    }
+  }
+  const next = { ...values, ProductFeatureFlags: JSON.stringify(flags) }
+  const changes = Object.fromEntries(
+    Object.entries(next).filter(([key, value]) => value !== original.value[key])
   )
-
-  if (changes.length === 0) {
-    ElMessage.info('没有更改需要保存。')
+  if (!Object.keys(changes).length) {
+    ElMessage.info('没有需要保存的修改')
     return
   }
-
+  saving.value = true
   try {
-    const response = await saveconfig(changes)
-    if (response.code === 200) {
-      ElMessage.success('配置保存成功！')
-    } else {
-      ElMessage.error('配置保存失败，请重试！')
-    }
-  } catch (error) {
-    ElMessage.error('保存配置时发生错误，请重试！')
-    console.error(error)
+    await saveProductConfig(changes)
+    Object.assign(values, next)
+    original.value = { ...next }
+    ElMessage.success('产品配置已保存，小程序重新加载配置后生效')
+  } catch (e) {
+    ElMessage.error(errorText(e))
+  } finally {
+    saving.value = false
   }
 }
+onMounted(load)
 </script>
+
+<template>
+  <div class="ops-page" v-loading="loading">
+    <div class="ops-header"
+      ><div
+        ><div class="ops-eyebrow">产品设置</div><h1>小程序配置</h1
+        ><p>当前定位：个人训练记录 + AI 辅助 + 教练工具。商业入口默认关闭。</p></div
+      ><el-button type="primary" :loading="saving" :disabled="!loaded || loading" @click="save"
+        >保存修改</el-button
+      ></div
+    >
+    <el-alert v-if="error" :title="error" type="error" show-icon :closable="false" /><el-button
+      v-if="error"
+      @click="load"
+      >重新加载</el-button
+    >
+    <template v-if="loaded">
+      <div class="ops-columns">
+        <section class="ops-panel"
+          ><h2>基础信息</h2><p class="hint">展示名称与新用户默认资料。</p>
+          <el-form label-position="top" :disabled="saving" style="margin-top: 20px">
+            <el-form-item label="产品名称"
+              ><el-input v-model="values.SystemName" maxlength="60" show-word-limit
+            /></el-form-item>
+            <el-form-item label="产品描述"
+              ><el-input
+                v-model="values.SystemDescription"
+                type="textarea"
+                :rows="3"
+                maxlength="300"
+                show-word-limit
+            /></el-form-item>
+            <el-form-item label="默认昵称前缀"
+              ><el-input v-model="values.DefaultWXName" maxlength="30" /><div class="hint"
+                >注册时自动追加六位数字。</div
+              ></el-form-item
+            >
+            <el-form-item label="默认训练名称"
+              ><el-input v-model="values.CourseDefaultName" maxlength="60"
+            /></el-form-item>
+            <el-form-item label="产品 Logo 地址"
+              ><el-input v-model="values.SystemLogo" placeholder="https://…"
+            /></el-form-item>
+            <el-form-item label="默认头像地址"
+              ><el-input v-model="values.DefaultWXImg" placeholder="https://…"
+            /></el-form-item>
+            <el-form-item label="男性训练头像"
+              ><el-input v-model="values.DefaultAvatarStudentMale" placeholder="https://…"
+            /></el-form-item>
+            <el-form-item label="女性训练头像"
+              ><el-input v-model="values.DefaultAvatarStudentFemale" placeholder="https://…"
+            /></el-form-item>
+            <el-form-item label="教练视角头像"
+              ><el-input v-model="values.DefaultAvatarCoach" placeholder="https://…"
+            /></el-form-item>
+          </el-form>
+        </section>
+        <div style="display: flex; flex-direction: column; gap: 20px">
+          <section class="ops-panel"
+            ><h2>动作内容</h2
+            ><div class="config-switch"
+              ><div><strong>动作视频显示</strong><p class="hint">控制动作详情页的视频入口。</p></div
+              ><el-switch
+                v-model="values.ShowVideo"
+                active-value="1"
+                inactive-value="0"
+                :disabled="saving" /></div
+          ></section>
+          <section class="ops-panel"
+            ><h2>商业功能入口</h2><p class="hint">按需恢复历史商业功能。教练视角切换始终可用。</p>
+            <div v-for="row in flagRows" :key="row.key" class="config-switch"
+              ><div
+                ><strong>{{ row.label }}</strong
+                ><p class="hint">{{ row.hint }}</p></div
+              ><el-switch v-model="flags[row.key]" :disabled="saving"
+            /></div>
+          </section>
+        </div>
+      </div>
+      <section class="ops-panel"
+        ><el-collapse
+          ><el-collapse-item title="历史业务处理" name="legacy"
+            ><p class="hint">处理已有订单、收入、提现及认证申请。</p
+            ><el-button @click="router.push('/legacy')">进入历史业务</el-button></el-collapse-item
+          ></el-collapse
+        ></section
+      >
+    </template>
+  </div>
+</template>
+
 <style scoped>
-.logotext {
-  width: 130px;
-  height: 50px;
-  max-width: 600px;
-  font-size: 20px;
-  line-height: 50px;
-  color: var(--el-color-info);
-  text-align: center;
-  background-color: var(--el-fill-color-light);
-  box-shadow:
-    1px 0 0 0 var(--el-input-border-color) inset,
-    0 1px 0 0 var(--el-input-border-color) inset,
-    0 -1px 0 0 var(--el-input-border-color) inset;
+.config-switch {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 18px 0;
+  border-bottom: 1px solid var(--el-border-color-lighter);
 }
-
-.avatar-uploader {
-  width: 100px;
-  height: 100px;
+.config-switch:last-child {
+  border-bottom: 0;
+  padding-bottom: 0;
 }
-
-.avatar {
-  width: 100px;
-  height: 100px;
+.config-switch strong {
+  font-size: 14px;
+  font-weight: 500;
 }
-
-.system-config {
-  position: relative;
-}
-
-.fixed-button-container {
-  z-index: 1000;
-  padding-right: 40px;
-  padding-bottom: 40px;
-  margin-left: auto;
+.config-switch p {
+  margin: 6px 0 0;
 }
 </style>

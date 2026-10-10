@@ -8,6 +8,7 @@ import { unref } from 'vue'
 import { useDark } from '@vueuse/core'
 
 interface AppState {
+  visualVersion: number
   breadcrumb: boolean
   breadcrumbIcon: boolean
   collapse: boolean
@@ -38,10 +39,11 @@ interface AppState {
 export const useAppStore = defineStore('app', {
   state: (): AppState => {
     return {
+      visualVersion: 0,
       sizeMap: ['default', 'large', 'small'],
       mobile: false, // 是否是移动端
       // title: import.meta.env.VITE_APP_TITLE, // 标题
-      title: '轻律健身后台管理系统', // 标题
+      title: '轻律 · 运营后台', // 标题
       pageLoading: true, // 路由跳转loading
       breadcrumb: true, // 面包屑
       breadcrumbIcon: true, // 面包屑图标
@@ -53,7 +55,7 @@ export const useAppStore = defineStore('app', {
       locale: false, // 多语言图标
       tagsView: true, // 标签页
       tagsViewIcon: true, // 是否显示标签图标
-      logo: false, // logo
+      logo: true, // logo
       fixedHeader: true, // 固定toolheader
       footer: true, // 显示页脚
       greyMode: false, // 是否开始灰色模式，用于特殊悼念日
@@ -65,23 +67,23 @@ export const useAppStore = defineStore('app', {
       currentSize: 'default', // 组件尺寸
       theme: {
         // 主题色
-        elColorPrimary: '#409eff',
+        elColorPrimary: '#167b6b',
         // 左侧菜单边框颜色
-        leftMenuBorderColor: 'inherit',
+        leftMenuBorderColor: '#e4ebe7',
         // 左侧菜单背景颜色
-        leftMenuBgColor: '#001529',
+        leftMenuBgColor: '#ffffff',
         // 左侧菜单浅色背景颜色
-        leftMenuBgLightColor: '#0f2438',
+        leftMenuBgLightColor: '#f5f8f7',
         // 左侧菜单选中背景颜色
-        leftMenuBgActiveColor: 'var(--el-color-primary)',
+        leftMenuBgActiveColor: '#e2f1eb',
         // 左侧菜单收起选中背景颜色
-        leftMenuCollapseBgActiveColor: 'var(--el-color-primary)',
+        leftMenuCollapseBgActiveColor: '#e2f1eb',
         // 左侧菜单字体颜色
-        leftMenuTextColor: '#bfcbd9',
+        leftMenuTextColor: '#303c35',
         // 左侧菜单选中字体颜色
-        leftMenuTextActiveColor: '#fff',
+        leftMenuTextActiveColor: '#105f4f',
         // logo字体颜色
-        logoTitleTextColor: '#fff',
+        logoTitleTextColor: '#203c32',
         // logo边框颜色
         logoBorderColor: 'inherit',
         // 头部背景颜色
@@ -91,7 +93,7 @@ export const useAppStore = defineStore('app', {
         // 头部悬停颜色
         topHeaderHoverColor: '#f6f6f6',
         // 头部边框颜色
-        topToolBorderColor: '#eee'
+        topToolBorderColor: '#e4ebe7'
       }
     }
   },
@@ -173,6 +175,48 @@ export const useAppStore = defineStore('app', {
     }
   },
   actions: {
+    initVisualTheme() {
+      // 只迁移旧版默认主题，保留用户手动选择的配色。
+      if (this.visualVersion >= 4) return
+      if (this.theme.elColorPrimary === '#409eff') this.theme.elColorPrimary = '#167b6b'
+      if (this.theme.leftMenuBgColor === '#001529') {
+        this.setTheme({
+          leftMenuBgColor: '#ffffff',
+          leftMenuBgLightColor: '#f5f8f7',
+          leftMenuBgActiveColor: '#e2f1eb',
+          leftMenuCollapseBgActiveColor: '#e2f1eb',
+          leftMenuTextColor: '#303c35',
+          leftMenuTextActiveColor: '#105f4f',
+          leftMenuBorderColor: '#e4ebe7',
+          logoTitleTextColor: '#203c32',
+          logoBorderColor: '#e4ebe7'
+        })
+      }
+      if (this.title === '轻律健身后台管理系统') this.title = '轻律 · 运营后台'
+      this.logo = true
+      if (this.theme.leftMenuTextColor === '#66756f') this.theme.leftMenuTextColor = '#34483d'
+      if (this.theme.leftMenuTextActiveColor === '#126655') {
+        this.theme.leftMenuTextActiveColor = '#0e5c49'
+      }
+      if (this.theme.leftMenuBgColor === '#ffffff') {
+        if (this.theme.leftMenuTextColor === '#34483d') this.theme.leftMenuTextColor = '#303c35'
+        if (this.theme.leftMenuBgActiveColor === '#e8f4ef') {
+          this.theme.leftMenuBgActiveColor = 'var(--el-color-primary)'
+          this.theme.leftMenuCollapseBgActiveColor = 'var(--el-color-primary)'
+          this.theme.leftMenuTextActiveColor = '#fff'
+        }
+      }
+      if (
+        this.theme.leftMenuBgColor === '#ffffff' &&
+        ['var(--el-color-primary)', '#e8f4ef'].includes(this.theme.leftMenuBgActiveColor ?? '')
+      ) {
+        this.theme.leftMenuBgActiveColor = '#e2f1eb'
+        this.theme.leftMenuCollapseBgActiveColor = '#e2f1eb'
+        this.theme.leftMenuTextActiveColor = '#105f4f'
+      }
+      this.visualVersion = 4
+      this.setCssVarTheme()
+    },
     setBreadcrumb(breadcrumb: boolean) {
       this.breadcrumb = breadcrumb
     },

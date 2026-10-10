@@ -23,12 +23,35 @@ const toggleCollapse = () => {
 </script>
 
 <template>
-  <div :class="prefixCls" @click="toggleCollapse">
+  <button
+    type="button"
+    :class="prefixCls"
+    :aria-label="collapse ? '展开侧栏' : '收起侧栏'"
+    :aria-expanded="!collapse"
+    @click="toggleCollapse"
+  >
     <Icon
       :size="18"
       :icon="collapse ? 'vi-ant-design:menu-unfold-outlined' : 'vi-ant-design:menu-fold-outlined'"
       :color="color"
       class="cursor-pointer"
     />
-  </div>
+  </button>
 </template>
+
+<style scoped>
+.v-collapse {
+  display: flex;
+  height: 36px;
+  padding: 0 12px;
+  cursor: pointer;
+  background: transparent;
+  border: 0;
+  align-items: center;
+}
+
+.v-collapse:focus-visible {
+  outline: 2px solid var(--el-color-primary);
+  outline-offset: -2px;
+}
+</style>

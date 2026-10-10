@@ -71,7 +71,8 @@ export default defineComponent({
     height: propTypes.oneOfType([Number, String]),
     maxHeight: propTypes.oneOfType([Number, String]),
     stripe: propTypes.bool.def(false),
-    border: propTypes.bool.def(true),
+    // 默认仅显示横向行线；需要完整网格时仍可显式传入 border。
+    border: propTypes.bool.def(false),
     size: {
       type: String as PropType<ComponentSize>,
       validator: (v: ComponentSize) => ['default', 'small', 'large'].includes(v)

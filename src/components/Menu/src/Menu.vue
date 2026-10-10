@@ -139,7 +139,7 @@ export default defineComponent({
     // 设置选中时子标题的颜色
     .is-active {
       & > .@{elNamespace}-sub-menu__title {
-        color: var(--left-menu-text-active-color) !important;
+        color: var(--left-menu-text-color) !important;
       }
     }
 
@@ -147,8 +147,8 @@ export default defineComponent({
     .@{elNamespace}-sub-menu__title,
     .@{elNamespace}-menu-item {
       &:hover {
-        color: var(--left-menu-text-active-color) !important;
-        background-color: var(--left-menu-bg-color) !important;
+        color: var(--left-menu-text-color) !important;
+        background-color: var(--left-menu-bg-light-color) !important;
       }
     }
 
@@ -175,6 +175,25 @@ export default defineComponent({
     }
   }
 
+  &__vertical :deep(.el-menu) {
+    padding: 8px 0;
+    .el-menu-item,
+    .el-sub-menu__title {
+      height: 46px;
+      margin: 4px 10px;
+      border-radius: 6px;
+      font-size: 14px;
+      font-weight: 500;
+    }
+    .el-menu-item.is-active {
+      font-weight: 600;
+    }
+    .el-menu--collapse .el-menu-item,
+    .el-menu--collapse .el-sub-menu__title {
+      margin: 4px 6px;
+    }
+  }
+
   // 折叠时的最小宽度
   :deep(.@{elNamespace}-menu--collapse) {
     width: var(--left-menu-min-width);
@@ -183,6 +202,7 @@ export default defineComponent({
     & > .is-active > .@{elNamespace}-sub-menu__title {
       position: relative;
       background-color: var(--left-menu-collapse-bg-active-color) !important;
+      color: var(--left-menu-text-active-color) !important;
     }
   }
 
@@ -234,7 +254,7 @@ export default defineComponent({
   // 设置选中时子标题的颜色
   .is-active {
     & > .el-sub-menu__title {
-      color: var(--left-menu-text-active-color) !important;
+      color: var(--left-menu-text-color) !important;
     }
   }
 
@@ -242,14 +262,15 @@ export default defineComponent({
   .el-sub-menu__title,
   .el-menu-item {
     &:hover {
-      color: var(--left-menu-text-active-color) !important;
-      background-color: var(--left-menu-bg-color) !important;
+      color: var(--left-menu-text-color) !important;
+      background-color: var(--left-menu-bg-light-color) !important;
     }
   }
 
   // 设置选中时的高亮背景
   .el-menu-item.is-active {
     position: relative;
+    color: var(--left-menu-text-active-color) !important;
     background-color: var(--left-menu-bg-active-color) !important;
 
     &:hover {

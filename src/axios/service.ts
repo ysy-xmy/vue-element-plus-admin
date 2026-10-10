@@ -33,13 +33,16 @@ axiosInstance.interceptors.response.use(
   },
   (error: AxiosError) => {
     console.log(error) // for debug
-    if (error.response.data.code === 401) {
+    if ((error.response?.data as { code?: number } | undefined)?.code === 401) {
       ElMessage.error('登录失效,请重新登录')
       const userStore = useUserStoreWithOut()
       userStore.logout()
     } else {
-
-      ElMessage.error(error)
+      ElMessage.error(
+        (error.response?.data as { msg?: string } | undefined)?.msg ||
+          error.message ||
+          '网络连接失败，请重试'
+      )
     }
 
     return Promise.reject(error)

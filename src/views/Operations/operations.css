@@ -1,0 +1,130 @@
+.ops-page {
+  --ops-accent: #167b6b;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding-bottom: 24px;
+}
+.ops-header {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+}
+.ops-header h1 {
+  margin: 0 0 8px;
+  font-size: 26px;
+  font-weight: 650;
+  letter-spacing: -0.5px;
+  color: var(--el-text-color-primary);
+}
+.ops-header p {
+  margin: 0;
+  color: var(--el-text-color-secondary);
+  font-size: 14px;
+  line-height: 1.6;
+}
+.ops-eyebrow {
+  margin-bottom: 8px;
+  color: var(--ops-accent);
+  font-size: 12px;
+  letter-spacing: 2px;
+  font-weight: 600;
+}
+.ops-panel {
+  background: var(--el-bg-color);
+  border: 1px solid var(--el-border-color-lighter);
+  border-radius: 14px;
+  padding: 22px;
+}
+.ops-panel h2 {
+  margin: 0 0 8px;
+  font-size: 17px;
+  font-weight: 600;
+}
+.ops-panel .hint {
+  color: var(--el-text-color-secondary);
+  font-size: 13px;
+  line-height: 1.7;
+}
+.ops-filters {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+.ops-pagination {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 20px;
+}
+.ops-error {
+  margin-bottom: 4px;
+}
+.ops-link {
+  color: var(--ops-accent);
+  cursor: pointer;
+}
+.ops-page .el-table {
+  --el-table-header-bg-color: var(--el-fill-color-light);
+}
+.ops-page .el-table th.el-table__cell {
+  font-weight: 600;
+}
+.ops-metrics {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 16px;
+}
+.ops-metric {
+  border-radius: 14px;
+  padding: 22px;
+  background: var(--el-bg-color);
+  border: 1px solid var(--el-border-color-lighter);
+}
+.ops-metric .label {
+  font-size: 13px;
+  color: var(--el-text-color-secondary);
+}
+.ops-metric .value {
+  margin: 12px 0;
+  font-size: 32px;
+  font-weight: 650;
+  line-height: 1.2;
+  font-variant-numeric: tabular-nums;
+}
+.ops-metric .note {
+  font-size: 12px;
+  color: var(--el-text-color-secondary);
+  line-height: 1.6;
+}
+.ops-columns {
+  display: grid;
+  grid-template-columns: minmax(0, 2fr) minmax(260px, 1fr);
+  gap: 20px;
+}
+@media (max-width: 1100px) {
+  .ops-metrics {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .ops-columns {
+    grid-template-columns: 1fr;
+  }
+}
+@media (max-width: 600px) {
+  .ops-panel {
+    padding: 16px;
+  }
+  .ops-metrics {
+    grid-template-columns: 1fr;
+  }
+  .ops-header h1 {
+    font-size: 22px;
+  }
+  .ops-pagination {
+    overflow: auto;
+    justify-content: flex-start;
+  }
+}

@@ -19,9 +19,6 @@ import { setupGlobCom } from '@/components'
 // 引入element-plus
 import { setupElementPlus } from '@/plugins/elementPlus'
 
-// 引入全局样式
-import '@/styles/index.less'
-
 // 引入动画
 import '@/plugins/animate.css'
 
@@ -37,6 +34,8 @@ import App from './App.vue'
 
 import './permission'
 import 'element-plus/dist/index.css'
+// 公共主题在组件库基础样式之后加载。
+import '@/styles/index.less'
 import ElementPlus from 'element-plus'
 
 // 创建实例

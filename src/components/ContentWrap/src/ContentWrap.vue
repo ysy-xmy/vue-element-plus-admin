@@ -16,7 +16,7 @@ defineProps({
 <template>
   <ElCard :class="[prefixCls]" shadow="never">
     <template v-if="title" #header>
-      <div class="flex items-center">
+      <div class="flex items-center flex-wrap gap-y-12px">
         <span class="text-16px font-700">{{ title }}</span>
         <ElTooltip v-if="message" effect="dark" placement="right">
           <template #content>

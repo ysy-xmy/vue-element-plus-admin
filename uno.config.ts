@@ -63,15 +63,9 @@ ${selector}:hover {
       ([], { rawSelector }) => {
         const selector = e(rawSelector)
         return `
-${selector}:before {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 1px;
-  height: 100%;
-  background-color: var(--el-border-color);
-  z-index: 3;
+${selector} {
+  box-sizing: border-box;
+  border-left: 1px solid var(--el-border-color);
 }
 `
       }
@@ -81,15 +75,9 @@ ${selector}:before {
       ([], { rawSelector }) => {
         const selector = e(rawSelector)
         return `
-${selector}:after {
-  content: "";
-  position: absolute;
-  top: 0;
-  right: 0;
-  width: 1px;
-  height: 100%;
-  background-color: var(--el-border-color);
-  z-index: 3;
+${selector} {
+  box-sizing: border-box;
+  border-right: 1px solid var(--el-border-color);
 }
 `
       }
