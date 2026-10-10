@@ -62,14 +62,14 @@ jobs:
       - name: Build Github
         run: |
           pnpm install --no-frozen-lockfile
-          pnpm run build:pro
+          pnpm run build
 
       - name: Deploy Github
         uses: peaceiris/actions-gh-pages@v3
         with:
           deploy_key: ${{secrets.ACTIONS_DEPLOY_KEY}}
           publish_branch: gh-pages
-          publish_dir: ./dist-pro
+          publish_dir: ./dist
           force_orphan: true
           cname: element-plus-admin.cn
 
@@ -105,7 +105,7 @@ jobs:
       - name: Build Gitee
         run: |
           pnpm install --no-frozen-lockfile
-          pnpm run build:gitee
+          pnpm run build
 
       # 发布到 gitee
       - name: Deploy Gitee
@@ -113,7 +113,7 @@ jobs:
         with:
           deploy_key: ${{secrets.ACTIONS_DEPLOY_KEY}}
           publish_branch: gh-pages-gitee
-          publish_dir: ./dist-pro
+          publish_dir: ./dist
           force_orphan: true
 
       - name: Sync Github Repos To Gitee # 名字随便起

@@ -4,8 +4,8 @@
       <div class="mb-10px">
         <div class="mb-2 flex items-center text-sm">
           <el-radio-group @change="changeSelect" v-model="select" class="ml-4">
-            <el-radio value="STUDENT" size="large">学员</el-radio>
-            <el-radio value="COACH" size="large">教练</el-radio>
+            <el-radio value="ALL_USERS" size="large">全部用户</el-radio>
+            <el-radio value="TRAINING_COACH" size="large">有学员的教练</el-radio>
           </el-radio-group>
         </div>
       </div>
@@ -65,7 +65,6 @@ import { useTable } from '@/hooks/web/useTable'
 import Write from './components/Write.vue'
 import Detail from './components/Detail.vue'
 import { Dialog } from '@/components/Dialog'
-import { roleApi } from '@/api/role'
 import { ElTag, ElMessageBox } from 'element-plus'
 import dayjs from 'dayjs'
 
@@ -76,8 +75,7 @@ import { BaseButton } from '@/components/Button'
 
 const { t } = useI18n()
 
-var select = ref('STUDENT')
-// 1为学员，2为教练，3为游客
+var select = ref('ALL_USERS')
 
 const changeSelect = (value: string) => {
   select.value = value
@@ -145,10 +143,7 @@ const crudSchemas = reactive<CrudSchema[]>([
   {
     field: 'Username',
     label: '用户名',
-    align: 'center',
-    form: {
-      hidden: true
-    }
+    align: 'center'
   },
   {
     field: 'CourseInfo',
@@ -295,7 +290,7 @@ const crudSchemas = reactive<CrudSchema[]>([
 
   {
     field: 'RoleName',
-    label: '角色',
+    label: '当前视角',
     align: 'center',
     search: {
       hidden: true
@@ -316,24 +311,7 @@ const crudSchemas = reactive<CrudSchema[]>([
         }
       }
     },
-    form: {
-      component: 'Select',
-      value: [],
-      componentProps: {
-        collapseTags: true,
-        maxCollapseTags: 1,
-        rules: [{ required: true, message: '请选择角色', trigger: 'change' }]
-      },
-      optionApi: async () => {
-        const res = await roleApi()
-        console.log(res)
-
-        return res.data.map((v) => ({
-          label: v.RoleName,
-          value: v.RoleName
-        }))
-      }
-    }
+    form: { hidden: true }
   },
   {
     field: 'Sex',
@@ -517,7 +495,7 @@ const crudSchemas = reactive<CrudSchema[]>([
       width: 200,
       slots: {
         default: (data: any) => {
-          const row = data.row as DepartmentUserItem
+          const row = data.row as DepartmentUserItem & { RoleName?: string }
           return (
             <>
               <div class="flex justify-center items-center w-full">
@@ -546,7 +524,7 @@ const fetchUserlist = async () => {
   let params: UserParams = {
     Page: String(currentPage.value),
     Size: String(pageSize.value),
-    UserSelectType: select.value as 'STUDENT' | 'COACH' | 'ADMIN' | 'COACH&STUDENT'
+    UserSelectType: select.value as 'ALL_USERS' | 'TRAINING_COACH'
   }
   Userlist.value = []
 
@@ -565,7 +543,7 @@ const fetchUserlist = async () => {
       Age: v.Age,
       Username: v.Username,
       Phone: v.Phone,
-      RoleName: v.RoleName == 'student' ? '学员' : v.RoleName == 'coach' ? '教练' : '其他',
+      RoleName: v.ActivePersona == 'coach' ? '教练' : '学员',
       Enable: v.Enable,
       LastLoginTime: v.LastLoginTime,
       Sex: v.Sex,
@@ -590,7 +568,6 @@ watch(
 
 const dialogVisible = ref(false)
 const dialogTitle = ref('')
-
 const currentRow = ref<DepartmentUserItem>()
 const actionType = ref('')
 const ids = ref<string[]>([])
@@ -615,8 +592,7 @@ const save = async () => {
     let data: object = {
       ID: (currentRow.value as any).ID,
       OpenID: (currentRow.value as any).OpenID,
-      Username: (currentRow.value as any).Username,
-      Roleid: formData.RoleName == '学员' ? 4 : 3
+      Username: formData.Username
     }
     const res = await updatauserapi(data)
     if (res.code == 200) {
@@ -632,15 +608,14 @@ const save = async () => {
 </script>
 <style>
 .el-table .cell {
-  margin: auto !important;
   display: flex;
+  margin: auto !important;
   justify-content: center;
 }
 
 /* 调整表格滚动条样式 */
 .el-table__body-wrapper {
-  overflow-x: auto;
-  overflow-y: auto;
+  overflow: auto;
 }
 
 .el-table__body-wrapper::-webkit-scrollbar {

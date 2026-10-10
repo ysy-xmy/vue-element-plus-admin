@@ -7,7 +7,7 @@
           <div class="w-4/5 h-full flex justify-start ml-40 mt-10 flex-wrap">
             <el-input
               v-model="systemConfig.SystemName"
-              style=" height: 50px;max-width: 600px; font-size: 20px"
+              style="height: 50px; max-width: 600px; font-size: 20px"
               placeholder="请输入"
             >
               <template #prepend>系统名称</template>
@@ -34,7 +34,7 @@
                 :autosize="{ minRows: 2, maxRows: 6 }"
                 type="textarea"
                 v-model="systemConfig.SystemDescription"
-                style=" height: 50px;max-width: 450px; font-size: 20px"
+                style="height: 50px; max-width: 450px; font-size: 20px"
                 placeholder="Please input"
               >
                 <template #prepend>系统描述</template>
@@ -44,7 +44,7 @@
               <el-input
                 type="number"
                 v-model="systemConfig.CoachSalary"
-                style=" height: 50px;max-width: 600px; font-size: 20px"
+                style="height: 50px; max-width: 600px; font-size: 20px"
                 placeholder="请输入教练工资"
               >
                 <template #prepend>教练工资</template>
@@ -54,7 +54,7 @@
               <el-input
                 type="number"
                 v-model="systemConfig.CourseCommissionPercent"
-                style=" height: 50px;max-width: 600px; font-size: 20px"
+                style="height: 50px; max-width: 600px; font-size: 20px"
                 placeholder="请输入课程佣金百分比"
               >
                 <template #prepend>课程佣金百分比</template>
@@ -64,7 +64,7 @@
               <el-input
                 type="number"
                 v-model="systemConfig.CourseDefaultLessonPrice"
-                style=" height: 50px;max-width: 600px; font-size: 20px"
+                style="height: 50px; max-width: 600px; font-size: 20px"
                 placeholder="请输入默认课程价格"
               >
                 <template #prepend>默认课程价格</template>
@@ -74,7 +74,7 @@
               <el-input
                 type="number"
                 v-model="systemConfig.CourseDefaultMonthPrice"
-                style=" height: 50px;max-width: 600px; font-size: 20px"
+                style="height: 50px; max-width: 600px; font-size: 20px"
                 placeholder="请输入默认月价格"
               >
                 <template #prepend>默认月价格</template>
@@ -83,7 +83,7 @@
             <div class="w-full my-30px items-center flex justify-start flex-nowrap">
               <el-input
                 v-model="systemConfig.CourseDefaultName"
-                style=" height: 50px;max-width: 600px; font-size: 20px"
+                style="height: 50px; max-width: 600px; font-size: 20px"
                 placeholder="请输入默认课程名称"
               >
                 <template #prepend>默认课程名称</template>
@@ -93,7 +93,7 @@
               <el-input
                 type="number"
                 v-model="systemConfig.CourseDefaultQuarterPrice"
-                style=" height: 50px;max-width: 600px; font-size: 20px"
+                style="height: 50px; max-width: 600px; font-size: 20px"
                 placeholder="请输入默认季度价格"
               >
                 <template #prepend>默认季度价格</template>
@@ -103,7 +103,7 @@
               <el-input
                 type="number"
                 v-model="systemConfig.CourseDefaultYearPrice"
-                style=" height: 50px;max-width: 600px; font-size: 20px"
+                style="height: 50px; max-width: 600px; font-size: 20px"
                 placeholder="请输入默认年价格"
               >
                 <template #prepend>默认年价格</template>
@@ -112,10 +112,10 @@
             <div class="w-full my-30px items-center flex justify-start flex-nowrap">
               <el-input
                 v-model="systemConfig.DefaultWXName"
-                style=" height: 50px;max-width: 600px; font-size: 20px"
-                placeholder="请输入默认微信名称"
+                style="height: 50px; max-width: 600px; font-size: 20px"
+                placeholder="默认昵称前缀（注册时自动加六位数字）"
               >
-                <template #prepend>默认微信名称</template>
+                <template #prepend>默认昵称前缀</template>
               </el-input>
             </div>
             <div class="w-full my-30px items-center flex justify-start flex-nowrap">

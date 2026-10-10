@@ -14,8 +14,9 @@ export interface UserParams {
   Page?: string
   Size?: string
   /**
-   * ADMIN、COACH、STUDENT、COACH&STUDENT
+   * ADMIN、COACH、STUDENT、COACH&STUDENT (旧角色筛选)；
+   * ALL_USERS、TRAINING_COACH (管理端按实际带教关系筛选)
    */
-  UserSelectType?: 'ADMIN' | 'COACH' | 'STUDENT' | 'COACH&STUDENT'
+  UserSelectType?: 'ADMIN' | 'COACH' | 'STUDENT' | 'COACH&STUDENT' | 'ALL_USERS' | 'TRAINING_COACH'
   [property: string]: any
 }
