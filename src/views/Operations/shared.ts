@@ -1,3 +1,5 @@
+import type { Ref } from 'vue'
+import type { ListQuery } from '@/api/admin'
 import dayjs from 'dayjs'
 export const formatTime = (value?: string | null) =>
   value && !value.startsWith('0001') ? dayjs(value).format('YYYY-MM-DD HH:mm') : '—'
@@ -31,3 +33,13 @@ export const statusType = (value: string): 'success' | 'danger' | 'warning' | 'i
         : 'info'
 export const errorText = (error: unknown) =>
   error instanceof Error ? error.message : '加载失败，请稍后重试'
+
+// 分页列表统一向后端请求全量排序；取消排序时恢复接口默认顺序。
+export const useListSort =
+  (query: Ref<ListQuery>, reload: () => void) =>
+  ({ prop, order }: { prop: string; order: 'ascending' | 'descending' | null }) => {
+    query.value.sortBy = order ? prop : ''
+    query.value.sortOrder = order === 'ascending' ? 'asc' : order === 'descending' ? 'desc' : ''
+    query.value.page = 1
+    reload()
+  }

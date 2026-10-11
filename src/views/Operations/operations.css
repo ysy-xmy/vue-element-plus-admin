@@ -128,3 +128,9 @@
     justify-content: flex-start;
   }
 }
+
+.ops-sort-hint {
+  margin: 0 0 16px;
+  color: var(--el-text-color-secondary);
+  font-size: 12px;
+}

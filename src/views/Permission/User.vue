@@ -3,9 +3,17 @@ import { onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { getUsers, setUserStatus, type UserRow, type ListQuery } from '@/api/admin'
-import { formatTime, errorText } from '@/views/Operations/shared'
+import { formatTime, errorText, useListSort } from '@/views/Operations/shared'
 import '@/views/Operations/operations.css'
 
+const sourceLabel = (value?: string) => {
+  const labels: Record<string, string> = {
+    partner: '合作渠道',
+    self: '自主来源',
+    other: '其他来源'
+  }
+  return value ? labels[value] || value : '未记录'
+}
 const router = useRouter()
 const query = ref<ListQuery>({ page: 1, size: 20, keyword: '', persona: '', enable: '' })
 const rows = ref<UserRow[]>([])
@@ -13,25 +21,37 @@ const total = ref(0)
 const loading = ref(false)
 const error = ref('')
 const pendingId = ref<number>()
+let requestId = 0
 const load = async () => {
+  const currentRequest = ++requestId
   loading.value = true
   error.value = ''
   try {
     const data = await getUsers(query.value)
+    if (currentRequest !== requestId) return
     rows.value = data.list
     total.value = data.total
   } catch (e) {
-    error.value = errorText(e)
+    if (currentRequest === requestId) error.value = errorText(e)
   } finally {
-    loading.value = false
+    if (currentRequest === requestId) loading.value = false
   }
 }
 const search = () => {
   query.value.page = 1
   load()
 }
+const onSortChange = useListSort(query, load)
 const reset = () => {
-  query.value = { page: 1, size: 20, keyword: '', persona: '', enable: '' }
+  query.value = {
+    sortBy: query.value.sortBy,
+    sortOrder: query.value.sortOrder,
+    page: 1,
+    size: 20,
+    keyword: '',
+    persona: '',
+    enable: ''
+  }
   load()
 }
 const toggle = async (user: UserRow) => {
@@ -68,6 +88,7 @@ onMounted(load)
     >
     <el-alert v-if="error" :title="error" type="error" show-icon :closable="false" />
     <section class="ops-panel">
+      <p class="ops-sort-hint">点击表头箭头排序，支持升序、降序和取消；排序对全部匹配记录生效。</p>
       <div class="ops-filters">
         <el-input
           v-model="query.keyword"
@@ -87,9 +108,15 @@ onMounted(load)
         <el-button type="primary" @click="search" :disabled="loading">查询</el-button
         ><el-button @click="reset" :disabled="loading">重置</el-button>
       </div>
-      <el-table :data="rows" v-loading="loading" empty-text="暂无符合条件的用户" row-key="id">
-        <el-table-column prop="id" label="ID" width="80" />
-        <el-table-column label="用户" min-width="190"
+      <el-table
+        :data="rows"
+        v-loading="loading"
+        empty-text="暂无符合条件的用户"
+        row-key="id"
+        @sort-change="onSortChange"
+      >
+        <el-table-column sortable="custom" prop="id" label="ID" width="80" />
+        <el-table-column sortable="custom" prop="username" label="用户" min-width="190"
           ><template #default="{ row }"
             ><div style="display: flex; align-items: center; gap: 10px"
               ><el-avatar :size="34" :src="row.avatar">{{
@@ -99,30 +126,61 @@ onMounted(load)
             ></template
           ></el-table-column
         >
-        <el-table-column prop="phone" label="手机号" min-width="135"
+        <el-table-column sortable="custom" prop="phone" label="手机号" min-width="135"
           ><template #default="{ row }">{{ row.phone || '—' }}</template></el-table-column
         >
-        <el-table-column label="当前视角" width="115"
+        <el-table-column sortable="custom" prop="sourceType" label="来源类型" width="120">
+          <template #default="{ row }">
+            <el-tag :type="row.sourceType === 'partner' ? 'success' : 'info'">
+              {{ sourceLabel(row.sourceType) }}
+            </el-tag>
+          </template>
+        </el-table-column>
+        <el-table-column
+          sortable="custom"
+          prop="sourceAppId"
+          label="来源应用 ID"
+          min-width="190"
+          show-overflow-tooltip
+        >
+          <template #default="{ row }">{{ row.sourceAppId || '—' }}</template>
+        </el-table-column>
+        <el-table-column
+          sortable="custom"
+          prop="channel"
+          label="来源渠道"
+          min-width="150"
+          show-overflow-tooltip
+        >
+          <template #default="{ row }">{{ row.channel || '—' }}</template>
+        </el-table-column>
+        <el-table-column sortable="custom" prop="activePersona" label="当前视角" width="115"
           ><template #default="{ row }"
             ><el-tag :type="row.activePersona === 'coach' ? 'success' : 'info'">{{
               row.activePersona === 'coach' ? '教练' : '训练'
             }}</el-tag></template
           ></el-table-column
         >
-        <el-table-column prop="planCount" label="训练计划" width="100" /><el-table-column
+        <el-table-column
+          sortable="custom"
+          prop="planCount"
+          label="训练计划"
+          width="100"
+        /><el-table-column
+          sortable="custom"
           prop="completedCount"
           label="已完成"
-          width="95"
-        /><el-table-column prop="studentCount" label="带教学员" width="100" />
-        <el-table-column label="最近登录" min-width="155"
+          width="110"
+        /><el-table-column sortable="custom" prop="studentCount" label="带教学员" width="120" />
+        <el-table-column sortable="custom" prop="lastLoginTime" label="最近登录" min-width="155"
           ><template #default="{ row }">{{
             formatTime(row.lastLoginTime)
           }}</template></el-table-column
         >
-        <el-table-column label="注册时间" min-width="155"
+        <el-table-column sortable="custom" prop="createdAt" label="注册时间" min-width="155"
           ><template #default="{ row }">{{ formatTime(row.createdAt) }}</template></el-table-column
         >
-        <el-table-column label="状态" width="90"
+        <el-table-column sortable="custom" prop="enable" label="状态" width="90"
           ><template #default="{ row }"
             ><el-tag :type="row.enable ? 'success' : 'danger'">{{
               row.enable ? '正常' : '停用'

@@ -7,6 +7,12 @@ export interface PageResult<T> {
   size: number
 }
 export interface UserRow {
+  sourceType: string
+  sourceAppId: string
+  referrerScene: string
+  channel: string
+  attributionNo: string
+  sourceCreatedAt: string | null
   id: number
   username: string
   avatar: string
@@ -81,6 +87,8 @@ export interface Overview {
   trend: { date: string; newUsers: number; plans: number; completedPlans: number; aiRuns: number }[]
 }
 export interface ListQuery {
+  sortBy?: string
+  sortOrder?: 'asc' | 'desc' | ''
   page: number
   size: number
   keyword?: string

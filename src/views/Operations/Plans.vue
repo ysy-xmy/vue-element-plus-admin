@@ -2,7 +2,7 @@
 import { onMounted, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import { getPlans, getPlanDetail, type PlanRow, type PlanDetail, type ListQuery } from '@/api/admin'
-import { formatTime, formatDate, sourceLabel, errorText } from './shared'
+import { formatTime, formatDate, sourceLabel, errorText, useListSort } from './shared'
 import './operations.css'
 
 const route = useRoute()
@@ -17,7 +17,9 @@ const detail = ref<PlanDetail>()
 const detailLoading = ref(false)
 const detailError = ref('')
 const selectedId = ref(0)
+let requestId = 0
 const load = async () => {
+  const currentRequest = ++requestId
   loading.value = true
   error.value = ''
   try {
@@ -26,20 +28,30 @@ const load = async () => {
       start: dates.value?.[0] || '',
       end: dates.value?.[1] || ''
     })
+    if (currentRequest !== requestId) return
     rows.value = data.list
     total.value = data.total
   } catch (e) {
-    error.value = errorText(e)
+    if (currentRequest === requestId) error.value = errorText(e)
   } finally {
-    loading.value = false
+    if (currentRequest === requestId) loading.value = false
   }
 }
 const search = () => {
   query.value.page = 1
   load()
 }
+const onSortChange = useListSort(query, load)
 const reset = () => {
-  query.value = { page: 1, size: 20, keyword: '', source: '', complete: '' }
+  query.value = {
+    sortBy: query.value.sortBy,
+    sortOrder: query.value.sortOrder,
+    page: 1,
+    size: 20,
+    keyword: '',
+    source: '',
+    complete: ''
+  }
   dates.value = []
   load()
 }
@@ -85,6 +97,7 @@ onMounted(() => {
     >
     <el-alert v-if="error" :title="error" type="error" show-icon :closable="false" />
     <section class="ops-panel">
+      <p class="ops-sort-hint">点击表头箭头排序，支持升序、降序和取消；排序对全部匹配记录生效。</p>
       <div class="ops-filters">
         <el-input
           v-model="query.keyword"
@@ -120,38 +133,45 @@ onMounted(() => {
         <el-button type="primary" @click="search" :disabled="loading">查询</el-button
         ><el-button @click="reset" :disabled="loading">重置</el-button>
       </div>
-      <el-table :data="rows" v-loading="loading" row-key="id" empty-text="暂无符合条件的训练计划">
-        <el-table-column prop="id" label="ID" width="80" /><el-table-column
+      <el-table
+        :data="rows"
+        v-loading="loading"
+        row-key="id"
+        empty-text="暂无符合条件的训练计划"
+        @sort-change="onSortChange"
+      >
+        <el-table-column sortable="custom" prop="id" label="ID" width="80" /><el-table-column
+          sortable="custom"
           prop="planTitle"
           label="计划"
           min-width="210"
           show-overflow-tooltip
         />
-        <el-table-column label="用户" min-width="170"
+        <el-table-column sortable="custom" prop="username" label="用户" min-width="170"
           ><template #default="{ row }"
             >{{ row.username || '未设置昵称' }}
             <span class="hint">#{{ row.userId }}</span></template
           ></el-table-column
         >
-        <el-table-column label="计划日期" width="125"
+        <el-table-column sortable="custom" prop="planTime" label="计划日期" width="125"
           ><template #default="{ row }">{{ formatDate(row.planTime) }}</template></el-table-column
         >
-        <el-table-column label="来源" width="120"
+        <el-table-column sortable="custom" prop="source" label="来源" width="120"
           ><template #default="{ row }"
             ><el-tag :type="row.source === 'ai' ? 'success' : 'info'">{{
               sourceLabel(row.source)
             }}</el-tag></template
           ></el-table-column
         >
-        <el-table-column prop="actionCount" label="动作数" width="90" />
-        <el-table-column label="完成状态" width="115"
+        <el-table-column sortable="custom" prop="actionCount" label="动作数" width="90" />
+        <el-table-column sortable="custom" prop="complete" label="完成状态" width="115"
           ><template #default="{ row }"
             ><el-tag :type="row.complete ? 'success' : 'info'">{{
               row.complete ? '已完成' : '未完成'
             }}</el-tag></template
           ></el-table-column
         >
-        <el-table-column label="创建时间" min-width="165"
+        <el-table-column sortable="custom" prop="createdAt" label="创建时间" min-width="165"
           ><template #default="{ row }">{{ formatTime(row.createdAt) }}</template></el-table-column
         >
         <el-table-column label="操作" width="100" fixed="right"
